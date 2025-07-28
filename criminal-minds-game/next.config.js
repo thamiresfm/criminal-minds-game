@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Configuração para GitHub Pages
-  basePath: process.env.NODE_ENV === 'production' ? '/criminal-minds-game' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/criminal-minds-game/' : '',
+  // Configuração para GitHub Pages - funcionará tanto com Actions quanto branch deploy
+  basePath: '',
+  assetPrefix: '',
   trailingSlash: true,
   output: 'export',
   images: {
