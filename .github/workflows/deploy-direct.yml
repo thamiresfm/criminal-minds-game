@@ -9,36 +9,30 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 18
+      - name: Setup Node.js (without cache)
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
 
       - name: Install dependencies
         run: |
           cd criminal-minds-game
-          npm ci
+          npm install --no-fund --no-audit
 
       - name: Build Next.js site
         run: |
           cd criminal-minds-game
           npm run build
-          echo "✅ Build completed!"
-          echo "📁 Generated files:"
+          echo "✅ Build completed successfully!"
           ls -la out/
-          echo "🎮 Game page:"
-          ls -la out/game/
-          echo "📊 File sizes:"
-          du -sh out/*
-          
-      - name: Deploy to GitHub Pages
+
+      - name: Deploy with peaceiris/actions-gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: criminal-minds-game/out
+          publish_dir: ./criminal-minds-game/out
           enable_jekyll: false
-          cname: false 
+          force_orphan: true 
