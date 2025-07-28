@@ -17,6 +17,7 @@ export interface Suspect {
   personality: string
   suspicionLevel: 'critical' | 'high' | 'medium' | 'low'
   evidence?: string[]
+  isGuilty?: boolean
 }
 
 export interface AccusationRequest {
@@ -51,19 +52,90 @@ export interface ApiError {
 }
 
 /**
- * Service para gerenciar acusações via API
+ * Service para gerenciar acusações via API ou dados estáticos
  * Implementa padrões de Clean Architecture
  */
 class AccusationService {
   private baseUrl: string
+  private isStatic: boolean
 
   constructor() {
-    // Usar URL base do ambiente ou localhost para desenvolvimento
+    // Detectar se estamos em modo estático (GitHub Pages)
+    this.isStatic = process.env.NODE_ENV === 'production' && typeof window !== 'undefined'
     this.baseUrl = process.env.NEXT_PUBLIC_API_URL || ''
   }
 
   /**
-   * Submete uma acusação para o backend
+   * Carrega dados dos suspeitos (estático ou API)
+   */
+  private async loadSuspectsData(): Promise<Suspect[]> {
+    if (this.isStatic) {
+      // Modo estático - carregar do JSON
+      const response = await fetch('/criminal-minds-game/data/suspects.json')
+      if (!response.ok) {
+        throw new Error('Erro ao carregar dados dos suspeitos')
+      }
+      return await response.json()
+    } else {
+      // Modo desenvolvimento - usar dados mockados inline
+      return [
+        {
+          id: 'produtor',
+          name: 'Marcus Williams',
+          role: 'Produtor',
+          age: 45,
+          isGuilty: true,
+          description: 'Produtor experiente com problemas financeiros',
+          motive: 'Conflitos financeiros com a vítima',
+          alibi: 'Alega estar no escritório',
+          personality: 'Ambicioso e calculista',
+          suspicionLevel: 'critical',
+          evidence: [
+            'Impressões digitais encontradas na arma',
+            'Histórico de ameaças à vítima',
+            'Beneficiário do seguro de vida'
+          ]
+        },
+        {
+          id: 'ator',
+          name: 'Diego Santos',
+          role: 'Ator Principal',
+          age: 32,
+          isGuilty: false,
+          description: 'Ator talentoso e ambicioso',
+          motive: 'Rivalidade profissional',
+          alibi: 'Estava no camarim se preparando',
+          personality: 'Competitivo mas honesto',
+          suspicionLevel: 'high',
+          evidence: [
+            'Discussão pública com a vítima',
+            'Álibi confirmado por testemunhas',
+            'Sem acesso à arma do crime'
+          ]
+        },
+        {
+          id: 'diretora',
+          name: 'Ana Silva',
+          role: 'Diretora',
+          age: 38,
+          isGuilty: false,
+          description: 'Diretora perfeccionista',
+          motive: 'Discordâncias criativas',
+          alibi: 'Reunião com investidores',
+          personality: 'Determinada e focada',
+          suspicionLevel: 'medium',
+          evidence: [
+            'Reunião documentada',
+            'Sem histórico de violência',
+            'Relação profissional cordial'
+          ]
+        }
+      ]
+    }
+  }
+
+  /**
+   * Submete uma acusação para o backend ou processa localmente
    * 
    * @param gameId - ID do jogo
    * @param accusationData - Dados da acusação
@@ -73,21 +145,55 @@ class AccusationService {
     gameId: string, 
     accusationData: AccusationRequest
   ): Promise<AccusationResponse> {
-    const response = await fetch(`${this.baseUrl}/api/game/${gameId}/accusation`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(accusationData),
-    })
+    if (this.isStatic) {
+      // Modo estático - processar localmente
+      const suspects = await this.loadSuspectsData()
+      const suspect = suspects.find(s => s.id === accusationData.suspectId)
+      
+      if (!suspect) {
+        throw new Error('Suspeito não encontrado')
+      }
 
-    const data = await response.json()
+      const isCorrect = suspect.isGuilty === true
+      const accusationId = `acc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-    if (!response.ok) {
-      throw new Error(data.error || 'Erro ao submeter acusação')
+      return {
+        success: true,
+        accusation: {
+          id: accusationId,
+          suspectId: accusationData.suspectId,
+          suspectName: suspect.name,
+          isCorrect,
+          confidence: accusationData.confidence,
+          reasoning: accusationData.reasoning || '',
+          timestamp: new Date().toISOString()
+        },
+        gameResult: {
+          status: 'completed',
+          isVictory: isCorrect,
+          message: isCorrect 
+            ? `Parabéns! Você identificou corretamente ${suspect.name} como o culpado!`
+            : `Infelizmente, ${suspect.name} não é o culpado. O verdadeiro criminoso escapou.`
+        }
+      }
+    } else {
+      // Modo desenvolvimento - usar API
+      const response = await fetch(`${this.baseUrl}/api/game/${gameId}/accusation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(accusationData),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao submeter acusação')
+      }
+
+      return data
     }
-
-    return data
   }
 
   /**
@@ -98,22 +204,37 @@ class AccusationService {
    * @returns Promise com lista de acusações
    */
   async getAccusations(gameId: string, playerId?: string) {
-    const params = new URLSearchParams()
-    if (playerId) {
-      params.append('playerId', playerId)
+    if (this.isStatic) {
+      // Modo estático - retornar dados mockados
+      return {
+        success: true,
+        accusations: [],
+        game: {
+          id: gameId,
+          status: 'active',
+          maxAccusations: 1
+        },
+        total: 0
+      }
+    } else {
+      // Modo desenvolvimento - usar API
+      const params = new URLSearchParams()
+      if (playerId) {
+        params.append('playerId', playerId)
+      }
+
+      const response = await fetch(
+        `${this.baseUrl}/api/game/${gameId}/accusation?${params.toString()}`
+      )
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao buscar acusações')
+      }
+
+      return data
     }
-
-    const response = await fetch(
-      `${this.baseUrl}/api/game/${gameId}/accusation?${params.toString()}`
-    )
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Erro ao buscar acusações')
-    }
-
-    return data
   }
 
   /**
@@ -130,27 +251,66 @@ class AccusationService {
       suspicionLevel?: string
     } = {}
   ): Promise<{ success: boolean; suspects: Suspect[]; total: number }> {
-    const params = new URLSearchParams()
-    
-    if (options.includeEvidence) {
-      params.append('includeEvidence', 'true')
+    if (this.isStatic) {
+      // Modo estático - usar dados do JSON
+      let suspects = await this.loadSuspectsData()
+
+      // Filtrar por nível de suspeita se especificado
+      if (options.suspicionLevel) {
+        suspects = suspects.filter(suspect => suspect.suspicionLevel === options.suspicionLevel)
+      }
+
+      // Remover informações sensíveis
+      const mappedSuspects = suspects.map(suspect => {
+        const baseSuspect = {
+          id: suspect.id,
+          name: suspect.name,
+          role: suspect.role,
+          age: suspect.age,
+          description: suspect.description,
+          motive: suspect.motive,
+          alibi: suspect.alibi,
+          personality: suspect.personality,
+          suspicionLevel: suspect.suspicionLevel
+        } as Suspect
+
+        // Incluir evidências se solicitado
+        if (options.includeEvidence) {
+          baseSuspect.evidence = suspect.evidence
+        }
+
+        return baseSuspect
+      })
+
+      return {
+        success: true,
+        suspects: mappedSuspects,
+        total: mappedSuspects.length
+      }
+    } else {
+      // Modo desenvolvimento - usar API
+      const params = new URLSearchParams()
+      
+      if (options.includeEvidence) {
+        params.append('includeEvidence', 'true')
+      }
+      
+      if (options.suspicionLevel) {
+        params.append('suspicionLevel', options.suspicionLevel)
+      }
+
+      const response = await fetch(
+        `${this.baseUrl}/api/game/${gameId}/suspects?${params.toString()}`
+      )
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao buscar suspeitos')
+      }
+
+      return data
     }
-    
-    if (options.suspicionLevel) {
-      params.append('suspicionLevel', options.suspicionLevel)
-    }
-
-    const response = await fetch(
-      `${this.baseUrl}/api/game/${gameId}/suspects?${params.toString()}`
-    )
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Erro ao buscar suspeitos')
-    }
-
-    return data
   }
 
   /**
@@ -164,21 +324,51 @@ class AccusationService {
     success: boolean
     suspect: Suspect
   }> {
-    const response = await fetch(`${this.baseUrl}/api/game/${gameId}/suspects`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ suspectId }),
-    })
+    if (this.isStatic) {
+      // Modo estático - buscar nos dados carregados
+      const suspects = await this.loadSuspectsData()
+      const suspect = suspects.find(s => s.id === suspectId)
 
-    const data = await response.json()
+      if (!suspect) {
+        throw new Error('Suspeito não encontrado')
+      }
 
-    if (!response.ok) {
-      throw new Error(data.error || 'Erro ao buscar detalhes do suspeito')
+      // Remover informações sensíveis
+      const suspectDetails = {
+        id: suspect.id,
+        name: suspect.name,
+        role: suspect.role,
+        age: suspect.age,
+        description: suspect.description,
+        motive: suspect.motive,
+        alibi: suspect.alibi,
+        personality: suspect.personality,
+        suspicionLevel: suspect.suspicionLevel,
+        evidence: suspect.evidence
+      } as Suspect
+
+      return {
+        success: true,
+        suspect: suspectDetails
+      }
+    } else {
+      // Modo desenvolvimento - usar API
+      const response = await fetch(`${this.baseUrl}/api/game/${gameId}/suspects`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ suspectId }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao buscar detalhes do suspeito')
+      }
+
+      return data
     }
-
-    return data
   }
 
   /**
