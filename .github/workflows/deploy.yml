@@ -1,0 +1,46 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install and Build
+        run: |
+          cd criminal-minds-game
+          npm install
+          npm run build
+          echo "✅ Build completed!"
+          echo "📁 Generated files:"
+          ls -la out/
+          echo "🎮 Game page:"
+          ls -la out/game/ 2>/dev/null || echo "Game directory not found"
+          echo "📊 File sizes:"
+          du -sh out/* 2>/dev/null || echo "No files to measure"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: criminal-minds-game/out
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 

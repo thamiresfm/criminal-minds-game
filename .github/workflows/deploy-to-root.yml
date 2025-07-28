@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -30,20 +28,20 @@ jobs:
       - name: Copy files to root
         run: |
           # Backup current files
-          cp index.html index.html.backup || true
+          cp index.html index.html.backup 2>/dev/null || true
           
           # Copy built files to root
           cp -r criminal-minds-game/out/* .
           
           # Keep the redirect page as index.html if no index.html from build
           if [ ! -f index.html ]; then
-            cp index.html.backup index.html
+            cp index.html.backup index.html 2>/dev/null || true
           fi
           
           echo "📁 Files in root:"
           ls -la
           echo "🎮 Game directory:"
-          ls -la game/
+          ls -la game/ 2>/dev/null || echo "Game directory not found"
 
       - name: Commit and push to gh-pages
         run: |
@@ -54,8 +52,8 @@ jobs:
           git checkout -B gh-pages
           
           # Add all files
-          git add .
-          git commit -m "🎯 Deploy game files to gh-pages - $(date)"
+          git add -A
+          git commit -m "🎯 Deploy game files to gh-pages - $(date)" || echo "No changes to commit"
           
           # Push to gh-pages branch
           git push origin gh-pages --force 
