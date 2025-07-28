@@ -115,16 +115,6 @@ export class GameEngine {
   }
   
   /**
-   * Utilitário para embaralhar array
-   */
-  private static shuffleArray<T>(array: T[]): void {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-  }
-  
-  /**
    * Randomiza as localizações das pistas
    */
   private static randomizeClueLocations(
@@ -196,6 +186,151 @@ export class GameEngine {
   }
   
   /**
+   * Cria o estado inicial do jogo
+   */
+  static createGameState(
+    gameId: string,
+    caseTemplate: CaseTemplate,
+    generatedGame: GeneratedGame,
+    players: DynamicPlayer[]
+  ): DynamicGameState {
+    
+    return {
+      gameId,
+      caseId: caseTemplate.id,
+      phase: 'lobby',
+      culprit: generatedGame.culprit,
+      selectedClues: generatedGame.selectedClues,
+      discoveredClues: [],
+      interrogatedSuspects: [],
+      playerAccusations: {},
+      timeLimit: 30 * 60, // 30 minutos padrão
+      timeRemaining: 30 * 60,
+      players,
+      isActive: false,
+      startedAt: new Date(),
+      statistics: {
+        totalPlayers: players.length,
+        correctAccusations: 0,
+        wrongAccusations: 0,
+        cluesFound: 0,
+        totalClues: generatedGame.selectedClues.length,
+        timeUsed: 0,
+        difficulty: generatedGame.estimatedDifficulty
+      }
+    };
+  }
+  
+  /**
+   * Gera resposta de interrogação baseada no suspeito e culpado
+   */
+  static generateInterrogationResponse(
+    suspect: Suspect,
+    culprit: Suspect,
+    question: string,
+    discoveredClues: string[],
+    allClues: ClueTemplate[]
+  ): InterrogationResponse {
+    
+    const isCulprit = suspect.id === culprit.id;
+    const relevantClues = allClues.filter(c => c.linkedSuspect === suspect.id);
+    const hasRelevantClues = discoveredClues.some(clueId => 
+      relevantClues.some(c => c.id === clueId)
+    );
+    
+    // Gerar resposta baseada se é culpado ou não
+    let response: string;
+    let isHelpful: boolean = false;
+    let revealsClue: string | undefined;
+    
+    if (isCulprit) {
+      // Culpado tenta desviar suspeita
+      response = this.generateCulpritResponse(suspect, hasRelevantClues);
+      isHelpful = Math.random() < 0.3; // 30% chance de dar pista útil
+    } else {
+      // Inocente coopera mais
+      response = this.generateInnocentResponse(suspect, hasRelevantClues);
+      isHelpful = Math.random() < 0.7; // 70% chance de ser útil
+      
+      // Pode revelar pista sobre o verdadeiro culpado
+      if (isHelpful && Math.random() < 0.4) {
+        const culpritClues = allClues.filter(c => c.linkedSuspect === culprit.id);
+        if (culpritClues.length > 0) {
+          revealsClue = culpritClues[Math.floor(Math.random() * culpritClues.length)].id;
+        }
+      }
+    }
+    
+    return {
+      suspectId: suspect.id,
+      question,
+      response,
+      isHelpful,
+      revealsClue
+    };
+  }
+  
+  /**
+   * Gera resposta de um suspeito culpado
+   */
+  private static generateCulpritResponse(suspect: Suspect, hasEvidence: boolean): string {
+    const defensiveResponses = [
+      "Não sei do que você está falando.",
+      "Isso é um absurdo! Eu nunca faria isso.",
+      "Vocês estão perdendo tempo comigo, o verdadeiro culpado ainda está solto.",
+      "Eu tenho álibi sólido para o momento do crime.",
+      "Alguém está tentando me incriminar."
+    ];
+    
+    const nervousResponses = [
+      "Eu... bem... isso é complicado.",
+      "Por que todos estão me interrogando?",
+      "Vocês não entendem a situação.",
+      "As coisas não são como parecem.",
+      "Eu posso explicar tudo, mas..."
+    ];
+    
+    return hasEvidence 
+      ? nervousResponses[Math.floor(Math.random() * nervousResponses.length)]
+      : defensiveResponses[Math.floor(Math.random() * defensiveResponses.length)];
+  }
+  
+  /**
+   * Gera resposta de um suspeito inocente
+   */
+  private static generateInnocentResponse(suspect: Suspect, hasEvidence: boolean): string {
+    const cooperativeResponses = [
+      "Claro, posso ajudar no que for necessário.",
+      "Eu vi algumas coisas suspeitas, posso contar.",
+      "Quero que peguem o verdadeiro culpado.",
+      "Isso é terrível, farei o que puder para ajudar.",
+      "Tenho algumas informações que podem ser úteis."
+    ];
+    
+    const concernedResponses = [
+      "Estou preocupado com essa situação toda.",
+      "Nunca pensei que algo assim pudesse acontecer aqui.",
+      "Espero que encontrem logo quem fez isso.",
+      "É assustador pensar que o culpado ainda está entre nós.",
+      "Todos nós estamos em choque."
+    ];
+    
+    return hasEvidence
+      ? cooperativeResponses[Math.floor(Math.random() * cooperativeResponses.length)]
+      : concernedResponses[Math.floor(Math.random() * concernedResponses.length)];
+  }
+  
+  /**
+   * Utilitário para embaralhar array
+   */
+  private static shuffleArray<T>(array: T[]): void {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+  
+  /**
    * Valida se uma acusação está correta
    */
   static validateAccusation(suspectId: string, culprit: Suspect): boolean {
@@ -218,4 +353,4 @@ export class GameEngine {
     
     return Math.max(0, baseScore + clueBonus + timeBonus);
   }
-}
+} 

@@ -346,7 +346,7 @@ export function useGameState() {
     setPlayers: (players: Player[]) => 
       dispatch({ type: 'SET_PLAYERS', payload: players }),
     
-    toggleModal: (modal: Parameters<typeof dispatch>[0]['payload']['modal'], show: boolean) => 
+    toggleModal: (modal: keyof Pick<GameState, 'showExitModal' | 'showDetailsModal' | 'showAnalysisModal' | 'showLabResultsModal' | 'showAllLabResultsModal' | 'showAccusationModal' | 'showGameOverModal' | 'showChat' | 'showAllEvidence'>, show: boolean) => 
       dispatch({ type: 'TOGGLE_MODAL', payload: { modal, show } }),
     
     setSelectedClue: (clue: Clue | null) => 
