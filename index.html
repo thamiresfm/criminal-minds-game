@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criminal Minds Game - Redirecionando...</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            padding: 2rem;
+        }
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .loading {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .manual-link {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .manual-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        // Redirecionar automaticamente após 3 segundos
+        setTimeout(() => {
+            window.location.href = '/criminal-minds-game/';
+        }, 3000);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🎯</div>
+        <h1>Criminal Minds Game</h1>
+        <p class="loading">Redirecionando para o jogo...</p>
+        <p>Se não for redirecionado automaticamente, <a href="/criminal-minds-game/" class="manual-link">clique aqui</a></p>
+        <p style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.7;">
+            Para jogar diretamente: <a href="/criminal-minds-game/game/" class="manual-link">Entrar no Jogo</a>
+        </p>
+    </div>
+</body>
+</html> 
