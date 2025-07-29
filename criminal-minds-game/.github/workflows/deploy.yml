@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: 🚀 Deploy to GitHub Pages
 
 on:
   push:
@@ -9,6 +9,10 @@ permissions:
   contents: read
   pages: write
   id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -28,11 +32,16 @@ jobs:
       - name: Install and Build
         run: |
           cd criminal-minds-game
-          npm install
+          npm install --no-fund --no-audit
           npm run build
+          echo "🎨 Interface moderna construída!"
+          echo "Verificando gradientes:"
+          if grep -q "bg-gradient-to-r from-yellow-400" out/index.html; then
+            echo "✅ Gradientes encontrados - Interface moderna OK!"
+          else
+            echo "❌ Gradientes não encontrados"
+          fi
           ls -la out/
-          echo "Contents of out/game/:"
-          ls -la out/game/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
