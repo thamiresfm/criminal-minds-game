@@ -1,0 +1,39 @@
+name: 🎯 Deploy Working - GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install and Build
+        run: |
+          cd criminal-minds-game
+          npm install --no-fund --no-audit
+          npm run build
+          echo "🎨 Interface moderna construída!"
+          echo "Verificando gradientes:"
+          if grep -q "bg-gradient-to-r from-yellow-400" out/index.html; then
+            echo "✅ Gradientes encontrados - Interface moderna OK!"
+          else
+            echo "❌ Gradientes não encontrados"
+          fi
+          ls -la out/
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./criminal-minds-game/out
+          force_orphan: true 
