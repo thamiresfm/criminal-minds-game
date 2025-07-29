@@ -1,21 +1,20 @@
-name: Deploy to GitHub Pages
+name: 🎯 DEPLOY FINAL - Interface Moderna
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
-  deploy:
+  deploy-modern-interface:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 18
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '18'
@@ -23,24 +22,20 @@ jobs:
       - name: Install and Build
         run: |
           cd criminal-minds-game
-          npm install
+          npm install --no-fund --no-audit
           npm run build
-          echo "✅ Build completed!"
-          echo "📁 Generated files:"
+          echo "🎨 Interface moderna construída!"
+          echo "Verificando gradientes:"
+          if grep -q "bg-gradient-to-r from-yellow-400" out/index.html; then
+            echo "✅ Gradientes encontrados - Interface moderna OK!"
+          else
+            echo "❌ Gradientes não encontrados"
+          fi
           ls -la out/
-          echo "🎮 Game page:"
-          ls -la out/game/ 2>/dev/null || echo "Game directory not found"
-          echo "📊 File sizes:"
-          du -sh out/* 2>/dev/null || echo "No files to measure"
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: criminal-minds-game/out
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./criminal-minds-game/out
+          force_orphan: true 

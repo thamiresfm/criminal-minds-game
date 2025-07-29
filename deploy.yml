@@ -1,6 +1,8 @@
-name: 🎯 DEPLOY FINAL - Interface Moderna
+name: 🚀 Deploy to GitHub Pages
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -8,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy-modern-interface:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,7 +26,7 @@ jobs:
           cd criminal-minds-game
           npm install --no-fund --no-audit
           npm run build
-          echo "🎨 Interface moderna construída!"
+          echo "✅ Interface moderna construída!"
           echo "Verificando gradientes:"
           if grep -q "bg-gradient-to-r from-yellow-400" out/index.html; then
             echo "✅ Gradientes encontrados - Interface moderna OK!"
