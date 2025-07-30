@@ -1,4 +1,4 @@
-name: 🚀 Deploy to GitHub Pages
+name: 🚀 Deploy Criminal Minds Game - GitHub Pages
 
 on:
   push:
@@ -15,42 +15,67 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
+      - name: 📂 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: criminal-minds-game/package-lock.json
 
-      - name: Install and Build
+      - name: 📦 Install Dependencies
         run: |
           cd criminal-minds-game
-          npm install --no-fund --no-audit
-          npm run build
-          echo "🎨 Interface moderna construída!"
-          echo "Verificando gradientes:"
-          if grep -q "bg-gradient-to-r from-yellow-400" out/index.html; then
-            echo "✅ Gradientes encontrados - Interface moderna OK!"
-          else
-            echo "❌ Gradientes não encontrados"
-          fi
-          ls -la out/
+          npm ci --no-fund --no-audit
+          echo "✅ Dependencies installed successfully"
 
-      - name: Setup Pages
+      - name: 🏗️ Build Application
+        run: |
+          cd criminal-minds-game
+          npm run build
+          echo "🎨 Build completed successfully!"
+          
+          # Verificar se o build foi bem-sucedido
+          if [ -d "out" ]; then
+            echo "✅ Build directory exists"
+            echo "📁 Build contents:"
+            ls -la out/
+            
+            # Verificar arquivos essenciais
+            if [ -f "out/index.html" ]; then
+              echo "✅ index.html found"
+            else
+              echo "❌ index.html not found"
+              exit 1
+            fi
+            
+            # Verificar interface moderna
+            if grep -q "bg-gradient-to-r from-yellow-400" out/index.html; then
+              echo "✅ Modern interface with gradients confirmed!"
+            else
+              echo "⚠️ Gradients not found, but continuing..."
+            fi
+          else
+            echo "❌ Build directory not found"
+            exit 1
+          fi
+
+      - name: 📋 Setup GitHub Pages
         uses: actions/configure-pages@v4
 
-      - name: Upload Pages artifact
+      - name: 📤 Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: criminal-minds-game/out
 
-      - name: Deploy to GitHub Pages
+      - name: 🚀 Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4 

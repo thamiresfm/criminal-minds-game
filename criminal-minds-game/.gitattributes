@@ -1,0 +1,30 @@
+# GitHub Pages optimized settings
+*.html linguist-detectable=true
+*.js linguist-detectable=true
+*.css linguist-detectable=true
+*.ts linguist-detectable=true
+
+# Ensure proper line endings
+* text=auto
+*.js text eol=lf
+*.ts text eol=lf
+*.jsx text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
