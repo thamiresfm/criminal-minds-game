@@ -5,8 +5,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && touch out/.nojekyll",
-    "build:github": "next build && touch out/.nojekyll",
+    "build": "NODE_ENV=production next build && touch out/.nojekyll && echo '🚀 Build completed successfully!'",
+    "build:github": "NODE_ENV=production next build && touch out/.nojekyll && echo '🎯 GitHub Pages build ready!'",
+    "build:local": "NODE_ENV=development next build && echo '🏠 Local build completed!'",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",

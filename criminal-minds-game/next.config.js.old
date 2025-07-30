@@ -1,9 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
+  // 🚀 Configuração otimizada para GitHub Pages
+  // BasePath para GitHub Pages (repo name)
+  basePath: process.env.NODE_ENV === 'production' ? '/criminal-minds-game' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/criminal-minds-game/' : '',
+  
+  // Configurações para export estático
+  trailingSlash: true,
+  output: 'export',
+  
+  // Configuração de imagens para build estático
   images: {
+    unoptimized: true, // Necessário para export estático
     remotePatterns: [
       {
         protocol: 'https',
@@ -13,26 +21,54 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos', // Para imagens de placeholder
+      },
     ],
   },
-  async headers() {
-    return [
-      {
-        source: '/api/:path*',
-        headers: [
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
-          { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
-        ],
-      },
-    ];
+
+  // Configurações de compilação
+  experimental: {
+    // Otimizações para performance
+    optimizeCss: true,
   },
-  webpack: (config) => {
+
+  // Configuração de webpack
+  webpack: (config, { isServer }) => {
+    // Fallbacks para o browser
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
+      net: false,
+      tls: false,
     };
+
+    // Otimizações para produção
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@': require('path').resolve(__dirname, 'src'),
+      };
+    }
+
     return config;
+  },
+
+  // Configurações de redirects e rewrites para SPA
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: '/404', // Redirecionar APIs para 404 em build estático
+      },
+    ];
+  },
+
+  // Configurações específicas para GitHub Pages
+  env: {
+    GITHUB_PAGES: process.env.NODE_ENV === 'production' ? 'true' : 'false',
+    BASE_PATH: process.env.NODE_ENV === 'production' ? '/criminal-minds-game' : '',
   },
 };
 

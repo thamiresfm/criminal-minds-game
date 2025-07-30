@@ -166,7 +166,7 @@ export default function LobbyPage() {
         );
         
         setTimeout(() => {
-          router.push(`/game/${selectedGame.id}/investigation`);
+          router.push(`/game/investigation?gameId=${selectedGame.id}`);
         }, 1000);
       } else {
         // Criar nova partida automaticamente
@@ -180,7 +180,7 @@ export default function LobbyPage() {
         );
         
         setTimeout(() => {
-          router.push(`/game/${newGameId}/investigation`);
+          router.push(`/game/investigation?gameId=${newGameId}`);
         }, 1000);
       }
     }, 2500);
@@ -216,7 +216,7 @@ export default function LobbyPage() {
     );
     
     setTimeout(() => {
-      router.push(`/game/${existingGame.id}/investigation`);
+      router.push(`/game/investigation?gameId=${existingGame.id}`);
     }, 500);
   };
 
@@ -231,7 +231,7 @@ export default function LobbyPage() {
     );
     
     setTimeout(() => {
-      router.push(`/game/${gameId}/investigation`);
+      router.push(`/game/investigation?gameId=${gameId}`);
     }, 1000);
   };
 
@@ -676,7 +676,7 @@ export default function LobbyPage() {
 
                         {/* Botão de Ação */}
                         <button 
-                          onClick={() => router.push(`/game/${game.id}/investigation`)}
+                          onClick={() => router.push(`/game/investigation?gameId=${game.id}`)}
                           disabled={game.players >= game.maxPlayers}
                           className={`group/btn relative overflow-hidden px-8 py-4 rounded-2xl font-bold text-sm shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center space-x-3 min-w-[200px] ${
                             game.players >= game.maxPlayers

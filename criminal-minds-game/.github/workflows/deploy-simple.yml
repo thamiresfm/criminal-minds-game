@@ -1,0 +1,76 @@
+name: 🚀 Deploy Simple - GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 📂 Checkout Repository
+        run: |
+          git clone https://github.com/thamiresfm/criminal-minds-game.git .
+          cd criminal-minds-game
+
+      - name: ⚙️ Setup Node.js
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          node --version
+          npm --version
+
+      - name: 📦 Install Dependencies
+        run: |
+          cd criminal-minds-game
+          npm ci --no-fund --no-audit
+          echo "✅ Dependencies installed successfully"
+
+      - name: 🏗️ Build Application
+        run: |
+          cd criminal-minds-game
+          npm run build
+          echo "🎨 Build completed successfully!"
+          
+          # Verificar se o build foi bem-sucedido
+          if [ -d "out" ]; then
+            echo "✅ Build directory exists"
+            echo "📁 Build contents:"
+            ls -la out/
+            
+            # Verificar arquivos essenciais
+            if [ -f "out/index.html" ]; then
+              echo "✅ index.html found"
+            else
+              echo "❌ index.html not found"
+              exit 1
+            fi
+          else
+            echo "❌ Build directory not found"
+            exit 1
+          fi
+
+      - name: 📋 Setup GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: 📤 Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: criminal-minds-game/out
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

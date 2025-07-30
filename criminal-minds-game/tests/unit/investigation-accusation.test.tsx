@@ -10,7 +10,7 @@ let sharedMockRouter: any
 let sharedMockNotify: any
 
 // Mock do componente principal
-jest.mock('../../src/app/game/[gameId]/investigation/page', () => {
+jest.mock('../../src/app/game/investigation/page', () => {
   const MockInvestigationPage = ({ params }: { params: { gameId: string } }) => {
     const [showAccusationModal, setShowAccusationModal] = React.useState(false)
     const [selectedSuspect, setSelectedSuspect] = React.useState('')
@@ -159,7 +159,7 @@ jest.mock('../../src/app/game/[gameId]/investigation/page', () => {
   return MockInvestigationPage
 })
 
-import InvestigationPage from '../../src/app/game/[gameId]/investigation/page'
+import InvestigationPage from '../../src/app/game/investigation/page'
 
 /**
  * ISTQB CTAL-TAE - Testes Unitários para Botão de Acusação
