@@ -1,0 +1,63 @@
+{
+  "name": "criminal-minds-game",
+  "version": "1.0.0",
+  "description": "Criminal Minds Game - Jogo de investigação multiplayer com Firebase Authentication",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve . -p 3000",
+    "serve": "npx serve . -p 8000",
+    "setup:firebase": "node setup-firebase-local.js",
+    "dev": "npm run setup:firebase && npm run serve",
+    "build": "echo 'Build será executado pelo GitHub Actions'",
+    "deploy": "echo 'Deploy automático via GitHub Actions'",
+    "test": "echo 'Testes a serem implementados'",
+    "lint": "echo 'Linting a ser implementado'",
+    "firebase:local": "node setup-firebase-local.js",
+    "firebase:check": "echo 'Verificando configuração Firebase...' && node -e \"console.log('Firebase SDK:', require('./package.json').dependencies.firebase)\""
+  },
+  "keywords": [
+    "game",
+    "investigation",
+    "multiplayer",
+    "firebase",
+    "authentication",
+    "criminal-minds",
+    "detective",
+    "cards",
+    "real-time"
+  ],
+  "author": "Criminal Minds Game Team",
+  "license": "MIT",
+  "dependencies": {
+    "firebase": "^12.0.0"
+  },
+  "devDependencies": {
+    "serve": "^14.2.1"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thamiresfm/criminal-minds-game.git"
+  },
+  "homepage": "https://thamiresfm.github.io/criminal-minds-game/",
+  "bugs": {
+    "url": "https://github.com/thamiresfm/criminal-minds-game/issues"
+  },
+  "private": false,
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "firebase": {
+    "configured": true,
+    "services": [
+      "auth",
+      "firestore"
+    ],
+    "deployment": "github-actions"
+  }
+}

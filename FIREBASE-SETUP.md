@@ -1,17 +1,19 @@
 # 🔥 FIREBASE SETUP - Criminal Minds Game
 
-Guia completo para configurar o Firebase Authentication e Firestore no seu projeto.
+Guia completo para configurar o Firebase Authentication e Firestore no seu projeto com variáveis secretas do GitHub.
 
 ## 📋 **ÍNDICE**
 
 1. [Pré-requisitos](#-pré-requisitos)
 2. [Criação do Projeto Firebase](#-criação-do-projeto-firebase)
-3. [Configuração do Authentication](#-configuração-do-authentication)
-4. [Configuração do Firestore](#-configuração-do-firestore)
-5. [Integração com o Código](#-integração-com-o-código)
-6. [Migração do Sistema Atual](#-migração-do-sistema-atual)
-7. [Estrutura de Dados](#-estrutura-de-dados)
-8. [Segurança e Regras](#-segurança-e-regras)
+3. [Configuração da Variável Secreta GitHub](#-configuração-da-variável-secreta-github)
+4. [Setup para Desenvolvimento Local](#-setup-para-desenvolvimento-local)
+5. [Configuração do Authentication](#-configuração-do-authentication)
+6. [Configuração do Firestore](#-configuração-do-firestore)
+7. [Deploy Automático](#-deploy-automático)
+8. [Estrutura de Dados](#-estrutura-de-dados)
+9. [Segurança e Regras](#-segurança-e-regras)
+10. [Troubleshooting](#-troubleshooting)
 
 ---
 
@@ -65,6 +67,126 @@ const firebaseConfig = {
   messagingSenderId: "123456789012",
   appId: "1:123456789012:web:abcdefghijklmnop"
 };
+```
+
+### **🔐 IMPORTANTE - GUARDE ESTA CONFIGURAÇÃO:**
+**⚠️ COPIE e SALVE essa configuração em local seguro!**  
+Você precisará dela para:
+- Configurar a variável secreta `DADOS_FIREBASE` no GitHub
+- Setup de desenvolvimento local
+- Backup de segurança
+
+---
+
+## 🔐 **CONFIGURAÇÃO DA VARIÁVEL SECRETA GITHUB**
+
+### **1. Acessar Configurações do Repositório**
+```bash
+1. Vá para seu repositório no GitHub
+2. Clique em "Settings" (Configurações)
+3. No menu lateral: "Secrets and variables"
+4. Clique em "Actions"
+```
+
+### **2. Criar Variável Secreta**
+```bash
+1. Clique em "New repository secret"
+2. Name: DADOS_FIREBASE
+3. Secret: Cole a configuração JSON (veja exemplo abaixo)
+4. Clique em "Add secret"
+```
+
+### **3. Formato da Variável DADOS_FIREBASE**
+A variável deve conter EXATAMENTE este formato JSON (uma linha só):
+
+```json
+{"apiKey":"AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","authDomain":"criminal-minds-game.firebaseapp.com","projectId":"criminal-minds-game","storageBucket":"criminal-minds-game.appspot.com","messagingSenderId":"123456789012","appId":"1:123456789012:web:abcdefghijklmnop"}
+```
+
+### **⚠️ ATENÇÃO - FORMATO CRÍTICO:**
+- **SEM quebras de linha** - tudo em uma linha só
+- **SEM espaços extras** entre as propriedades
+- **COM aspas duplas** em todas as chaves e valores
+- **Substitua pelos seus dados reais** do Firebase Console
+
+### **4. Verificar Configuração**
+```bash
+✅ CORRETO:
+{"apiKey":"sua_api_key","authDomain":"seu_projeto.firebaseapp.com",...}
+
+❌ INCORRETO:
+{
+  "apiKey": "sua_api_key",
+  "authDomain": "seu_projeto.firebaseapp.com",
+  ...
+}
+```
+
+---
+
+## 💻 **SETUP PARA DESENVOLVIMENTO LOCAL**
+
+### **1. Executar Script de Setup**
+```bash
+# Executar setup automático
+node setup-firebase-local.js
+
+# ou se preferir npm
+npm run setup:firebase
+```
+
+### **2. O que o Script Faz:**
+```bash
+✅ AÇÕES AUTOMÁTICAS:
+• Cria firebase-config-injected.js com config local
+• Adiciona script aos arquivos HTML
+• Atualiza .gitignore
+• Mostra próximos passos
+```
+
+### **3. Configuração Manual (Alternativa)**
+Se preferir fazer manualmente:
+
+```bash
+# 1. Criar arquivo de configuração local
+echo 'window.FIREBASE_CONFIG = {
+  "apiKey": "SUA_API_KEY_AQUI",
+  "authDomain": "seu-projeto.firebaseapp.com",
+  "projectId": "seu-projeto-id",
+  "storageBucket": "seu-projeto.appspot.com",  
+  "messagingSenderId": "123456789012",
+  "appId": "1:123456789012:web:abcdef"
+};' > firebase-config-injected.js
+```
+
+### **4. Adicionar aos Arquivos HTML**
+Adicione esta linha no `<head>` de cada arquivo HTML:
+
+```html
+<script src="firebase-config-injected.js"></script>
+```
+
+**Arquivos que precisam:**
+- `login.html`
+- `register.html` 
+- `lobby.html`
+- `investigation.html`
+- `investigation-cards.html`
+
+### **5. Atualizar .gitignore**
+```bash
+# Adicionar ao .gitignore
+echo 'firebase-config-injected.js' >> .gitignore
+```
+
+### **6. Testar Localmente**
+```bash
+# Servir arquivos
+npx serve .
+# ou
+python -m http.server 8000
+
+# Testar em http://localhost:3000 ou :8000
 ```
 
 ---
@@ -126,47 +248,85 @@ Authentication → Settings → User actions:
 
 ---
 
-## 🔧 **INTEGRAÇÃO COM O CÓDIGO**
+## 🚀 **DEPLOY AUTOMÁTICO**
 
-### **1. Atualizar Configuração**
-Edite o arquivo `firebase-config.js`:
+### **1. GitHub Actions Configurado**
+O projeto já tem GitHub Actions configurado que:
 
-```javascript
-// Substitua pelos seus dados reais do Firebase Console
-const firebaseConfig = {
-  apiKey: "SUA_API_KEY_REAL",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  projectId: "SEU_PROJETO_ID",
-  storageBucket: "SEU_PROJETO.appspot.com",
-  messagingSenderId: "SEU_SENDER_ID",
-  appId: "SEU_APP_ID"
-};
+```bash
+✅ FUNCIONALIDADES AUTOMÁTICAS:
+• Lê a variável secreta DADOS_FIREBASE
+• Injeta configuração nos arquivos durante build
+• Adiciona script Firebase automaticamente aos HTMLs
+• Faz deploy automático no GitHub Pages
+• Verifica integridade da configuração
 ```
 
-### **2. Adicionar aos Arquivos HTML**
-Adicione ao `<head>` de `login.html` e `register.html`:
+### **2. Workflow: `.github/workflows/deploy-firebase.yml`**
+```yaml
+# O workflow executa automaticamente quando:
+- push na branch gh-pages
+- Execução manual (workflow_dispatch)
 
-```html
-<!-- Firebase Integration -->
-<script type="module" src="firebase-config.js"></script>
-<script type="module" src="firebase-integration-example.js"></script>
+# Processo automático:
+1. Checkout do repositório
+2. Setup Node.js e dependências
+3. Injeção da configuração Firebase
+4. Atualização dos arquivos HTML
+5. Build do projeto
+6. Deploy para GitHub Pages
+7. Verificação do deploy
 ```
 
-### **3. Substituir Lógica JavaScript**
-Em `login.html` e `register.html`, comente o JavaScript atual e use a integração Firebase:
+### **3. Como Funciona**
+```bash
+📋 FLUXO AUTOMÁTICO:
 
-```html
-<!-- Comentar JavaScript atual -->
-<!--
-<script>
-// ... código atual do login/register
-</script>
--->
+1️⃣ PUSH PARA gh-pages:
+   git push origin gh-pages
 
-<!-- Usar integração Firebase -->
-<script type="module">
-import './firebase-integration-example.js';
-</script>
+2️⃣ GITHUB ACTIONS EXECUTA:
+   • Lê secrets.DADOS_FIREBASE
+   • Cria firebase-config-injected.js
+   • Injeta script nos HTMLs automaticamente
+
+3️⃣ DEPLOY AUTOMÁTICO:
+   • Site atualizado em GitHub Pages
+   • Firebase configurado e funcionando
+   • Pronto para uso em produção
+```
+
+### **4. Verificar Deploy**
+```bash
+# Verificar se GitHub Actions executou
+1. Vá para: GitHub → Actions tab
+2. Veja o status do último workflow
+3. Clique no workflow para ver detalhes
+
+# Verificar se configuração foi injetada
+1. Acesse seu site: https://usuario.github.io/criminal-minds-game
+2. Abra DevTools (F12)
+3. Vá para Console
+4. Deve aparecer: "✅ Firebase configurado via GitHub Actions"
+```
+
+### **5. Deploy Manual (Se Necessário)**
+```bash
+# Executar workflow manualmente
+1. GitHub → Actions tab
+2. Clique em "🔥 Deploy with Firebase Config"
+3. Clique em "Run workflow"
+4. Selecione branch: gh-pages
+5. Clique em "Run workflow" (verde)
+```
+
+### **6. Logs e Debug**
+```bash
+# Em caso de erro, verificar:
+1. GitHub → Actions → Workflow com erro
+2. Expandir steps para ver detalhes
+3. Verificar se DADOS_FIREBASE está configurado
+4. Verificar formato JSON da variável secreta
 ```
 
 ---
@@ -437,3 +597,141 @@ Com essa configuração, você terá:
 🛡️ **Segurança**: Regras de acesso controladas  
 
 **🎮 Seu Criminal Minds Game será um jogo moderno e profissional!**
+
+---
+
+## 🔧 **TROUBLESHOOTING**
+
+### **❌ Erro: "FIREBASE NÃO CONFIGURADO"**
+```bash
+🔍 DIAGNÓSTICO:
+• Variável secreta DADOS_FIREBASE não encontrada
+• Formato JSON inválido na variável secreta
+• Script firebase-config-injected.js não foi criado
+
+✅ SOLUÇÃO:
+1. Verificar se variável DADOS_FIREBASE existe no GitHub
+2. Verificar formato JSON (sem quebras de linha)
+3. Re-executar deploy ou setup local
+```
+
+### **❌ Erro: "Firebase config carregada, mas auth não funciona"**
+```bash
+🔍 DIAGNÓSTICO:
+• Configuração injetada mas projeto Firebase não configurado
+• Authentication não ativado no Firebase Console
+• Domínio não autorizado no Firebase
+
+✅ SOLUÇÃO:
+1. Ativar Authentication no Firebase Console
+2. Ativar método Email/Password
+3. Adicionar domínio em Authorized domains
+```
+
+### **❌ Erro: "Failed to initialize Firebase"**
+```bash
+🔍 DIAGNÓSTICO:
+• API Key inválida ou revogada
+• Project ID incorreto
+• Restrições de API Key
+
+✅ SOLUÇÃO:
+1. Verificar configuração no Firebase Console
+2. Regenerar API Key se necessário
+3. Verificar restrições da API Key
+```
+
+### **❌ GitHub Actions falha no deploy**
+```bash
+🔍 DIAGNÓSTICO:
+• Variável secreta DADOS_FIREBASE não configurada
+• Formato JSON inválido (quebras de linha)
+• Permissões do GitHub Actions insuficientes
+
+✅ SOLUÇÃO:
+1. Configurar variável secreta corretamente
+2. Verificar formato JSON em linha única
+3. Verificar permissões em Settings → Actions
+```
+
+### **❌ Erro: "Permission denied" no Firestore**
+```bash
+🔍 DIAGNÓSTICO:
+• Regras de segurança muito restritivas
+• Usuário não autenticado
+• Database em modo produção sem regras
+
+✅ SOLUÇÃO:
+1. Configurar regras de segurança adequadas
+2. Verificar se usuário está logado
+3. Testar com regras de teste temporariamente
+```
+
+### **🔍 Como Debuggar Problemas:**
+
+#### **1. Console do Navegador**
+```javascript
+// Verificar se configuração foi carregada
+console.log('Firebase Config:', window.FIREBASE_CONFIG);
+
+// Verificar estado de autenticação
+import { getCurrentUser } from './firebase-config.js';
+console.log('Usuário atual:', getCurrentUser());
+```
+
+#### **2. GitHub Actions Logs**
+```bash
+1. GitHub → Actions tab
+2. Clique no workflow com problema
+3. Expandir "🔥 Inject Firebase Config"
+4. Verificar se variável foi lida corretamente
+```
+
+#### **3. Firebase Console Debug**
+```bash
+1. Firebase Console → Authentication → Users
+2. Verificar se usuários estão sendo criados
+3. Firebase Console → Firestore → Data
+4. Verificar se dados estão sendo salvos
+```
+
+### **📞 Suporte e Recursos:**
+
+#### **🔗 Links Úteis:**
+- **Firebase Console**: https://console.firebase.google.com/
+- **GitHub Actions**: https://github.com/features/actions
+- **Firebase Docs**: https://firebase.google.com/docs
+- **GitHub Secrets**: https://docs.github.com/en/actions/security-guides/encrypted-secrets
+
+#### **📋 Checklist Final:**
+```bash
+✅ Projeto Firebase criado
+✅ Authentication habilitado (Email/Password)
+✅ Firestore Database criado
+✅ Configuração copiada corretamente
+✅ Variável DADOS_FIREBASE configurada no GitHub
+✅ Formato JSON válido (sem quebras de linha)
+✅ Deploy executado com sucesso
+✅ Site carregando com Firebase configurado
+✅ Cadastro e login funcionando
+✅ Dados sendo salvos no Firestore
+```
+
+---
+
+## 🎉 **RESULTADO FINAL**
+
+### **✅ SISTEMA COMPLETO FUNCIONANDO:**
+
+🔐 **Autenticação Segura**: Email/senha com Firebase Auth  
+☁️ **Dados na Nuvem**: Firestore sincronizado automaticamente  
+🚀 **Deploy Automático**: GitHub Actions + Variáveis Secretas  
+🛡️ **Segurança Total**: Configurações protegidas por GitHub Secrets  
+👥 **Multiplayer Real**: Base sólida para jogos em tempo real  
+📊 **Analytics Completo**: Dados estruturados para métricas  
+
+### **🎮 Criminal Minds Game - Versão Profissional!**
+
+**🔥 Firebase Authentication + Firestore configurado com segurança total!**
+
+**✨ Sistema moderno, escalável e pronto para produção!**

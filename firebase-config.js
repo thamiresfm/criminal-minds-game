@@ -5,16 +5,46 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
-// Configuração do Firebase - SUBSTITUA PELOS SEUS DADOS
-// Acesse https://console.firebase.google.com/ para obter essas informações
-const firebaseConfig = {
-  apiKey: "SUA_API_KEY_AQUI",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  projectId: "SEU_PROJETO_ID",
-  storageBucket: "SEU_PROJETO.appspot.com",
-  messagingSenderId: "SEU_SENDER_ID",
-  appId: "SEU_APP_ID"
-};
+// Configuração do Firebase - Lida de variável secreta GitHub ou local
+let firebaseConfig;
+
+try {
+    // Tentar ler configuração injetada durante build (GitHub Actions)
+    if (window.FIREBASE_CONFIG) {
+        firebaseConfig = window.FIREBASE_CONFIG;
+        console.log('✅ Firebase config carregada de variável de build');
+    } 
+    // Fallback para desenvolvimento local
+    else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        firebaseConfig = {
+            apiKey: "AIzaSyDEMO_KEY_PARA_DESENVOLVIMENTO_LOCAL",
+            authDomain: "criminal-minds-demo.firebaseapp.com",
+            projectId: "criminal-minds-demo",
+            storageBucket: "criminal-minds-demo.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:demo"
+        };
+        console.log('⚠️ Usando configuração demo para desenvolvimento local');
+    } 
+    // Erro se não encontrar configuração
+    else {
+        throw new Error('Configuração Firebase não encontrada');
+    }
+} catch (error) {
+    console.error('❌ Erro ao carregar configuração Firebase:', error);
+    
+    // Configuração de emergência (não funcional, apenas para evitar erros)
+    firebaseConfig = {
+        apiKey: "CONFIGURE_DADOS_FIREBASE_NO_GITHUB",
+        authDomain: "projeto.firebaseapp.com",
+        projectId: "projeto-id",
+        storageBucket: "projeto.appspot.com",
+        messagingSenderId: "000000000000",
+        appId: "1:000000000000:web:demo"
+    };
+    
+    alert('🔥 FIREBASE NÃO CONFIGURADO\n\nConfigure a variável secreta DADOS_FIREBASE no GitHub.\nConsulte FIREBASE-SETUP.md para instruções.');
+}
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
