@@ -176,45 +176,7 @@
             box-shadow: 0 10px 25px -3px rgba(251, 191, 36, 0.25);
         }
 
-        .divider {
-            text-align: center;
-            margin: 1.5rem 0;
-            color: #9ca3af;
-            position: relative;
-        }
 
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: rgba(75, 85, 99, 0.5);
-        }
-
-        .divider span {
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f23);
-            padding: 0 1rem;
-        }
-
-        .guest-button {
-            width: 100%;
-            background: transparent;
-            color: #fbbf24;
-            border: 2px solid #fbbf24;
-            padding: 1rem 2rem;
-            border-radius: 0.75rem;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 1rem;
-        }
-
-        .guest-button:hover {
-            background: rgba(251, 191, 36, 0.1);
-        }
 
         .back-link {
             text-align: center;
@@ -333,14 +295,6 @@
                 <p>Já tem uma conta? <a href="login.html">Faça login aqui</a></p>
             </div>
 
-            <div class="divider">
-                <span>ou</span>
-            </div>
-
-            <button type="button" class="guest-button" onclick="joinAsGuest()">
-                👤 Jogar como Convidado
-            </button>
-
             <div class="features">
                 <span>🎮 Multiplayer</span>
                 <span>•</span>
@@ -436,24 +390,7 @@
             }, 2000);
         });
 
-        // Função para jogar como convidado
-        function joinAsGuest() {
-            const guestName = 'Detetive_' + Math.floor(Math.random() * 1000);
-            const guestData = {
-                fullName: guestName,
-                email: guestName.toLowerCase() + '@guest.criminal-minds.com',
-                detectiveName: guestName,
-                registrationDate: new Date().toISOString(),
-                isGuest: true
-            };
-            
-            localStorage.setItem('criminalMinds_userData', JSON.stringify(guestData));
-            localStorage.setItem('criminalMinds_username', guestName);
-            localStorage.setItem('criminalMinds_isGuest', 'true');
-            
-            // Redirecionar para o lobby
-            window.location.href = 'lobby.html';
-        }
+
 
         // Efeito de foco nos inputs com ajuste para password container
         document.querySelectorAll('.form-input').forEach(input => {
