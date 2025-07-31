@@ -65,7 +65,9 @@
             padding: 1.5rem;
             backdrop-filter: blur(15px);
             overflow-y: auto;
+            overflow-x: hidden;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            min-width: 0;
         }
 
         .main-area {
@@ -450,6 +452,8 @@
             margin-bottom: 1.5rem;
             overflow-y: auto;
             backdrop-filter: blur(10px);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .chat-message {
@@ -471,6 +475,8 @@
             gap: 0.8rem;
             align-items: stretch;
             margin-top: 1rem;
+            width: 100%;
+            overflow: hidden;
         }
 
         .chat-input input {
@@ -504,22 +510,24 @@
             background: linear-gradient(135deg, #fbbf24, #f59e0b, #f97316);
             color: #0f0f23;
             border: none;
-            padding: 1rem 1.5rem;
+            padding: 1rem 1.2rem;
             border-radius: 15px;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            min-width: 100px;
+            letter-spacing: 0.3px;
+            min-width: 85px;
+            max-width: 120px;
             justify-content: center;
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         .send-button::before {
@@ -561,17 +569,47 @@
         @media (max-width: 768px) {
             .chat-input {
                 gap: 0.5rem;
+                flex-wrap: nowrap;
             }
             
             .chat-input input {
                 padding: 0.9rem 1rem;
                 font-size: 0.9rem;
+                min-width: 0;
             }
             
             .send-button {
-                padding: 0.9rem 1.2rem;
-                font-size: 0.8rem;
-                min-width: 80px;
+                padding: 0.9rem 1rem;
+                font-size: 0.75rem;
+                min-width: 70px;
+                max-width: 90px;
+                gap: 0.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chat-input {
+                gap: 0.4rem;
+            }
+            
+            .chat-input input {
+                padding: 0.8rem 0.9rem;
+                font-size: 0.85rem;
+            }
+            
+            .send-button {
+                padding: 0.8rem 0.8rem;
+                font-size: 0.7rem;
+                min-width: 60px;
+                max-width: 75px;
+            }
+            
+            .send-button span:first-child {
+                display: none;
+            }
+            
+            .send-button-icon {
+                font-size: 1.2rem !important;
             }
         }
 
@@ -582,6 +620,11 @@
                 grid-template-rows: auto auto 1fr auto;
                 height: auto;
                 min-height: 100vh;
+                padding: 0.8rem;
+            }
+            
+            .sidebar {
+                padding: 1.2rem;
             }
             
             .cards-container {
