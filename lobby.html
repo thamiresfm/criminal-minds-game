@@ -189,9 +189,9 @@
             </div>
         </div>
 
-        <button class="start-button" onclick="startInvestigation()">
+        <a href="investigation.html" class="start-button">
             🚀 Iniciar Investigação
-        </button>
+        </a>
 
         <div class="back-link">
             <a href="login.html">← Sair do Lobby</a>
@@ -249,18 +249,19 @@
         // Iniciar simulação após 2 segundos
         setTimeout(simulatePlayerJoin, 2000);
 
-        // Função para iniciar investigação
-        function startInvestigation() {
-            // Salvar estado do jogo
+        // Salvar estado do jogo quando sair do lobby
+        function saveGameState() {
             localStorage.setItem('criminalMinds_gameStarted', 'true');
             localStorage.setItem('criminalMinds_playerCount', connectedPlayers);
-            
-            // Redirecionar para o jogo (ainda será criado)
-            alert(`🎮 Iniciando investigação com ${connectedPlayers} jogador(es)!\n\n🔍 Em breve você será redirecionado para a tela de investigação.\n\n🕵️ Prepare-se para desvendar o mistério!`);
-            
-            // Por enquanto, volta para o início
-            // window.location.href = 'game.html'; // Página do jogo será criada depois
         }
+        
+        // Salvar estado automaticamente ao clicar no botão de investigação
+        document.addEventListener('DOMContentLoaded', function() {
+            const startButton = document.querySelector('.start-button');
+            if (startButton) {
+                startButton.addEventListener('click', saveGameState);
+            }
+        });
 
         // Efeitos visuais
         document.addEventListener('DOMContentLoaded', function() {
