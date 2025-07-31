@@ -101,6 +101,119 @@
             box-shadow: 0 10px 25px -3px rgba(251, 191, 36, 0.25);
         }
 
+        /* ESTILOS PARA OS MODOS DE JOGO */
+        .game-modes {
+            margin: 2rem 0;
+        }
+
+        .modes-container {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .mode-button {
+            position: relative;
+            flex: 1;
+            min-width: 280px;
+            max-width: 350px;
+            background: rgba(15, 15, 35, 0.8);
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            text-decoration: none;
+            color: white;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        .mode-button:hover {
+            transform: translateY(-8px);
+            border-color: #fbbf24;
+            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.2);
+        }
+
+        .classic-mode:hover {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
+        }
+
+        .cards-mode {
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        .cards-mode:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1));
+            border-color: #8b5cf6;
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3);
+        }
+
+        .mode-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.3));
+        }
+
+        .cards-mode .mode-icon {
+            filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5));
+        }
+
+        .mode-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #fbbf24;
+        }
+
+        .cards-mode .mode-title {
+            color: #a78bfa;
+        }
+
+        .mode-description {
+            font-size: 0.95rem;
+            text-align: center;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        .mode-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* RESPONSIVIDADE PARA MODOS DE JOGO */
+        @media (max-width: 768px) {
+            .modes-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .mode-button {
+                min-width: 280px;
+                max-width: 100%;
+            }
+        }
+
         .back-link {
             text-align: center;
             margin-top: 2rem;
@@ -189,13 +302,25 @@
             </div>
         </div>
 
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a href="investigation.html" class="start-button" style="flex: 1; min-width: 200px;">
-                🔍 Modo Clássico
-            </a>
-            <a href="investigation-cards.html" class="start-button" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
-                🃏 Modo Cartas (NOVO!)
-            </a>
+        <div class="game-modes">
+            <h3 style="text-align: center; color: #fbbf24; margin-bottom: 1.5rem; font-size: 1.3rem;">
+                🎮 Escolha seu Modo de Jogo
+            </h3>
+            
+            <div class="modes-container">
+                <a href="investigation.html" class="mode-button classic-mode">
+                    <div class="mode-icon">🔍</div>
+                    <div class="mode-title">Modo Clássico</div>
+                    <div class="mode-description">Investigação tradicional com foco em evidências e interrogatórios</div>
+                </a>
+                
+                <a href="investigation-cards.html" class="mode-button cards-mode">
+                    <div class="mode-icon">🃏</div>
+                    <div class="mode-title">Modo Cartas</div>
+                    <div class="mode-badge">NOVO!</div>
+                    <div class="mode-description">Sistema de cartas digital com combos e estratégias</div>
+                </a>
+            </div>
         </div>
 
         <div class="back-link">
