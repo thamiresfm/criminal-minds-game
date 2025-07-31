@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Criminal Minds Game</title>
-    <meta name="description" content="Faça login no Criminal Minds Game - Entre com email e senha">
+    <title>Cadastro - Criminal Minds Game</title>
+    <meta name="description" content="Cadastre-se no Criminal Minds Game - Digite nome, email e senha">
     <style>
         * {
             margin: 0;
@@ -232,24 +232,24 @@
             color: #fbbf24;
         }
 
-        .register-link {
+        .login-link {
             text-align: center;
             margin: 1.5rem 0;
             font-size: 0.9rem;
         }
 
-        .register-link p {
+        .login-link p {
             color: #9ca3af;
         }
 
-        .register-link a {
+        .login-link a {
             color: #fbbf24;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
         }
 
-        .register-link a:hover {
+        .login-link a:hover {
             color: #f59e0b;
             text-decoration: underline;
         }
@@ -285,10 +285,16 @@
         <div class="login-card">
             <div class="logo">
                 <h1>🎯 Criminal Minds</h1>
-                <p>Faça login para entrar na investigação</p>
+                <p>Cadastre-se para entrar na investigação</p>
             </div>
 
             <form id="loginForm">
+                <div class="form-group">
+                    <label for="fullName">Nome Completo</label>
+                    <input type="text" id="fullName" name="fullName" class="form-input" 
+                           placeholder="Digite seu nome completo" required>
+                </div>
+
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" class="form-input" 
@@ -299,11 +305,17 @@
                     <label for="password">Senha</label>
                     <div class="password-container">
                         <input type="password" id="password" name="password" class="form-input" 
-                               placeholder="Digite sua senha" required>
+                               placeholder="Digite sua senha (mín. 6 caracteres)" required minlength="6">
                         <button type="button" class="password-toggle" onclick="togglePassword()">
                             <span id="passwordIcon">👁️</span>
                         </button>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="detectiveName">Nome do Detetive (Apelido no Jogo)</label>
+                    <input type="text" id="detectiveName" name="detectiveName" class="form-input" 
+                           placeholder="Como você quer ser chamado no jogo" required>
                 </div>
 
                 <div class="form-group">
@@ -313,12 +325,12 @@
                 </div>
 
                 <button type="submit" class="login-button">
-                    🕵️ Entrar na Investigação
+                    🕵️ Criar Conta e Entrar
                 </button>
             </form>
 
-            <div class="register-link">
-                <p>Não tem uma conta? <a href="register.html">Cadastre-se aqui</a></p>
+            <div class="login-link">
+                <p>Já tem uma conta? <a href="login.html">Faça login aqui</a></p>
             </div>
 
             <div class="divider">
@@ -368,53 +380,60 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            const fullName = document.getElementById('fullName').value.trim();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
+            const detectiveName = document.getElementById('detectiveName').value.trim();
             const gameCode = document.getElementById('gameCode').value.trim();
             
-            // Validações básicas
+            // Validações
+            if (!fullName) {
+                alert('Por favor, digite seu nome completo.');
+                return;
+            }
+            
             if (!email || !isValidEmail(email)) {
                 alert('Por favor, digite um email válido.');
                 return;
             }
             
-            if (!password) {
-                alert('Por favor, digite sua senha.');
+            if (!password || password.length < 6) {
+                alert('A senha deve ter pelo menos 6 caracteres.');
                 return;
             }
             
-            // Verificar se existe usuário cadastrado
-            const existingUserData = localStorage.getItem('criminalMinds_userData');
-            
-            if (existingUserData) {
-                const userData = JSON.parse(existingUserData);
-                
-                // Simular verificação de login (em um app real, seria no servidor)
-                if (userData.email === email) {
-                    // Login bem-sucedido
-                    localStorage.setItem('criminalMinds_username', userData.detectiveName);
-                    localStorage.setItem('criminalMinds_userEmail', email);
-                    localStorage.setItem('criminalMinds_isLoggedIn', 'true');
-                    
-                    if (gameCode) {
-                        localStorage.setItem('criminalMinds_gameCode', gameCode);
-                    }
-                    
-                    // Feedback visual de sucesso
-                    const submitButton = document.querySelector('.login-button');
-                    submitButton.innerHTML = '✅ Login realizado com sucesso!';
-                    submitButton.style.background = 'linear-gradient(to right, #10b981, #059669)';
-                    
-                    // Redirecionar para o lobby após 1.5 segundos
-                    setTimeout(() => {
-                        window.location.href = 'lobby.html';
-                    }, 1500);
-                } else {
-                    alert('Email ou senha incorretos. Verifique seus dados ou cadastre-se.');
-                }
-            } else {
-                alert('Usuário não encontrado. Faça seu cadastro primeiro.');
+            if (!detectiveName) {
+                alert('Por favor, digite seu nome de detetive.');
+                return;
             }
+            
+            // Salvar dados do usuário no localStorage
+            const userData = {
+                fullName: fullName,
+                email: email,
+                detectiveName: detectiveName,
+                registrationDate: new Date().toISOString(),
+                isGuest: false
+            };
+            
+            localStorage.setItem('criminalMinds_userData', JSON.stringify(userData));
+            localStorage.setItem('criminalMinds_username', detectiveName);
+            localStorage.setItem('criminalMinds_userEmail', email);
+            
+            if (gameCode) {
+                localStorage.setItem('criminalMinds_gameCode', gameCode);
+            }
+            
+            // Feedback visual de sucesso
+            const submitButton = document.querySelector('.login-button');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '✅ Cadastro realizado com sucesso!';
+            submitButton.style.background = 'linear-gradient(to right, #10b981, #059669)';
+            
+            // Redirecionar para o lobby após 2 segundos
+            setTimeout(() => {
+                window.location.href = 'lobby.html';
+            }, 2000);
         });
 
         // Função para jogar como convidado
@@ -450,6 +469,25 @@
             });
         });
 
+        // Auto-preenchimento do nome do detetive baseado no nome completo
+        document.getElementById('fullName').addEventListener('input', function() {
+            const fullName = this.value.trim();
+            const detectiveNameInput = document.getElementById('detectiveName');
+            
+            if (fullName && !detectiveNameInput.value) {
+                // Gerar nome de detetive baseado no primeiro nome
+                const firstName = fullName.split(' ')[0];
+                const suggestions = [
+                    `Detetive ${firstName}`,
+                    `Agente ${firstName}`,
+                    `Inspector ${firstName}`,
+                    firstName + '_Detective'
+                ];
+                
+                detectiveNameInput.placeholder = `Sugestão: ${suggestions[0]}`;
+            }
+        });
+
         // Feedback visual para email válido
         document.getElementById('email').addEventListener('input', function() {
             const email = this.value.trim();
@@ -459,6 +497,21 @@
             } else if (email) {
                 this.style.borderColor = '#ef4444';
                 this.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
+            } else {
+                this.style.borderColor = 'rgba(75, 85, 99, 0.5)';
+                this.style.boxShadow = 'none';
+            }
+        });
+
+        // Feedback visual para senha
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            if (password.length >= 6) {
+                this.style.borderColor = '#10b981';
+                this.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
+            } else if (password.length > 0) {
+                this.style.borderColor = '#f59e0b';
+                this.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
             } else {
                 this.style.borderColor = 'rgba(75, 85, 99, 0.5)';
                 this.style.boxShadow = 'none';
