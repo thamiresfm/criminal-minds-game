@@ -1,7 +1,7 @@
 {
   "name": "criminal-minds-game",
   "version": "1.0.0",
-  "description": "Criminal Minds Game - Jogo de investigação multiplayer com Firebase Authentication",
+  "description": "Criminal Minds Game - Jogo de investigação multiplayer com MySQL + Retool",
   "main": "index.html",
   "scripts": {
     "start": "npx serve . -p 3000",

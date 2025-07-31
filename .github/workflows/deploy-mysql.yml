@@ -1,0 +1,184 @@
+name: 🗄️ Deploy with MySQL Database
+
+on:
+  push:
+    branches: [ gh-pages ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Checkout do código
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    # 2. Setup Node.js
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    # 3. Instalar dependências
+    - name: 📦 Install Dependencies
+      run: npm ci
+      
+    # 4. Configurar variáveis de ambiente
+    - name: 🔧 Setup Environment Variables
+      env:
+        BD_URL: ${{ secrets.BD_URL }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        RETOOL_API_KEY: ${{ secrets.RETOOL_API_KEY }}
+        RETOOL_API_URL: ${{ secrets.RETOOL_API_URL }}
+        RETOOL_APP_ID: ${{ secrets.RETOOL_APP_ID }}
+      run: |
+        echo "🔧 Configurando variáveis de ambiente..."
+        
+        # Verificar se a variável BD_URL existe
+        if [ -z "$BD_URL" ]; then
+          echo "❌ ERRO: Variável secreta BD_URL não encontrada!"
+          echo "Configure a variável secreta no GitHub: Settings → Secrets and variables → Actions"
+          exit 1
+        fi
+        
+        # Criar arquivo .env para o build
+        cat > .env << EOF
+        BD_URL=$BD_URL
+        JWT_SECRET=${JWT_SECRET:-fallback_jwt_secret_$(date +%s)}
+        RETOOL_API_KEY=${RETOOL_API_KEY:-}
+        RETOOL_API_URL=${RETOOL_API_URL:-}
+        RETOOL_APP_ID=${RETOOL_APP_ID:-}
+        NODE_ENV=production
+        CORS_ORIGINS=https://${{ github.repository_owner }}.github.io
+        EOF
+        
+        echo "✅ Variáveis de ambiente configuradas"
+        
+    # 5. Gerar cliente Prisma
+    - name: 🛠️ Generate Prisma Client
+      env:
+        BD_URL: ${{ secrets.BD_URL }}
+      run: |
+        echo "🛠️ Gerando cliente Prisma..."
+        npx prisma generate
+        echo "✅ Cliente Prisma gerado com sucesso"
+        
+    # 6. Executar migrações (opcional, apenas se necessário)
+    - name: 🗄️ Run Database Migrations
+      env:
+        BD_URL: ${{ secrets.BD_URL }}
+      run: |
+        echo "🗄️ Verificando necessidade de migrações..."
+        
+        # Só executar migrações se o banco estiver acessível
+        if npx prisma migrate status > /dev/null 2>&1; then
+          echo "Executando migrações necessárias..."
+          npx prisma migrate deploy
+        else
+          echo "⚠️ Banco não acessível ou migrações não necessárias"
+        fi
+        
+        echo "✅ Migrações verificadas"
+      continue-on-error: true
+        
+    # 7. Health Check do banco
+    - name: 🔍 Database Health Check
+      env:
+        BD_URL: ${{ secrets.BD_URL }}
+      run: |
+        echo "🔍 Verificando saúde do banco de dados..."
+        
+        # Tentar executar health check
+        if npm run db:health > /dev/null 2>&1; then
+          echo "✅ Banco de dados acessível e funcionando"
+        else
+          echo "⚠️ Banco de dados não acessível no momento do build"
+          echo "Isso é normal se o banco está em modo serverless"
+        fi
+      continue-on-error: true
+        
+    # 8. Build do projeto
+    - name: 🏗️ Build Project
+      run: |
+        echo "🏗️ Fazendo build do projeto..."
+        
+        # Se tiver script de build específico
+        if npm run --help | grep -q "build"; then
+          echo "Executando npm run build..."
+          npm run build
+        else
+          echo "Nenhum script de build específico. Usando arquivos estáticos."
+        fi
+        
+        echo "✅ Build concluído"
+        
+    # 9. Preparar arquivos para deploy
+    - name: 📝 Prepare Deploy Files
+      run: |
+        echo "📝 Preparando arquivos para deploy..."
+        
+        # Criar arquivo de configuração para o cliente
+        cat > database-config.js << 'EOF'
+        // Configuração do banco para o cliente
+        window.DATABASE_CONFIG = {
+          apiEndpoint: 'https://seu-backend-api.herokuapp.com/api',
+          version: '${{ github.sha }}',
+          deployTime: new Date().toISOString(),
+          environment: 'production'
+        };
+        console.log('✅ Configuração do banco carregada para produção');
+        EOF
+        
+        # Adicionar script aos HTMLs se necessário
+        for file in *.html; do
+          if [ -f "$file" ]; then
+            # Adicionar script de configuração se não existir
+            if ! grep -q "database-config.js" "$file"; then
+              sed -i 's|</head>|    <script src="database-config.js"></script>\n</head>|g' "$file"
+              echo "✅ Script adicionado a $file"
+            fi
+          fi
+        done
+        
+        echo "✅ Arquivos preparados para deploy"
+        
+    # 10. Deploy para GitHub Pages
+    - name: 🚀 Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        publish_branch: gh-pages
+        force_orphan: true
+        commit_message: '🗄️ Deploy with MySQL: ${{ github.event.head_commit.message }}'
+        
+    # 11. Notificar deploy completo
+    - name: ✅ Deploy Complete
+      run: |
+        echo "✅ Deploy concluído com sucesso!"
+        echo "🌐 Site disponível em: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+        echo "🗄️ MySQL configurado com variável secreta BD_URL"
+        echo "📊 Commit: ${{ github.sha }}"
+        echo "🕐 Deploy realizado em: $(date)"
+        
+    # 12. Verificar saúde pós-deploy (opcional)
+    - name: 🔍 Post-Deploy Health Check
+      run: |
+        echo "🔍 Verificando site após deploy..."
+        
+        # Aguardar um pouco para o deploy ser processado
+        sleep 30
+        
+        # Verificar se o site está respondendo
+        SITE_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+        
+        if curl -s -I "$SITE_URL" | grep -q "200 OK"; then
+          echo "✅ Site está respondendo corretamente"
+        else
+          echo "⚠️ Site pode estar ainda sendo processado pelo GitHub Pages"
+        fi
+        
+        echo "🎉 Processo de deploy finalizado!"
+      continue-on-error: true

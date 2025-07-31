@@ -19,7 +19,7 @@ const prisma = new PrismaClient({
   
   datasources: {
     db: {
-      url: process.env.DATABASE_URL
+      url: process.env.BD_URL
     }
   }
 });
@@ -33,8 +33,8 @@ let mysqlConnection = null;
 async function createMySQLConnection() {
   try {
     if (!mysqlConnection) {
-      // Parse da DATABASE_URL para extrair componentes
-      const dbUrl = new URL(process.env.DATABASE_URL);
+      // Parse da BD_URL para extrair componentes
+      const dbUrl = new URL(process.env.BD_URL);
       
       mysqlConnection = await mysql.createConnection({
         host: dbUrl.hostname,

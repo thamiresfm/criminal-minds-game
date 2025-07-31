@@ -125,13 +125,92 @@ docker run -d \
 cp env.example .env
 
 # Editar .env com seus dados reais
-DATABASE_URL="mysql://user:password@host:port/database"
+BD_URL="mysql://user:password@host:port/database"
 
 # Exemplo PlanetScale:
-DATABASE_URL="mysql://user:pass@aws.connect.psdb.cloud/criminal-minds-game?sslaccept=strict"
+BD_URL="mysql://user:pass@aws.connect.psdb.cloud/criminal-minds-game?sslaccept=strict"
 
 # Exemplo Local:
-DATABASE_URL="mysql://root:criminal123@localhost:3306/criminal_minds_game"
+BD_URL="mysql://root:criminal123@localhost:3306/criminal_minds_game"
+```
+
+---
+
+## 🔐 **CONFIGURAÇÃO DA VARIÁVEL SECRETA BD_URL**
+
+### **1. Configurar Variável Secreta no GitHub:**
+
+#### **🌐 PASSO A PASSO:**
+```bash
+1. Acesse seu repositório no GitHub
+2. Vá para Settings (Configurações)
+3. No menu lateral: "Secrets and variables"
+4. Clique em "Actions"
+5. Clique em "New repository secret"
+6. Nome: BD_URL
+7. Value: sua string de conexão MySQL completa
+8. Clique em "Add secret"
+```
+
+#### **📋 FORMATO DA VARIÁVEL BD_URL:**
+A variável deve conter a string de conexão MySQL:
+
+```bash
+# Formato geral:
+BD_URL="mysql://username:password@host:port/database?options"
+
+# Exemplo PlanetScale:
+BD_URL="mysql://user123:pass456@aws.connect.psdb.cloud/criminal-minds-game?sslaccept=strict"
+
+# Exemplo Railway:
+BD_URL="mysql://root:password@containers-us-west-x.railway.app:3306/railway"
+
+# Exemplo Local (para testes):
+BD_URL="mysql://root:mypassword@localhost:3306/criminal_minds_game"
+```
+
+#### **⚠️ ATENÇÃO - SEGURANÇA:**
+- **NUNCA** commite a string de conexão no código
+- Use **apenas** GitHub Secrets para dados sensíveis
+- A variável `BD_URL` só é acessível durante o GitHub Actions
+- Mantenha backups seguros das credenciais
+
+#### **✅ VERIFICAR CONFIGURAÇÃO:**
+```bash
+# Após configurar a variável secreta BD_URL:
+1. Faça um push para a branch gh-pages
+2. Vá para Actions tab no GitHub
+3. Verifique se o workflow executou sem erros
+4. Procure por "✅ Variáveis de ambiente configuradas"
+```
+
+### **2. Configuração Local vs Produção:**
+
+#### **💻 DESENVOLVIMENTO LOCAL:**
+```bash
+# Arquivo .env (local apenas)
+BD_URL="mysql://root:password@localhost:3306/criminal_minds_game"
+```
+
+#### **🚀 PRODUÇÃO (GitHub Actions):**
+```bash
+# GitHub Secret (seguro)
+Nome: BD_URL
+Valor: mysql://user:pass@prod-host:port/database?sslaccept=strict
+```
+
+### **3. Workflow Automático:**
+
+O arquivo `.github/workflows/deploy-mysql.yml` foi criado para:
+
+```bash
+✅ FUNCIONALIDADES AUTOMÁTICAS:
+• Lê a variável secreta BD_URL do GitHub
+• Configura ambiente de produção automaticamente
+• Gera cliente Prisma com a conexão correta
+• Executa migrações se necessário
+• Faz health check do banco de dados
+• Deploy automático no GitHub Pages
 ```
 
 ---
@@ -636,7 +715,7 @@ heroku login
 heroku create criminal-minds-api
 
 # Configurar variáveis de ambiente
-heroku config:set DATABASE_URL="mysql://..."
+heroku config:set BD_URL="mysql://..."
 heroku config:set JWT_SECRET="..."
 heroku config:set RETOOL_API_KEY="..."
 
@@ -744,7 +823,7 @@ GET  /api/admin/stats        # Estatísticas gerais
 • MySQL server offline
 
 ✅ SOLUÇÃO:
-1. Verificar DATABASE_URL no .env
+1. Verificar BD_URL no .env
 2. Testar conexão: mysql -h host -u user -p
 3. Verificar regras de firewall
 4. Confirmar se MySQL está rodando
