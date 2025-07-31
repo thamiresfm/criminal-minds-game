@@ -339,6 +339,46 @@
             box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
         }
 
+        /* BOTÃO SAIR MODERNO */
+        .exit-button {
+            background: rgba(15, 15, 35, 0.9);
+            border: 2px solid rgba(156, 163, 175, 0.3);
+            color: #9ca3af;
+            padding: 0.6rem 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .exit-button:hover {
+            border-color: #ef4444;
+            color: #f87171;
+            background: rgba(239, 68, 68, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .exit-icon {
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .exit-button:hover .exit-icon {
+            transform: translateX(-3px);
+        }
+
+        .exit-button:active {
+            transform: translateY(0) scale(0.95);
+        }
+
         /* MODAL MODERNO */
         .modal {
             display: none;
@@ -428,23 +468,111 @@
 
         .chat-input {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.8rem;
+            align-items: stretch;
+            margin-top: 1rem;
         }
 
         .chat-input input {
             flex: 1;
-            padding: 0.8rem;
+            padding: 1rem 1.2rem;
             border: 2px solid rgba(251, 191, 36, 0.3);
-            border-radius: 10px;
-            background: rgba(15, 15, 35, 0.8);
+            border-radius: 15px;
+            background: rgba(15, 15, 35, 0.9);
             color: white;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
 
         .chat-input input:focus {
             outline: none;
             border-color: #fbbf24;
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+            background: rgba(15, 15, 35, 0.95);
+            transform: translateY(-1px);
+        }
+
+        .chat-input input::placeholder {
+            color: rgba(203, 213, 225, 0.6);
+            font-style: italic;
+        }
+
+        /* BOTÃO ENVIAR MODERNO */
+        .send-button {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b, #f97316);
+            color: #0f0f23;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 100px;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .send-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .send-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.5);
+            background: linear-gradient(135deg, #f59e0b, #fbbf24, #f97316);
+        }
+
+        .send-button:hover::before {
+            left: 100%;
+        }
+
+        .send-button:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+        }
+
+        .send-button-icon {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .send-button:hover .send-button-icon {
+            transform: translateX(2px);
+        }
+
+        /* RESPONSIVIDADE DO CHAT */
+        @media (max-width: 768px) {
+            .chat-input {
+                gap: 0.5rem;
+            }
+            
+            .chat-input input {
+                padding: 0.9rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .send-button {
+                padding: 0.9rem 1.2rem;
+                font-size: 0.8rem;
+                min-width: 80px;
+            }
         }
 
         /* RESPONSIVIDADE */
@@ -489,6 +617,29 @@
             }
         }
 
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateX(50px) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        /* EFEITOS PARA BOTÃO DISABLED */
+        .send-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .send-button:disabled:hover {
+            transform: none !important;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3) !important;
+        }
+
         .card {
             animation: cardAppear 0.6s ease-out;
         }
@@ -504,7 +655,13 @@
 <body>
     <div class="game-container">
         <div class="header">
-            <div class="case-title">🎯 CRIMINAL MINDS: DIGITAL CARDS</div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button class="exit-button" onclick="exitInvestigation()">
+                    <span class="exit-icon">←</span>
+                    <span>Sair</span>
+                </button>
+                <div class="case-title">🎯 CRIMINAL MINDS: DIGITAL CARDS</div>
+            </div>
             <div class="timer" id="gameTimer">⏱️ 45:00</div>
             <div style="display: flex; gap: 1rem;">
                 <button class="btn" onclick="openDeck()">🃏 Meu Deck</button>
@@ -541,7 +698,10 @@
             </div>
             <div class="chat-input">
                 <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
-                <button class="btn" onclick="sendMessage()">Enviar</button>
+                <button class="send-button" onclick="sendMessage()">
+                    <span>Enviar</span>
+                    <span class="send-button-icon">📤</span>
+                </button>
             </div>
         </div>
 
@@ -1044,13 +1204,40 @@
             }
         }
 
-        // Chat
+        // Chat com feedback visual
         function sendMessage() {
             const input = document.getElementById('chatInput');
+            const sendButton = document.querySelector('.send-button');
             const message = input.value.trim();
+            
             if (message) {
-                addChatMessage(message, 'self');
-                input.value = '';
+                // Feedback visual no botão
+                sendButton.style.transform = 'scale(0.95)';
+                sendButton.innerHTML = '<span>Enviando...</span><span class="send-button-icon">⏳</span>';
+                sendButton.disabled = true;
+                
+                // Feedback visual no input
+                input.style.borderColor = '#10b981';
+                input.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
+                
+                setTimeout(() => {
+                    // Restaurar botão
+                    sendButton.innerHTML = '<span>Enviar</span><span class="send-button-icon">📤</span>';
+                    sendButton.disabled = false;
+                    sendButton.style.transform = '';
+                    
+                    // Restaurar input
+                    input.style.borderColor = '';
+                    input.style.boxShadow = '';
+                    
+                    // Adicionar mensagem
+                    addChatMessage(message, 'self');
+                    input.value = '';
+                    
+                    // Efeito de sucesso
+                    showMessageSuccess();
+                    
+                }, 300);
                 
                 // Simular resposta da equipe
                 setTimeout(() => {
@@ -1063,8 +1250,44 @@
                     ];
                     const randomResponse = responses[Math.floor(Math.random() * responses.length)];
                     addChatMessage(randomResponse, '🔍 Morgan');
+                }, 2300);
+            } else {
+                // Feedback para mensagem vazia
+                input.style.borderColor = '#ef4444';
+                input.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.4)';
+                input.placeholder = 'Digite algo antes de enviar...';
+                
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                    input.style.boxShadow = '';
+                    input.placeholder = 'Digite sua mensagem...';
                 }, 2000);
             }
+        }
+        
+        function showMessageSuccess() {
+            const success = document.createElement('div');
+            success.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #10b981, #059669);
+                color: white;
+                padding: 0.8rem 1.5rem;
+                border-radius: 12px;
+                font-weight: 600;
+                z-index: 3000;
+                box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+                animation: slideIn 0.3s ease-out;
+            `;
+            success.innerHTML = '✅ Mensagem enviada!';
+            
+            document.body.appendChild(success);
+            
+            setTimeout(() => {
+                success.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => success.remove(), 300);
+            }, 2000);
         }
 
         function addChatMessage(message, sender) {
@@ -1097,6 +1320,55 @@
 
         function makeAccusation() {
             alert('⚖️ Sistema de acusação baseado em cartas em desenvolvimento! Suas cartas jogadas determinarão o resultado.');
+        }
+
+        // Função para sair da investigação
+        function exitInvestigation() {
+            // Mostrar modal de confirmação
+            const confirmExit = confirm('🚪 Tem certeza que deseja sair da investigação?\n\n⚠️ Seu progresso atual será salvo, mas você perderá o timer atual.\n\n✅ Clique OK para voltar ao lobby\n❌ Clique Cancelar para continuar jogando');
+            
+            if (confirmExit) {
+                // Salvar progresso antes de sair
+                const gameData = {
+                    cardsPlayed: cardsPlayed,
+                    comboStreak: comboStreak,
+                    playerCoins: playerCoins,
+                    exitTime: new Date().toISOString(),
+                    timeRemaining: gameTime
+                };
+                
+                localStorage.setItem('criminalMinds_gameProgress', JSON.stringify(gameData));
+                
+                // Mostrar feedback de saída
+                const exitFeedback = document.createElement('div');
+                exitFeedback.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: linear-gradient(135deg, #1a1a2e, #16213e);
+                    border: 3px solid #fbbf24;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    z-index: 4000;
+                    text-align: center;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+                    color: white;
+                `;
+                
+                exitFeedback.innerHTML = `
+                    <h3 style="color: #fbbf24; margin-bottom: 1rem;">🚪 Saindo da Investigação...</h3>
+                    <p style="color: #cbd5e1; margin-bottom: 1rem;">✅ Progresso salvo com sucesso!</p>
+                    <p style="color: #6b7280; font-style: italic;">Redirecionando para o lobby...</p>
+                `;
+                
+                document.body.appendChild(exitFeedback);
+                
+                // Redirecionar após 2 segundos
+                setTimeout(() => {
+                    window.location.href = 'lobby.html';
+                }, 2000);
+            }
         }
 
         function closeModal(modalId) {
