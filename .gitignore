@@ -275,3 +275,4 @@ cypress/downloads/
 # ✅ Todos os arquivos HTML, CSS, JS do jogo
 # ✅ FIREBASE-SETUP.md (documentação)
 # ✅ package.json (configuração do projeto)
+/src/generated/prisma

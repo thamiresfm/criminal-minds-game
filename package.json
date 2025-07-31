@@ -13,7 +13,20 @@
     "test": "echo 'Testes a serem implementados'",
     "lint": "echo 'Linting a ser implementado'",
     "firebase:local": "node setup-firebase-local.js",
-    "firebase:check": "echo 'Verificando configuração Firebase...' && node -e \"console.log('Firebase SDK:', require('./package.json').dependencies.firebase)\""
+    "firebase:check": "echo 'Verificando configuração Firebase...' && node -e \"console.log('Firebase SDK:', require('./package.json').dependencies.firebase)\"",
+    "db:generate": "npx prisma generate",
+    "db:migrate": "npx prisma migrate dev",
+    "db:migrate:deploy": "npx prisma migrate deploy",
+    "db:migrate:reset": "npx prisma migrate reset",
+    "db:studio": "npx prisma studio",
+    "db:seed": "node -e \"require('./src/config/database').DatabaseUtils.seedDatabase()\"",
+    "db:import": "node scripts/import-csv-data.js",
+    "db:status": "npx prisma migrate status",
+    "db:validate": "npx prisma validate",
+    "db:format": "npx prisma format",
+    "db:health": "node -e \"require('./src/config/database').DatabaseUtils.healthCheck()\"",
+    "setup:env": "cp env.example .env && echo 'Configure suas variáveis no arquivo .env'",
+    "setup:mysql": "echo 'Siga o guia MYSQL-RETOOL-SETUP.md para configuração completa'"
   },
   "keywords": [
     "game",
@@ -29,7 +42,16 @@
   "author": "Criminal Minds Game Team",
   "license": "MIT",
   "dependencies": {
-    "firebase": "^12.0.0"
+    "@prisma/client": "^6.13.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "firebase": "^12.0.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.3",
+    "prisma": "^6.13.0"
   },
   "devDependencies": {
     "serve": "^14.2.1"

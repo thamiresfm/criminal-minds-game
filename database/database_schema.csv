@@ -1,0 +1,102 @@
+table_name,column_name,data_type,max_length,is_nullable,is_primary_key,is_foreign_key,foreign_table,foreign_column,default_value,description
+users,id,INT,,NO,YES,NO,,,AUTO_INCREMENT,ID único do usuário
+users,email,VARCHAR,255,NO,NO,NO,,,UNIQUE,Email do usuário para login
+users,password_hash,VARCHAR,255,NO,NO,NO,,,,Hash da senha (bcrypt ou similar)
+users,full_name,VARCHAR,255,NO,NO,NO,,,,Nome completo do usuário
+users,detective_name,VARCHAR,100,NO,NO,NO,,,UNIQUE,Nome do detetive no jogo
+users,game_code,VARCHAR,20,YES,NO,NO,,,,Código da sala preferida
+users,registration_date,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP,Data de criação da conta
+users,last_login,DATETIME,,YES,NO,NO,,,,Data do último login
+users,is_active,BOOLEAN,,NO,NO,NO,,,TRUE,Se a conta está ativa
+users,email_verified,BOOLEAN,,NO,NO,NO,,,FALSE,Se o email foi verificado
+users,created_at,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP,Data de criação do registro
+users,updated_at,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP ON UPDATE,Data da última atualização
+game_stats,id,INT,,NO,YES,NO,,,AUTO_INCREMENT,ID único das estatísticas
+game_stats,user_id,INT,,NO,NO,YES,users,id,,ID do usuário (FK)
+game_stats,games_played,INT,,NO,NO,NO,,,0,Total de jogos jogados
+game_stats,games_won,INT,,NO,NO,NO,,,0,Total de jogos vencidos
+game_stats,games_lost,INT,,NO,NO,NO,,,0,Total de jogos perdidos
+game_stats,total_score,INT,,NO,NO,NO,,,0,Pontuação total acumulada
+game_stats,cards_collected,INT,,NO,NO,NO,,,0,Total de cartas coletadas
+game_stats,best_time_seconds,INT,,NO,NO,NO,,,0,Melhor tempo em segundos
+game_stats,favorite_mode,ENUM,,NO,NO,NO,,,cards|classic,Modo de jogo favorito
+game_stats,combo_streak_record,INT,,NO,NO,NO,,,0,Maior sequência de combos
+game_stats,evidences_found,INT,,NO,NO,NO,,,0,Total de evidências encontradas
+game_stats,suspects_interrogated,INT,,NO,NO,NO,,,0,Total de suspeitos interrogados
+game_stats,locations_investigated,INT,,NO,NO,NO,,,0,Total de locais investigados
+game_stats,total_playtime_minutes,INT,,NO,NO,NO,,,0,Tempo total jogado em minutos
+game_stats,last_game_date,DATETIME,,YES,NO,NO,,,,Data do último jogo
+game_stats,achievements_unlocked,INT,,NO,NO,NO,,,0,Total de conquistas desbloqueadas
+game_stats,rank_level,INT,,NO,NO,NO,,,1,Nível atual do jogador
+game_stats,rank_points,INT,,NO,NO,NO,,,0,Pontos de ranking
+game_stats,created_at,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP,Data de criação do registro
+game_stats,updated_at,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP ON UPDATE,Data da última atualização
+user_sessions,id,INT,,NO,YES,NO,,,AUTO_INCREMENT,ID único da sessão
+user_sessions,user_id,INT,,NO,NO,YES,users,id,,ID do usuário (FK)
+user_sessions,session_token,VARCHAR,255,NO,NO,NO,,,UNIQUE,Token único da sessão
+user_sessions,ip_address,VARCHAR,45,YES,NO,NO,,,,Endereço IP do cliente
+user_sessions,user_agent,TEXT,,YES,NO,NO,,,,User agent do navegador
+user_sessions,device_type,ENUM,,YES,NO,NO,,,desktop|mobile|tablet,Tipo de dispositivo
+user_sessions,browser,VARCHAR,50,YES,NO,NO,,,,Nome do navegador
+user_sessions,operating_system,VARCHAR,50,YES,NO,NO,,,,Sistema operacional
+user_sessions,is_active,BOOLEAN,,NO,NO,NO,,,TRUE,Se a sessão está ativa
+user_sessions,login_time,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP,Hora do login
+user_sessions,last_activity,DATETIME,,YES,NO,NO,,,,Última atividade registrada
+user_sessions,logout_time,DATETIME,,YES,NO,NO,,,,Hora do logout
+user_sessions,expires_at,DATETIME,,NO,NO,NO,,,,Data de expiração da sessão
+user_sessions,created_at,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP,Data de criação do registro
+user_sessions,updated_at,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP ON UPDATE,Data da última atualização
+games,id,INT,,NO,YES,NO,,,AUTO_INCREMENT,ID único do jogo
+games,game_code,VARCHAR,20,NO,NO,NO,,,UNIQUE,Código único da sala
+games,host_user_id,INT,,NO,NO,YES,users,id,,ID do usuário host (FK)
+games,game_mode,ENUM,,NO,NO,NO,,,cards|classic,Modo de jogo
+games,max_players,INT,,NO,NO,NO,,,6,Máximo de jogadores
+games,current_players,INT,,NO,NO,NO,,,0,Jogadores atuais na sala
+games,status,ENUM,,NO,NO,NO,,,waiting|active|finished|cancelled,Status do jogo
+games,difficulty,ENUM,,NO,NO,NO,,,easy|medium|hard,Dificuldade do jogo
+games,time_limit_minutes,INT,,NO,NO,NO,,,60,Limite de tempo em minutos
+games,created_at,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP,Data de criação do jogo
+games,started_at,DATETIME,,YES,NO,NO,,,,Data de início do jogo
+games,finished_at,DATETIME,,YES,NO,NO,,,,Data de finalização do jogo
+games,winner_user_id,INT,,YES,NO,YES,users,id,,ID do usuário vencedor (FK)
+games,total_score,INT,,YES,NO,NO,,,,Pontuação total do jogo
+games,game_duration_minutes,INT,,YES,NO,NO,,,,Duração real do jogo
+games,is_active,BOOLEAN,,NO,NO,NO,,,TRUE,Se o jogo está ativo
+games,settings_json,JSON,,YES,NO,NO,,,,Configurações específicas do jogo
+games,updated_at,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP ON UPDATE,Data da última atualização
+game_players,id,INT,,NO,YES,NO,,,AUTO_INCREMENT,ID único do participante
+game_players,game_id,INT,,NO,NO,YES,games,id,,ID do jogo (FK)
+game_players,user_id,INT,,NO,NO,YES,users,id,,ID do usuário (FK)
+game_players,detective_name,VARCHAR,100,NO,NO,NO,,,,Nome do detetive usado no jogo
+game_players,role,ENUM,,NO,NO,NO,,,host|player,Papel do jogador
+game_players,is_ready,BOOLEAN,,NO,NO,NO,,,FALSE,Se o jogador está pronto
+game_players,join_time,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP,Hora que entrou no jogo
+game_players,leave_time,DATETIME,,YES,NO,NO,,,,Hora que saiu do jogo
+game_players,final_score,INT,,YES,NO,NO,,,,Pontuação final do jogador
+game_players,cards_played,INT,,NO,NO,NO,,,0,Cartas jogadas pelo jogador
+game_players,combo_streak,INT,,NO,NO,NO,,,0,Maior sequência de combos
+game_players,evidences_collected,INT,,NO,NO,NO,,,0,Evidências coletadas
+game_players,time_bonus,INT,,NO,NO,NO,,,0,Bônus de tempo obtido
+game_players,is_active,BOOLEAN,,NO,NO,NO,,,TRUE,Se o jogador está ativo no jogo
+game_players,position_finished,INT,,YES,NO,NO,,,,Posição final (1º 2º etc.)
+game_players,achievements_earned,INT,,NO,NO,NO,,,0,Conquistas obtidas neste jogo
+game_players,created_at,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP,Data de criação do registro
+game_players,updated_at,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP ON UPDATE,Data da última atualização
+game_progress,id,INT,,NO,YES,NO,,,AUTO_INCREMENT,ID único do progresso
+game_progress,game_id,INT,,NO,NO,YES,games,id,,ID do jogo (FK)
+game_progress,user_id,INT,,NO,NO,YES,users,id,,ID do usuário (FK)
+game_progress,session_id,VARCHAR,255,YES,NO,NO,,,,ID da sessão para rastreamento
+game_progress,save_timestamp,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP,Momento do salvamento
+game_progress,game_mode,ENUM,,NO,NO,NO,,,cards|classic,Modo de jogo
+game_progress,current_level,INT,,NO,NO,NO,,,1,Nível atual do jogador
+game_progress,cards_played,INT,,NO,NO,NO,,,0,Cartas jogadas até o momento
+game_progress,combo_streak,INT,,NO,NO,NO,,,0,Sequência atual de combos
+game_progress,player_coins,INT,,NO,NO,NO,,,0,Moedas do jogador
+game_progress,evidences_collected,INT,,NO,NO,NO,,,0,Evidências coletadas
+game_progress,suspects_interrogated,INT,,NO,NO,NO,,,0,Suspeitos interrogados
+game_progress,locations_investigated,INT,,NO,NO,NO,,,0,Locais investigados
+game_progress,time_remaining_seconds,INT,,NO,NO,NO,,,,Tempo restante em segundos
+game_progress,progress_data_json,JSON,,YES,NO,NO,,,,Dados específicos do progresso
+game_progress,is_current_save,BOOLEAN,,NO,NO,NO,,,TRUE,Se é o salvamento atual
+game_progress,created_at,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP,Data de criação do registro
+game_progress,updated_at,DATETIME,,NO,NO,NO,,,CURRENT_TIMESTAMP ON UPDATE,Data da última atualização

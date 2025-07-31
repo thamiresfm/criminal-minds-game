@@ -1,0 +1,8 @@
+id,game_code,host_user_id,game_mode,max_players,current_players,status,difficulty,time_limit_minutes,created_at,started_at,finished_at,winner_user_id,total_score,game_duration_minutes,is_active,settings_json,updated_at
+1,SALA123,2,cards,6,3,active,medium,60,2024-01-20 15:30:00,2024-01-20 15:35:00,,,,25,1,"{""cardsEnabled"":true,""timeBonus"":true,""hintsAllowed"":3}",2024-01-20 16:00:00
+2,SALA456,4,classic,4,2,waiting,easy,45,2024-01-20 16:45:00,,,,,0,1,"{""cardsEnabled"":false,""timeBonus"":false,""hintsAllowed"":5}",2024-01-20 16:45:00
+3,SALA789,5,cards,6,4,active,hard,90,2024-01-20 17:15:00,2024-01-20 17:20:00,,,,40,1,"{""cardsEnabled"":true,""timeBonus"":true,""hintsAllowed"":1}",2024-01-20 17:55:00
+4,GAME001,3,cards,4,4,finished,medium,60,2024-01-20 14:00:00,2024-01-20 14:05:00,2024-01-20 15:00:00,3,2400,55,0,"{""cardsEnabled"":true,""timeBonus"":true,""hintsAllowed"":3}",2024-01-20 15:00:00
+5,GAME002,7,cards,6,5,finished,hard,75,2024-01-20 15:00:00,2024-01-20 15:10:00,2024-01-20 16:15:00,7,3200,65,0,"{""cardsEnabled"":true,""timeBonus"":true,""hintsAllowed"":2}",2024-01-20 16:15:00
+6,PRIV001,6,cards,2,2,finished,easy,30,2024-01-20 16:30:00,2024-01-20 16:35:00,2024-01-20 17:00:00,6,1200,25,0,"{""cardsEnabled"":true,""timeBonus"":false,""hintsAllowed"":5}",2024-01-20 17:00:00
+7,DEMO001,1,cards,8,1,waiting,medium,60,2024-01-20 18:00:00,,,,,0,1,"{""cardsEnabled"":true,""timeBonus"":true,""hintsAllowed"":3}",2024-01-20 18:00:00
