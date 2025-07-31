@@ -3,60 +3,416 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criminal Minds Game - Redirecionando...</title>
+    <title>🎯 Criminal Minds Game</title>
+    <meta name="description" content="Jogo de investigação criminal online para até 6 jogadores">
     <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        * {
             margin: 0;
-            text-align: center;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f23);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
         .container {
-            max-width: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
             padding: 2rem;
+            position: relative;
         }
-        .logo {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+
+        .bg-effects {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
         }
-        .loading {
+
+        .bg-gradient-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(255, 193, 7, 0.1), transparent, transparent);
+        }
+
+        .bg-blur-1 {
+            position: absolute;
+            top: 5rem;
+            left: 2.5rem;
+            width: 18rem;
+            height: 18rem;
+            background: rgba(255, 193, 7, 0.05);
+            border-radius: 50%;
+            filter: blur(3rem);
+        }
+
+        .bg-blur-2 {
+            position: absolute;
+            bottom: 5rem;
+            right: 2.5rem;
+            width: 24rem;
+            height: 24rem;
+            background: rgba(220, 53, 69, 0.05);
+            border-radius: 50%;
+            filter: blur(3rem);
+        }
+
+        .content {
+            text-align: center;
+            max-width: 1200px;
+            z-index: 10;
+            position: relative;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 193, 7, 0.1);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #ffc107;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #ffc107;
+            border-radius: 50%;
             animation: pulse 2s infinite;
         }
+
         @keyframes pulse {
-            0% { opacity: 1; }
+            0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
-            100% { opacity: 1; }
         }
-        .manual-link {
-            color: #ffd700;
+
+        .main-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffc107, #ff8f00, #ff6f00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+            text-shadow: 0 0 40px rgba(255, 193, 7, 0.3);
+        }
+
+        .title-divider {
+            width: 6rem;
+            height: 4px;
+            background: linear-gradient(to right, #ffc107, #ff8f00);
+            margin: 2rem auto;
+            border-radius: 2px;
+        }
+
+        .description {
+            font-size: clamp(1.25rem, 3vw, 2rem);
+            color: #e0e0e0;
+            max-width: 800px;
+            margin: 0 auto 1rem;
+            font-weight: 300;
+            line-height: 1.4;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: #bbb;
+            font-weight: 500;
+            margin-bottom: 3rem;
+        }
+
+        .play-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(45deg, #ffc107, #ff8f00);
+            color: #000;
+            padding: 1.25rem 2.5rem;
+            border-radius: 1rem;
+            font-weight: 700;
+            font-size: 1.25rem;
             text-decoration: none;
-            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.25);
+            border: none;
+            cursor: pointer;
         }
-        .manual-link:hover {
-            text-decoration: underline;
+
+        .play-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 193, 7, 0.4);
+            background: linear-gradient(45deg, #ffcd3c, #ffa000);
+        }
+
+        .play-button-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .play-button:hover .play-button-icon {
+            transform: translateX(4px);
+        }
+
+        .version-info {
+            margin-top: 2rem;
+            font-size: 0.875rem;
+            color: #777;
+        }
+
+        .version-info p {
+            margin: 0.25rem 0;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 4rem auto 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 193, 7, 0.3);
+            box-shadow: 0 20px 40px rgba(255, 193, 7, 0.1);
+        }
+
+        .feature-icon {
+            width: 4rem;
+            height: 4rem;
+            background: linear-gradient(45deg, #ffc107, #ff8f00);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: rotate(12deg);
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #fff;
+        }
+
+        .feature-description {
+            color: #bbb;
+            line-height: 1.6;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 2rem;
+            max-width: 600px;
+            margin: 4rem auto 0;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffc107, #ff8f00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #bbb;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin-top: 3rem;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
         }
     </style>
-    <script>
-        // Redirecionar para o jogo diretamente
-        setTimeout(() => {
-            window.location.href = '/game/';
-        }, 2000);
-    </script>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">🎯</div>
-        <h1>Criminal Minds Game</h1>
-        <p class="loading">Iniciando o jogo...</p>
-        <p>Se não iniciar automaticamente, <a href="/game/" class="manual-link">clique aqui para jogar</a></p>
-        <p style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.7;">
-            Carregando investigação criminal...
-        </p>
+    <div class="bg-effects">
+        <div class="bg-gradient-overlay"></div>
+        <div class="bg-blur-1"></div>
+        <div class="bg-blur-2"></div>
     </div>
+
+    <div class="container">
+        <div class="content">
+            <div class="status-badge">
+                <div class="pulse-dot"></div>
+                <span>Jogo Online • Multiplayer</span>
+            </div>
+
+            <h1 class="main-title">🎯 Criminal Minds</h1>
+            <div class="title-divider"></div>
+
+            <p class="description">
+                Desvende mistérios complexos trabalhando em equipe, coletando pistas e fazendo deduções colaborativas
+            </p>
+            
+            <p class="subtitle">
+                🕵️ Investigação Criminal Online • Até 6 Jogadores • Tempo Real
+            </p>
+
+            <a href="#" class="play-button" onclick="startGame()">
+                <span>🎮 Começar a Jogar</span>
+                <div class="play-button-icon">
+                    <span>→</span>
+                </div>
+            </a>
+
+            <div class="version-info">
+                <p><strong>✨ Versão 1.0.0 • Desenvolvido com Next.js 14</strong></p>
+                <p>🚀 Deploy automático • 🔐 100% Seguro • 📱 Responsivo</p>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🕵️</div>
+                    <h3 class="feature-title">Investigação</h3>
+                    <p class="feature-description">
+                        Explore locais misteriosos, colete pistas cruciais e desvende os segredos mais obscuros
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3 class="feature-title">Colaboração</h3>
+                    <p class="feature-description">
+                        Trabalhe em equipe para resolver casos complexos com comunicação em tempo real
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚖️</div>
+                    <h3 class="feature-title">Dedução</h3>
+                    <p class="feature-description">
+                        Faça acusações estratégicas baseadas nas evidências encontradas durante a investigação
+                    </p>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">Jogadores Max</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">Casos Únicos</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Online</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">⚡</div>
+                    <div class="stat-label">Tempo Real</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function startGame() {
+            alert('🎮 Criminal Minds Game\n\n🎯 Jogo de investigação criminal em desenvolvimento!\n\n✨ Funcionalidades:\n• Sistema de investigação avançado\n• Multiplayer até 6 jogadores\n• Chat em tempo real\n• Sistema de acusações\n• Interface moderna\n\n🚀 Em breve: versão completa!');
+        }
+
+        // Efeitos visuais adicionais
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.querySelector('.cursor');
+            if (!cursor) {
+                const newCursor = document.createElement('div');
+                newCursor.className = 'cursor';
+                newCursor.style.cssText = `
+                    position: fixed;
+                    width: 20px;
+                    height: 20px;
+                    background: radial-gradient(circle, rgba(255,193,7,0.3), transparent);
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 9999;
+                    transition: transform 0.1s ease;
+                `;
+                document.body.appendChild(newCursor);
+            }
+            
+            const cursorElement = document.querySelector('.cursor');
+            cursorElement.style.left = e.clientX - 10 + 'px';
+            cursorElement.style.top = e.clientY - 10 + 'px';
+        });
+
+        // Animação de entrada
+        window.addEventListener('load', () => {
+            document.querySelector('.content').style.animation = 'fadeInUp 1s ease-out';
+        });
+    </script>
 </body>
-</html> 
+</html>
