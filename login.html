@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Criminal Minds Game</title>
+    <meta name="description" content="Faça login no Criminal Minds Game">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f23);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .background-effects {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(234, 179, 8, 0.1), transparent);
+            pointer-events: none;
+        }
+
+        .glow-1 {
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(234, 179, 8, 0.05);
+            border-radius: 50%;
+            filter: blur(3rem);
+        }
+
+        .glow-2 {
+            position: absolute;
+            bottom: 20%;
+            right: 10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(239, 68, 68, 0.05);
+            border-radius: 50%;
+            filter: blur(3rem);
+        }
+
+        .login-card {
+            background: rgba(31, 41, 55, 0.5);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(55, 65, 81, 0.5);
+            border-radius: 2rem;
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(to right, #fbbf24, #f59e0b, #f97316);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            color: #9ca3af;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #f3f4f6;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(75, 85, 99, 0.5);
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .login-button {
+            width: 100%;
+            background: linear-gradient(to right, #f59e0b, #f97316);
+            color: black;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-button:hover {
+            background: linear-gradient(to right, #fbbf24, #f59e0b);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -3px rgba(251, 191, 36, 0.25);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #9ca3af;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(75, 85, 99, 0.5);
+        }
+
+        .divider span {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f23);
+            padding: 0 1rem;
+        }
+
+        .guest-button {
+            width: 100%;
+            background: transparent;
+            color: #fbbf24;
+            border: 2px solid #fbbf24;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .guest-button:hover {
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #fbbf24;
+        }
+
+        .features {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .features span {
+            margin: 0 0.5rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-card {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="background-effects">
+            <div class="glow-1"></div>
+            <div class="glow-2"></div>
+        </div>
+
+        <div class="login-card">
+            <div class="logo">
+                <h1>🎯 Criminal Minds</h1>
+                <p>Entre na investigação</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Nome do Detetive</label>
+                    <input type="text" id="username" name="username" class="form-input" 
+                           placeholder="Digite seu nome de detetive" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="gameCode">Código da Sala (Opcional)</label>
+                    <input type="text" id="gameCode" name="gameCode" class="form-input" 
+                           placeholder="Digite o código da sala" maxlength="6">
+                </div>
+
+                <button type="submit" class="login-button">
+                    🕵️ Entrar na Investigação
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>ou</span>
+            </div>
+
+            <button type="button" class="guest-button" onclick="joinAsGuest()">
+                👤 Jogar como Convidado
+            </button>
+
+            <div class="features">
+                <span>🎮 Multiplayer</span>
+                <span>•</span>
+                <span>🕵️ Investigação</span>
+                <span>•</span>
+                <span>⚡ Tempo Real</span>
+            </div>
+
+            <div class="back-link">
+                <a href="index.html">← Voltar ao início</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para lidar com o login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const gameCode = document.getElementById('gameCode').value.trim();
+            
+            if (username) {
+                // Salvar dados do usuário no localStorage
+                localStorage.setItem('criminalMinds_username', username);
+                if (gameCode) {
+                    localStorage.setItem('criminalMinds_gameCode', gameCode);
+                }
+                
+                // Redirecionar para o lobby
+                window.location.href = 'lobby.html';
+            }
+        });
+
+        // Função para jogar como convidado
+        function joinAsGuest() {
+            const guestName = 'Detetive_' + Math.floor(Math.random() * 1000);
+            localStorage.setItem('criminalMinds_username', guestName);
+            localStorage.setItem('criminalMinds_isGuest', 'true');
+            
+            // Redirecionar para o lobby
+            window.location.href = 'lobby.html';
+        }
+
+        // Efeito de foco nos inputs
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+                this.parentElement.style.transition = 'transform 0.3s ease';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

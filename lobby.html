@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lobby - Criminal Minds Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f23);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(to right, #fbbf24, #f59e0b, #f97316);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-message {
+            background: rgba(31, 41, 55, 0.5);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(55, 65, 81, 0.5);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .game-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .info-card {
+            background: rgba(31, 41, 55, 0.5);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(55, 65, 81, 0.5);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        .info-card h3 {
+            color: #fbbf24;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .start-button {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 2rem auto;
+            background: linear-gradient(to right, #f59e0b, #f97316);
+            color: black;
+            border: none;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .start-button:hover {
+            background: linear-gradient(to right, #fbbf24, #f59e0b);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -3px rgba(251, 191, 36, 0.25);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-link a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #fbbf24;
+        }
+
+        .players-list {
+            list-style: none;
+        }
+
+        .players-list li {
+            background: rgba(17, 24, 39, 0.8);
+            margin: 0.5rem 0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .player-online {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Criminal Minds</h1>
+            <div class="status-indicator">
+                <div class="player-online"></div>
+                <span>Online • Pronto para jogar</span>
+            </div>
+        </div>
+
+        <div class="welcome-message">
+            <h2 id="welcomeText">Bem-vindo, Detetive!</h2>
+            <p>Prepare-se para uma investigação criminal intensa. Trabalhe em equipe para desvendar o mistério!</p>
+        </div>
+
+        <div class="game-info">
+            <div class="info-card">
+                <h3>🕵️ Jogadores</h3>
+                <p><strong>Conectados:</strong> <span id="playerCount">1</span>/6</p>
+                <ul class="players-list" id="playersList">
+                    <li>
+                        <span>
+                            <div class="player-online"></div>
+                            <span id="currentPlayer">Você</span>
+                        </span>
+                        <span>🕵️ Detetive</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3>🎮 Informações do Jogo</h3>
+                <p><strong>Modo:</strong> Investigação Colaborativa</p>
+                <p><strong>Duração:</strong> 15-30 minutos</p>
+                <p><strong>Dificuldade:</strong> Intermediário</p>
+                <p><strong>Código da Sala:</strong> <span id="roomCode">LOBBY-001</span></p>
+            </div>
+
+            <div class="info-card">
+                <h3>📋 Regras Rápidas</h3>
+                <ul style="list-style: disc; margin-left: 1.5rem; line-height: 1.6;">
+                    <li>Explore locais e colete pistas</li>
+                    <li>Comunique-se com sua equipe</li>
+                    <li>Analise evidências no laboratório</li>
+                    <li>Faça acusações quando tiver certeza</li>
+                    <li>Trabalhe em equipe para vencer!</li>
+                </ul>
+            </div>
+        </div>
+
+        <button class="start-button" onclick="startInvestigation()">
+            🚀 Iniciar Investigação
+        </button>
+
+        <div class="back-link">
+            <a href="login.html">← Sair do Lobby</a>
+        </div>
+    </div>
+
+    <script>
+        // Recuperar nome do usuário do localStorage
+        const username = localStorage.getItem('criminalMinds_username') || 'Detetive Anônimo';
+        const isGuest = localStorage.getItem('criminalMinds_isGuest') === 'true';
+        const gameCode = localStorage.getItem('criminalMinds_gameCode') || 'LOBBY-001';
+
+        // Atualizar interface com dados do usuário
+        document.getElementById('welcomeText').textContent = `Bem-vindo, ${username}!`;
+        document.getElementById('currentPlayer').textContent = username;
+        document.getElementById('roomCode').textContent = gameCode;
+
+        // Simular outros jogadores (para demonstração)
+        const mockPlayers = [
+            'Detetive_Holmes',
+            'Inspector_Poirot', 
+            'Agent_Scully',
+            'Detective_Morse'
+        ];
+
+        let connectedPlayers = 1;
+        const maxPlayers = 6;
+
+        // Simular entrada de jogadores
+        function simulatePlayerJoin() {
+            if (connectedPlayers < maxPlayers && mockPlayers.length > 0) {
+                const randomPlayer = mockPlayers.splice(Math.floor(Math.random() * mockPlayers.length), 1)[0];
+                
+                const playersList = document.getElementById('playersList');
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>
+                        <div class="player-online"></div>
+                        <span>${randomPlayer}</span>
+                    </span>
+                    <span>🕵️ Detetive</span>
+                `;
+                playersList.appendChild(li);
+                
+                connectedPlayers++;
+                document.getElementById('playerCount').textContent = connectedPlayers;
+                
+                // Próximo jogador em 3-8 segundos
+                if (connectedPlayers < maxPlayers && mockPlayers.length > 0) {
+                    setTimeout(simulatePlayerJoin, Math.random() * 5000 + 3000);
+                }
+            }
+        }
+
+        // Iniciar simulação após 2 segundos
+        setTimeout(simulatePlayerJoin, 2000);
+
+        // Função para iniciar investigação
+        function startInvestigation() {
+            // Salvar estado do jogo
+            localStorage.setItem('criminalMinds_gameStarted', 'true');
+            localStorage.setItem('criminalMinds_playerCount', connectedPlayers);
+            
+            // Redirecionar para o jogo (ainda será criado)
+            alert(`🎮 Iniciando investigação com ${connectedPlayers} jogador(es)!\n\n🔍 Em breve você será redirecionado para a tela de investigação.\n\n🕵️ Prepare-se para desvendar o mistério!`);
+            
+            // Por enquanto, volta para o início
+            // window.location.href = 'game.html'; // Página do jogo será criada depois
+        }
+
+        // Efeitos visuais
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.info-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>
