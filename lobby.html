@@ -101,116 +101,188 @@
             box-shadow: 0 10px 25px -3px rgba(251, 191, 36, 0.25);
         }
 
-        /* ESTILOS PARA OS MODOS DE JOGO */
-        .game-modes {
-            margin: 2rem 0;
-        }
-
-        .modes-container {
+        /* ESTILO PARA O JOGO ÚNICO */
+        .game-start {
+            margin: 3rem 0;
             display: flex;
-            gap: 1.5rem;
             justify-content: center;
-            flex-wrap: wrap;
-            max-width: 800px;
-            margin: 0 auto;
         }
 
-        .mode-button {
+        .start-card {
+            background: linear-gradient(135deg, rgba(15, 15, 35, 0.95), rgba(22, 33, 62, 0.95));
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            border-radius: 25px;
+            padding: 3rem;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
             position: relative;
-            flex: 1;
-            min-width: 280px;
-            max-width: 350px;
-            background: rgba(15, 15, 35, 0.8);
-            border: 2px solid rgba(251, 191, 36, 0.3);
-            border-radius: 20px;
-            padding: 2rem;
-            text-decoration: none;
-            color: white;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(10px);
-            cursor: pointer;
+            overflow: hidden;
+            max-width: 500px;
+            width: 100%;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .mode-button:hover {
-            transform: translateY(-8px);
-            border-color: #fbbf24;
-            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.2);
-        }
-
-        .classic-mode:hover {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
-        }
-
-        .cards-mode {
-            border-color: rgba(139, 92, 246, 0.5);
-        }
-
-        .cards-mode:hover {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1));
-            border-color: #8b5cf6;
-            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3);
-        }
-
-        .mode-icon {
-            font-size: 3rem;
-            text-align: center;
-            margin-bottom: 1rem;
-            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.3));
-        }
-
-        .cards-mode .mode-icon {
-            filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5));
-        }
-
-        .mode-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 1rem;
-            color: #fbbf24;
-        }
-
-        .cards-mode .mode-title {
-            color: #a78bfa;
-        }
-
-        .mode-description {
-            font-size: 0.95rem;
-            text-align: center;
-            color: #cbd5e1;
-            line-height: 1.5;
-        }
-
-        .mode-badge {
+        .start-card::before {
+            content: '';
             position: absolute;
-            top: -8px;
-            right: -8px;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            padding: 0.4rem 0.8rem;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 25px;
+            padding: 3px;
+            background: linear-gradient(45deg, #fbbf24, #f59e0b, #8b5cf6, #a78bfa, #fbbf24);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            animation: borderRotate 4s linear infinite;
+        }
+
+        @keyframes borderRotate {
+            0% { background: linear-gradient(45deg, #fbbf24, #f59e0b, #8b5cf6, #a78bfa, #fbbf24); }
+            25% { background: linear-gradient(135deg, #f59e0b, #8b5cf6, #a78bfa, #fbbf24, #f59e0b); }
+            50% { background: linear-gradient(225deg, #8b5cf6, #a78bfa, #fbbf24, #f59e0b, #8b5cf6); }
+            75% { background: linear-gradient(315deg, #a78bfa, #fbbf24, #f59e0b, #8b5cf6, #a78bfa); }
+            100% { background: linear-gradient(45deg, #fbbf24, #f59e0b, #8b5cf6, #a78bfa, #fbbf24); }
+        }
+
+        .start-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 35px 70px rgba(251, 191, 36, 0.3);
+        }
+
+        .start-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: cardFloat 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
+        }
+
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-5px) rotate(2deg); }
+            66% { transform: translateY(5px) rotate(-2deg); }
+        }
+
+        .start-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            background: linear-gradient(45deg, #fbbf24, #f59e0b, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
+        }
+
+        .start-subtitle {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .start-features {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2.5rem;
+            gap: 1rem;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+
+        .feature-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.4));
+        }
+
+        .ultimate-start-button {
+            position: relative;
+            display: inline-block;
+            padding: 1.2rem 2.5rem;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b, #f97316);
+            border: none;
             border-radius: 15px;
-            font-size: 0.7rem;
-            font-weight: 700;
+            color: #0f0f23;
+            font-weight: 800;
+            font-size: 1.1rem;
+            text-decoration: none;
             text-transform: uppercase;
-            animation: pulse 2s infinite;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            letter-spacing: 1px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4);
+            overflow: hidden;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        .ultimate-start-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(251, 191, 36, 0.6);
+            background: linear-gradient(135deg, #f59e0b, #fbbf24, #f97316);
         }
 
-        /* RESPONSIVIDADE PARA MODOS DE JOGO */
+        .button-shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .ultimate-start-button:hover .button-shine {
+            left: 100%;
+        }
+
+        .button-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .button-icon {
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .ultimate-start-button:hover .button-icon {
+            transform: translateX(3px);
+        }
+
+        /* RESPONSIVIDADE */
         @media (max-width: 768px) {
-            .modes-container {
-                flex-direction: column;
-                align-items: center;
+            .start-card {
+                padding: 2rem;
+                margin: 0 1rem;
             }
             
-            .mode-button {
-                min-width: 280px;
-                max-width: 100%;
+            .start-title {
+                font-size: 1.8rem;
+            }
+            
+            .start-features {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .feature-item {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .ultimate-start-button {
+                padding: 1rem 2rem;
+                font-size: 1rem;
             }
         }
 
@@ -302,23 +374,33 @@
             </div>
         </div>
 
-        <div class="game-modes">
-            <h3 style="text-align: center; color: #fbbf24; margin-bottom: 1.5rem; font-size: 1.3rem;">
-                🎮 Escolha seu Modo de Jogo
-            </h3>
-            
-            <div class="modes-container">
-                <a href="investigation.html" class="mode-button classic-mode">
-                    <div class="mode-icon">🔍</div>
-                    <div class="mode-title">Modo Clássico</div>
-                    <div class="mode-description">Investigação tradicional com foco em evidências e interrogatórios</div>
-                </a>
+        <div class="game-start">
+            <div class="start-card">
+                <div class="start-icon">🃏</div>
+                <h2 class="start-title">Criminal Minds: Digital Cards</h2>
+                <p class="start-subtitle">Sistema de investigação com cartas digitais</p>
                 
-                <a href="investigation-cards.html" class="mode-button cards-mode">
-                    <div class="mode-icon">🃏</div>
-                    <div class="mode-title">Modo Cartas</div>
-                    <div class="mode-badge">NOVO!</div>
-                    <div class="mode-description">Sistema de cartas digital com combos e estratégias</div>
+                <div class="start-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">⚡</span>
+                        <span>Sistema de Combos</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">💎</span>
+                        <span>4 Níveis de Raridade</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🎯</span>
+                        <span>Estratégias Avançadas</span>
+                    </div>
+                </div>
+                
+                <a href="investigation-cards.html" class="ultimate-start-button">
+                    <span class="button-shine"></span>
+                    <span class="button-content">
+                        <span class="button-icon">🚀</span>
+                        <span class="button-text">INICIAR INVESTIGAÇÃO</span>
+                    </span>
                 </a>
             </div>
         </div>
@@ -379,17 +461,15 @@
         // Iniciar simulação após 2 segundos
         setTimeout(simulatePlayerJoin, 2000);
 
-        // Salvar estado do jogo quando sair do lobby
-        function saveGameState() {
-            localStorage.setItem('criminalMinds_gameStarted', 'true');
-            localStorage.setItem('criminalMinds_playerCount', connectedPlayers);
-        }
-        
-        // Salvar estado automaticamente ao clicar no botão de investigação
+        // Salvar estado automaticamente ao iniciar investigação
         document.addEventListener('DOMContentLoaded', function() {
-            const startButton = document.querySelector('.start-button');
-            if (startButton) {
-                startButton.addEventListener('click', saveGameState);
+            const ultimateButton = document.querySelector('.ultimate-start-button');
+            if (ultimateButton) {
+                ultimateButton.addEventListener('click', function() {
+                    localStorage.setItem('criminalMinds_gameStarted', 'true');
+                    localStorage.setItem('criminalMinds_playerCount', connectedPlayers);
+                    localStorage.setItem('criminalMinds_gameMode', 'cards');
+                });
             }
         });
 
