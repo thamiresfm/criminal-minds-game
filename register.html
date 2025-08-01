@@ -237,6 +237,7 @@
         }
     </style>
     <script src="firebase-config-injected.js"></script>
+    <script src="js/api-client.js"></script>
 </head>
 <body>
     <div class="container">
@@ -331,64 +332,146 @@
             return emailRegex.test(email);
         }
 
-        // Função para lidar com o login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // Função para lidar com o cadastro
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const fullName = document.getElementById('fullName').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const detectiveName = document.getElementById('detectiveName').value.trim();
-            const gameCode = document.getElementById('gameCode').value.trim();
-            
-            // Validações
-            if (!fullName) {
-                alert('Por favor, digite seu nome completo.');
-                return;
-            }
-            
-            if (!email || !isValidEmail(email)) {
-                alert('Por favor, digite um email válido.');
-                return;
-            }
-            
-            if (!password || password.length < 6) {
-                alert('A senha deve ter pelo menos 6 caracteres.');
-                return;
-            }
-            
-            if (!detectiveName) {
-                alert('Por favor, digite seu nome de detetive.');
-                return;
-            }
-            
-            // Salvar dados do usuário no localStorage
-            const userData = {
-                fullName: fullName,
-                email: email,
-                detectiveName: detectiveName,
-                registrationDate: new Date().toISOString(),
-                isGuest: false
-            };
-            
-            localStorage.setItem('criminalMinds_userData', JSON.stringify(userData));
-            localStorage.setItem('criminalMinds_username', detectiveName);
-            localStorage.setItem('criminalMinds_userEmail', email);
-            
-            if (gameCode) {
-                localStorage.setItem('criminalMinds_gameCode', gameCode);
-            }
-            
-            // Feedback visual de sucesso
             const submitButton = document.querySelector('.login-button');
             const originalText = submitButton.innerHTML;
-            submitButton.innerHTML = '✅ Cadastro realizado com sucesso!';
-            submitButton.style.background = 'linear-gradient(to right, #10b981, #059669)';
             
-            // Redirecionar para o lobby após 2 segundos
-            setTimeout(() => {
-                window.location.href = 'lobby.html';
-            }, 2000);
+            try {
+                // Desabilitar botão durante processamento
+                submitButton.disabled = true;
+                submitButton.innerHTML = '⏳ Criando conta...';
+                submitButton.style.background = 'linear-gradient(to right, #6b7280, #4b5563)';
+                
+                const fullName = document.getElementById('fullName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const detectiveName = document.getElementById('detectiveName').value.trim();
+                const gameCode = document.getElementById('gameCode').value.trim();
+                
+                // Validações
+                if (!fullName) {
+                    throw new Error('Por favor, digite seu nome completo.');
+                }
+                
+                if (!email || !isValidEmail(email)) {
+                    throw new Error('Por favor, digite um email válido.');
+                }
+                
+                if (!password || password.length < 6) {
+                    throw new Error('A senha deve ter pelo menos 6 caracteres.');
+                }
+                
+                if (!detectiveName) {
+                    throw new Error('Por favor, digite seu nome de detetive.');
+                }
+                
+                // Preparar dados para API
+                const userData = {
+                    fullName: fullName,
+                    email: email,
+                    password: password,
+                    detectiveName: detectiveName,
+                    gameCode: gameCode || undefined
+                };
+                
+                // Registrar via API MySQL
+                const api = window.CriminalMindsAPI;
+                const response = await api.register(userData);
+                
+                if (response.success) {
+                    // Feedback visual de sucesso
+                    submitButton.innerHTML = '✅ Conta criada com sucesso!';
+                    submitButton.style.background = 'linear-gradient(to right, #10b981, #059669)';
+                    
+                    console.log('🎉 Usuário registrado no MySQL:', response.user.email);
+                    
+                    // Redirecionar para o lobby após 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'lobby.html';
+                    }, 2000);
+                } else {
+                    throw new Error(response.error || 'Erro desconhecido no cadastro');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro no cadastro:', error);
+                
+                // Verificar se é erro de rede (API offline)
+                const isNetworkError = error.message.includes('fetch') || 
+                                     error.message.includes('Failed to fetch') ||
+                                     error.message.includes('NetworkError') ||
+                                     error.message.includes('net::');
+                
+                if (isNetworkError) {
+                    console.warn('⚠️ API offline, usando modo local temporário');
+                    
+                    try {
+                        // Fallback para localStorage (modo offline)
+                        const fallbackData = {
+                            fullName: document.getElementById('fullName').value.trim(),
+                            email: document.getElementById('email').value.trim(),
+                            password: document.getElementById('password').value,
+                            detectiveName: document.getElementById('detectiveName').value.trim(),
+                            gameCode: document.getElementById('gameCode').value.trim(),
+                            registrationDate: new Date().toISOString(),
+                            isGuest: false,
+                            isOfflineAccount: true // Flag para identificar conta offline
+                        };
+                        
+                        localStorage.setItem('criminalMinds_userData', JSON.stringify(fallbackData));
+                        localStorage.setItem('criminalMinds_username', fallbackData.detectiveName);
+                        localStorage.setItem('criminalMinds_userEmail', fallbackData.email);
+                        localStorage.setItem('criminalMinds_isLoggedIn', 'true');
+                        
+                        if (fallbackData.gameCode) {
+                            localStorage.setItem('criminalMinds_gameCode', fallbackData.gameCode);
+                        }
+                        
+                        // Feedback de modo offline
+                        submitButton.innerHTML = '⚠️ Conta criada (modo offline)';
+                        submitButton.style.background = 'linear-gradient(to right, #f59e0b, #f97316)';
+                        
+                        console.log('📴 Conta salva offline, será sincronizada quando API estiver disponível');
+                        
+                        // Redirecionar
+                        setTimeout(() => {
+                            window.location.href = 'lobby.html';
+                        }, 2500);
+                        
+                        return; // Sair da função sem mostrar erro
+                        
+                    } catch (fallbackError) {
+                        console.error('❌ Erro no fallback offline:', fallbackError);
+                        error.message = 'API offline e erro no modo local: ' + fallbackError.message;
+                    }
+                }
+                
+                // Mostrar erro para o usuário
+                let errorMessage = error.message;
+                
+                // Customizar mensagens de erro comuns
+                if (errorMessage.includes('Email já cadastrado')) {
+                    errorMessage = 'Este email já está cadastrado. Tente fazer login.';
+                } else if (errorMessage.includes('Nome de detetive já em uso')) {
+                    errorMessage = 'Este nome de detetive já está em uso. Escolha outro.';
+                } else if (errorMessage.includes('fetch')) {
+                    errorMessage = 'Erro de conexão. Verifique sua internet.';
+                }
+                
+                // Feedback visual de erro
+                submitButton.innerHTML = '❌ ' + errorMessage;
+                submitButton.style.background = 'linear-gradient(to right, #ef4444, #dc2626)';
+                
+                // Restaurar botão após 4 segundos
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalText;
+                    submitButton.style.background = 'linear-gradient(to right, #f59e0b, #f97316)';
+                }, 4000);
+            }
         });
 
 

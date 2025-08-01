@@ -237,6 +237,7 @@
         }
     </style>
     <script src="firebase-config-injected.js"></script>
+    <script src="js/api-client.js"></script>
 </head>
 <body>
     <div class="container">
@@ -314,50 +315,137 @@
         }
 
         // Função para lidar com o login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
+            const submitButton = document.querySelector('.login-button');
+            const originalText = submitButton.innerHTML;
             
-            // Validações básicas
-            if (!email || !isValidEmail(email)) {
-                alert('Por favor, digite um email válido.');
-                return;
-            }
-            
-            if (!password) {
-                alert('Por favor, digite sua senha.');
-                return;
-            }
-            
-            // Verificar se existe usuário cadastrado
-            const existingUserData = localStorage.getItem('criminalMinds_userData');
-            
-            if (existingUserData) {
-                const userData = JSON.parse(existingUserData);
+            try {
+                // Desabilitar botão durante processamento
+                submitButton.disabled = true;
+                submitButton.innerHTML = '⏳ Fazendo login...';
+                submitButton.style.background = 'linear-gradient(to right, #6b7280, #4b5563)';
                 
-                // Simular verificação de login (em um app real, seria no servidor)
-                if (userData.email === email) {
-                    // Login bem-sucedido
-                    localStorage.setItem('criminalMinds_username', userData.detectiveName);
-                    localStorage.setItem('criminalMinds_userEmail', email);
-                    localStorage.setItem('criminalMinds_isLoggedIn', 'true');
-                    
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                
+                // Validações básicas
+                if (!email || !isValidEmail(email)) {
+                    throw new Error('Por favor, digite um email válido.');
+                }
+                
+                if (!password) {
+                    throw new Error('Por favor, digite sua senha.');
+                }
+                
+                // Preparar dados para API
+                const credentials = {
+                    email: email,
+                    password: password
+                };
+                
+                // Fazer login via API MySQL
+                const api = window.CriminalMindsAPI;
+                const response = await api.login(credentials);
+                
+                if (response.success) {
                     // Feedback visual de sucesso
-                    const submitButton = document.querySelector('.login-button');
                     submitButton.innerHTML = '✅ Login realizado com sucesso!';
                     submitButton.style.background = 'linear-gradient(to right, #10b981, #059669)';
+                    
+                    console.log('🎉 Login bem-sucedido:', response.user.email);
                     
                     // Redirecionar para o lobby após 1.5 segundos
                     setTimeout(() => {
                         window.location.href = 'lobby.html';
                     }, 1500);
                 } else {
-                    alert('Email ou senha incorretos. Verifique seus dados ou cadastre-se.');
+                    throw new Error(response.error || 'Erro desconhecido no login');
                 }
-            } else {
-                alert('Usuário não encontrado. Faça seu cadastro primeiro.');
+                
+            } catch (error) {
+                console.error('❌ Erro no login:', error);
+                
+                // Verificar se é erro de rede (API offline)
+                const isNetworkError = error.message.includes('fetch') || 
+                                     error.message.includes('Failed to fetch') ||
+                                     error.message.includes('NetworkError') ||
+                                     error.message.includes('net::');
+                
+                if (isNetworkError) {
+                    console.warn('⚠️ API offline, tentando login local');
+                    
+                    try {
+                        // Fallback para localStorage (modo offline)
+                        const existingUserData = localStorage.getItem('criminalMinds_userData');
+                        
+                        if (existingUserData) {
+                            const userData = JSON.parse(existingUserData);
+                            
+                            // Verificar credenciais locais
+                            if (userData.email === document.getElementById('email').value.trim() && 
+                                userData.password === document.getElementById('password').value) {
+                                
+                                // Login local bem-sucedido
+                                localStorage.setItem('criminalMinds_username', userData.detectiveName);
+                                localStorage.setItem('criminalMinds_userEmail', userData.email);
+                                localStorage.setItem('criminalMinds_isLoggedIn', 'true');
+                                
+                                if (userData.gameCode) {
+                                    localStorage.setItem('criminalMinds_gameCode', userData.gameCode);
+                                }
+                                
+                                // Feedback de modo offline
+                                submitButton.innerHTML = '⚠️ Login offline realizado';
+                                submitButton.style.background = 'linear-gradient(to right, #f59e0b, #f97316)';
+                                
+                                console.log('📴 Login local bem-sucedido, será sincronizado quando API estiver disponível');
+                                
+                                // Redirecionar
+                                setTimeout(() => {
+                                    window.location.href = 'lobby.html';
+                                }, 1800);
+                                
+                                return; // Sair da função sem mostrar erro
+                                
+                            } else {
+                                throw new Error('Email ou senha incorretos.');
+                            }
+                        } else {
+                            throw new Error('Usuário não encontrado. Faça seu cadastro primeiro.');
+                        }
+                        
+                    } catch (fallbackError) {
+                        console.error('❌ Erro no login local:', fallbackError);
+                        error.message = fallbackError.message;
+                    }
+                }
+                
+                // Mostrar erro para o usuário
+                let errorMessage = error.message;
+                
+                // Customizar mensagens de erro comuns
+                if (errorMessage.includes('Email ou senha incorretos')) {
+                    errorMessage = 'Email ou senha incorretos. Verifique seus dados.';
+                } else if (errorMessage.includes('Usuário não encontrado')) {
+                    errorMessage = 'Usuário não encontrado. Faça seu cadastro primeiro.';
+                } else if (errorMessage.includes('Conta desativada')) {
+                    errorMessage = 'Sua conta foi desativada. Entre em contato com o suporte.';
+                } else if (errorMessage.includes('fetch')) {
+                    errorMessage = 'Erro de conexão. Verifique sua internet.';
+                }
+                
+                // Feedback visual de erro
+                submitButton.innerHTML = '❌ ' + errorMessage;
+                submitButton.style.background = 'linear-gradient(to right, #ef4444, #dc2626)';
+                
+                // Restaurar botão após 3 segundos
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalText;
+                    submitButton.style.background = 'linear-gradient(to right, #f59e0b, #f97316)';
+                }, 3500);
             }
         });
 
