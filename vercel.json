@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "name": "criminal-minds-game",
+  "builds": [
+    {
+      "src": "api/api.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/api.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/api.js"
+    }
+  ]
+}
