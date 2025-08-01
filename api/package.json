@@ -4,7 +4,7 @@
   "description": "API PostgreSQL para Criminal Minds Game - Deploy Railway/Vercel",
   "main": "api.js",
   "scripts": {
-    "start": "node test-simple.js",
+    "start": "node minimal.js",
     "start:full": "node api.js",
     "build": "echo 'Build test simple - no prisma'",
     "dev": "node test-simple.js",
