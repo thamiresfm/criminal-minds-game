@@ -9,9 +9,10 @@
 
 // URLs da API baseado no ambiente - SOMENTE BANCO POSTGRESQL
 const API_CONFIG = {
-  // Produção - API externa com PostgreSQL (BD_URL)
-  // IMPORTANTE: Substituir pela URL real após deploy no Railway
-  production: null, // Substituir pela URL real: https://sua-api.up.railway.app/api
+  // Produção - API Railway com PostgreSQL (BD_URL)
+  // ATENÇÃO: Deploy atual não tem as rotas corretas
+  // Precisa fazer deploy da pasta /api corretamente
+  production: null, // Configurar após deploy correto: 'https://criminal-minds-game.railway.app/api'
   
   // Desenvolvimento local
   development: 'http://localhost:3001/api',
