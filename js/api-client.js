@@ -477,5 +477,18 @@ document.addEventListener('DOMContentLoaded', migrateLocalDataToAPI);
 
 console.log('🎮 Criminal Minds API Client carregado!');
 console.log('📡 Endpoint:', API_CONFIG.baseURL);
-console.log('🗄️ Database: PostgreSQL Retool');
+console.log('🗄️ Database:', API_CONFIG.isGitHubPages ? 'localStorage (GitHub Pages)' : 'PostgreSQL Retool');
 console.log('🔧 Modo:', window.location.hostname === 'localhost' ? 'Desenvolvimento' : 'Produção');
+
+// Verificar configuração de GitHub Secrets
+if (typeof window.GitHubSecretsConfig !== 'undefined') {
+  const secretsConfig = window.GitHubSecretsConfig.getPersistenceConfig();
+  console.log('🔐 GitHub Secrets Config ativo:');
+  console.log(`   Tipo: ${secretsConfig.type}`);
+  console.log(`   Motivo: ${secretsConfig.reason}`);
+  
+  if (API_CONFIG.isGitHubPages && secretsConfig.type === 'localStorage') {
+    console.log('💡 BD_URL está configurada no GitHub, mas GitHub Pages usa localStorage');
+    console.log('   Para usar BD_URL em produção, consulte: GITHUB-SECRETS-SETUP.md');
+  }
+}
