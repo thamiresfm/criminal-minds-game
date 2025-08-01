@@ -4,9 +4,10 @@
   "description": "API PostgreSQL para Criminal Minds Game - Deploy Railway/Vercel",
   "main": "api.js",
   "scripts": {
-    "start": "node api.js",
-    "build": "npx prisma generate && npx prisma migrate deploy",
-    "dev": "node api.js",
+    "start": "node test-simple.js",
+    "start:full": "node api.js",
+    "build": "echo 'Build test simple - no prisma'",
+    "dev": "node test-simple.js",
     "db:generate": "npx prisma generate",
     "db:migrate": "npx prisma migrate deploy",
     "db:reset": "npx prisma migrate reset --force"
