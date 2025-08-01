@@ -9,8 +9,8 @@
 
 // URLs da API baseado no ambiente
 const API_CONFIG = {
-  // Produção - GitHub Pages com backend na Railway/Heroku/Vercel
-  production: 'https://criminal-minds-api.railway.app/api',
+  // Produção - GitHub Pages SEM backend (usar localStorage)
+  production: null, // GitHub Pages não tem backend
   
   // Desenvolvimento local
   development: 'http://localhost:3001/api',
@@ -20,8 +20,13 @@ const API_CONFIG = {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return this.development;
     } else {
-      return this.production;
+      return this.production; // null para GitHub Pages
     }
+  },
+  
+  // Verificar se estamos no GitHub Pages
+  get isGitHubPages() {
+    return window.location.hostname.includes('github.io') || this.baseURL === null;
   }
 };
 
@@ -97,6 +102,13 @@ class CriminalMindsAPI {
   // Registrar usuário
   async register(userData) {
     try {
+      // Se estamos no GitHub Pages, usar localStorage diretamente
+      if (API_CONFIG.isGitHubPages) {
+        console.log('🌐 GitHub Pages detectado - usando localStorage');
+        return this.registerLocalStorage(userData);
+      }
+
+      // Tentar API normal (localhost)
       const response = await this.request('/auth/register', {
         method: 'POST',
         body: JSON.stringify(userData)
@@ -113,14 +125,22 @@ class CriminalMindsAPI {
 
       throw new Error(response.error || 'Erro no registro');
     } catch (error) {
-      console.error('❌ Erro no registro:', error);
-      throw error;
+      console.error('❌ Erro no registro via API, tentando localStorage...', error);
+      // Fallback para localStorage
+      return this.registerLocalStorage(userData);
     }
   }
 
   // Fazer login
   async login(credentials) {
     try {
+      // Se estamos no GitHub Pages, usar localStorage diretamente
+      if (API_CONFIG.isGitHubPages) {
+        console.log('🌐 GitHub Pages detectado - usando localStorage');
+        return this.loginLocalStorage(credentials);
+      }
+
+      // Tentar API normal (localhost)
       const response = await this.request('/auth/login', {
         method: 'POST',
         body: JSON.stringify(credentials)
@@ -137,8 +157,9 @@ class CriminalMindsAPI {
 
       throw new Error(response.error || 'Erro no login');
     } catch (error) {
-      console.error('❌ Erro no login:', error);
-      throw error;
+      console.error('❌ Erro no login via API, tentando localStorage...', error);
+      // Fallback para localStorage
+      return this.loginLocalStorage(credentials);
     }
   }
 
@@ -270,6 +291,128 @@ class CriminalMindsAPI {
     } catch (error) {
       console.error('❌ API não está respondendo:', error);
       throw error;
+    }
+  }
+
+  // ========================================
+  // MÉTODOS LOCALSTORAGE (GITHUB PAGES)
+  // ========================================
+
+  // Registrar usuário no localStorage
+  async registerLocalStorage(userData) {
+    try {
+      console.log('💾 Registrando usuário no localStorage...', userData.email);
+
+      // Validar dados obrigatórios
+      if (!userData.fullName || !userData.email || !userData.detectiveName || !userData.password) {
+        throw new Error('Todos os campos são obrigatórios');
+      }
+
+      // Validar email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(userData.email)) {
+        throw new Error('Email inválido');
+      }
+
+      // Carregar usuários existentes
+      const users = JSON.parse(localStorage.getItem('criminalMinds_users') || '[]');
+      
+      // Verificar se email já existe
+      const existingUser = users.find(u => u.email.toLowerCase() === userData.email.toLowerCase());
+      if (existingUser) {
+        throw new Error('Email já cadastrado');
+      }
+
+      // Verificar se nome de detetive já existe
+      const existingDetective = users.find(u => u.detectiveName.toLowerCase() === userData.detectiveName.toLowerCase());
+      if (existingDetective) {
+        throw new Error('Nome de detetive já está em uso');
+      }
+
+      // Criar novo usuário
+      const newUser = {
+        id: Date.now(),
+        email: userData.email,
+        fullName: userData.fullName,
+        detectiveName: userData.detectiveName,
+        gameCode: null,
+        createdAt: new Date().toISOString(),
+        isActive: true
+      };
+
+      // Salvar usuário na lista
+      users.push(newUser);
+      localStorage.setItem('criminalMinds_users', JSON.stringify(users));
+
+      // Gerar token simples
+      const token = btoa(JSON.stringify({ userId: newUser.id, timestamp: Date.now() }));
+      
+      // Salvar dados da sessão
+      this.setToken(token);
+      this.saveUserData(newUser);
+
+      console.log('✅ Usuário registrado no localStorage:', newUser.email);
+      
+      return {
+        success: true,
+        message: 'Conta criada com sucesso (modo offline)',
+        user: newUser,
+        token: token
+      };
+
+    } catch (error) {
+      console.error('❌ Erro no registro localStorage:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // Fazer login no localStorage
+  async loginLocalStorage(credentials) {
+    try {
+      console.log('💾 Fazendo login no localStorage...', credentials.email);
+
+      // Validar dados obrigatórios
+      if (!credentials.email || !credentials.password) {
+        throw new Error('Email e senha são obrigatórios');
+      }
+
+      // Carregar usuários existentes
+      const users = JSON.parse(localStorage.getItem('criminalMinds_users') || '[]');
+      
+      // Procurar usuário por email
+      const user = users.find(u => u.email.toLowerCase() === credentials.email.toLowerCase());
+      if (!user) {
+        throw new Error('Usuário não encontrado. Faça seu cadastro primeiro.');
+      }
+
+      // Em localStorage, não temos senha hasheada, então só validamos se o usuário existe
+      // Em um ambiente real, verificaríamos a senha hasheada
+
+      // Gerar token simples
+      const token = btoa(JSON.stringify({ userId: user.id, timestamp: Date.now() }));
+      
+      // Salvar dados da sessão
+      this.setToken(token);
+      this.saveUserData(user);
+
+      console.log('✅ Login realizado no localStorage:', user.email);
+      
+      return {
+        success: true,
+        message: 'Login realizado com sucesso (modo offline)',
+        user: user,
+        token: token
+      };
+
+    } catch (error) {
+      console.error('❌ Erro no login localStorage:', error);
+      return {
+        success: false,
+        error: error.message
+      };
     }
   }
 }

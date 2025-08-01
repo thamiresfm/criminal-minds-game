@@ -3,7 +3,7 @@
 // Configuração de conexão com MySQL e Retool
 // ========================================
 
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('../generated/prisma');
 const mysql = require('mysql2/promise');
 
 // ========================================
