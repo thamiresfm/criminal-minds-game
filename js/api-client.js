@@ -7,10 +7,11 @@
 // CONFIGURAÇÃO DA API
 // ========================================
 
-// URLs da API baseado no ambiente
+// URLs da API baseado no ambiente - SOMENTE BANCO POSTGRESQL
 const API_CONFIG = {
-  // Produção - GitHub Pages SEM backend (usar localStorage)
-  production: null, // GitHub Pages não tem backend
+  // Produção - API externa com PostgreSQL (BD_URL)
+  // IMPORTANTE: Deploy server/api.js em Railway/Vercel com BD_URL configurada
+  production: 'https://criminal-minds-api.up.railway.app/api', // URL da API em produção
   
   // Desenvolvimento local
   development: 'http://localhost:3001/api',
@@ -20,13 +21,18 @@ const API_CONFIG = {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return this.development;
     } else {
-      return this.production; // null para GitHub Pages
+      return this.production; // API externa em produção
     }
   },
   
   // Verificar se estamos no GitHub Pages
   get isGitHubPages() {
-    return window.location.hostname.includes('github.io') || this.baseURL === null;
+    return window.location.hostname.includes('github.io');
+  },
+  
+  // Verificar se temos URL de API configurada
+  get hasAPIEndpoint() {
+    return this.baseURL !== null;
   }
 };
 
@@ -83,10 +89,12 @@ class CriminalMindsAPI {
     }
   }
 
-  // Salvar token
+  // Salvar token - SOMENTE PARA SESSÃO
   setToken(token) {
     this.token = token;
+    // Salvar apenas token para controle de sessão (não dados do usuário)
     localStorage.setItem('criminalMinds_token', token);
+    console.log('🔐 Token de sessão salvo (dados ficam no PostgreSQL)');
   }
 
   // Remover token
@@ -99,67 +107,75 @@ class CriminalMindsAPI {
   // MÉTODOS DE AUTENTICAÇÃO
   // ========================================
 
-  // Registrar usuário
+  // Registrar usuário - SOMENTE BANCO POSTGRESQL
   async register(userData) {
     try {
-      // Se estamos no GitHub Pages, usar localStorage diretamente
-      if (API_CONFIG.isGitHubPages) {
-        console.log('🌐 GitHub Pages detectado - usando localStorage');
-        return this.registerLocalStorage(userData);
+      console.log('🗄️ Conectando com PostgreSQL para registrar usuário...');
+      
+      if (!API_CONFIG.hasAPIEndpoint) {
+        throw new Error('URL da API não configurada - deploy necessário');
       }
 
-      // Tentar API normal (localhost)
+      // Sempre tentar API PostgreSQL
       const response = await this.request('/auth/register', {
         method: 'POST',
         body: JSON.stringify(userData)
       });
 
       if (response.success) {
-        // Salvar token e dados do usuário
+        // Salvar apenas token para sessão (não dados completos)
         this.setToken(response.token);
-        this.saveUserData(response.user);
         
-        console.log('✅ Registro bem-sucedido:', response.user.email);
+        console.log('✅ Usuário registrado no PostgreSQL:', response.user.email);
+        console.log('🗄️ Dados salvos no banco de dados');
         return response;
       }
 
       throw new Error(response.error || 'Erro no registro');
     } catch (error) {
-      console.error('❌ Erro no registro via API, tentando localStorage...', error);
-      // Fallback para localStorage
-      return this.registerLocalStorage(userData);
+      console.error('❌ Erro ao conectar com PostgreSQL:', error);
+      
+      // NÃO usar localStorage - sempre mostrar erro
+      return {
+        success: false,
+        error: `Erro de conexão com banco de dados: ${error.message}. Verifique se a API está rodando.`
+      };
     }
   }
 
-  // Fazer login
+  // Fazer login - SOMENTE BANCO POSTGRESQL  
   async login(credentials) {
     try {
-      // Se estamos no GitHub Pages, usar localStorage diretamente
-      if (API_CONFIG.isGitHubPages) {
-        console.log('🌐 GitHub Pages detectado - usando localStorage');
-        return this.loginLocalStorage(credentials);
+      console.log('🗄️ Conectando com PostgreSQL para login...');
+      
+      if (!API_CONFIG.hasAPIEndpoint) {
+        throw new Error('URL da API não configurada - deploy necessário');
       }
 
-      // Tentar API normal (localhost)
+      // Sempre tentar API PostgreSQL
       const response = await this.request('/auth/login', {
         method: 'POST',
         body: JSON.stringify(credentials)
       });
 
       if (response.success) {
-        // Salvar token e dados do usuário
+        // Salvar apenas token para sessão (não dados completos)
         this.setToken(response.token);
-        this.saveUserData(response.user);
         
-        console.log('✅ Login bem-sucedido:', response.user.email);
+        console.log('✅ Login realizado no PostgreSQL:', response.user.email);
+        console.log('🗄️ Dados recuperados do banco de dados');
         return response;
       }
 
-      throw new Error(response.error || 'Erro no login');
+      throw new Error(response.error || 'Credenciais inválidas');
     } catch (error) {
-      console.error('❌ Erro no login via API, tentando localStorage...', error);
-      // Fallback para localStorage
-      return this.loginLocalStorage(credentials);
+      console.error('❌ Erro ao conectar com PostgreSQL:', error);
+      
+      // NÃO usar localStorage - sempre mostrar erro
+      return {
+        success: false,
+        error: `Erro de conexão com banco de dados: ${error.message}. Verifique se a API está rodando.`
+      };
     }
   }
 
@@ -475,20 +491,20 @@ async function migrateLocalDataToAPI() {
 // Executar migração se necessário
 document.addEventListener('DOMContentLoaded', migrateLocalDataToAPI);
 
-console.log('🎮 Criminal Minds API Client carregado!');
+console.log('🎮 Criminal Minds API Client carregado - MODO SOMENTE BANCO!');
 console.log('📡 Endpoint:', API_CONFIG.baseURL);
-console.log('🗄️ Database:', API_CONFIG.isGitHubPages ? 'localStorage (GitHub Pages)' : 'PostgreSQL Retool');
+console.log('🗄️ Database: PostgreSQL EXCLUSIVO (BD_URL)');
 console.log('🔧 Modo:', window.location.hostname === 'localhost' ? 'Desenvolvimento' : 'Produção');
+console.log('⚠️ ATENÇÃO: Dados salvos SOMENTE no banco PostgreSQL');
 
-// Verificar configuração de GitHub Secrets
-if (typeof window.GitHubSecretsConfig !== 'undefined') {
-  const secretsConfig = window.GitHubSecretsConfig.getPersistenceConfig();
-  console.log('🔐 GitHub Secrets Config ativo:');
-  console.log(`   Tipo: ${secretsConfig.type}`);
-  console.log(`   Motivo: ${secretsConfig.reason}`);
-  
-  if (API_CONFIG.isGitHubPages && secretsConfig.type === 'localStorage') {
-    console.log('💡 BD_URL está configurada no GitHub, mas GitHub Pages usa localStorage');
-    console.log('   Para usar BD_URL em produção, consulte: GITHUB-SECRETS-SETUP.md');
-  }
+if (API_CONFIG.hasAPIEndpoint) {
+  console.log('✅ URL da API configurada - sistema pronto');
+} else {
+  console.error('❌ URL da API não configurada - deploy necessário');
+}
+
+if (API_CONFIG.isGitHubPages) {
+  console.log('🌐 GitHub Pages detectado');
+  console.log('   Para funcionar, precisa de API externa com BD_URL');
+  console.log('   Deploy server/api.js em Railway/Vercel/Netlify');
 }
