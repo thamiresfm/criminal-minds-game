@@ -10,8 +10,8 @@
 // URLs da API baseado no ambiente - SOMENTE BANCO POSTGRESQL
 const API_CONFIG = {
   // Produção - API externa com PostgreSQL (BD_URL)
-  // IMPORTANTE: Deploy server/api.js em Railway/Vercel com BD_URL configurada
-  production: 'https://criminal-minds-api.up.railway.app/api', // URL da API em produção
+  // IMPORTANTE: Substituir pela URL real após deploy no Railway
+  production: null, // Substituir pela URL real: https://sua-api.up.railway.app/api
   
   // Desenvolvimento local
   development: 'http://localhost:3001/api',
@@ -113,7 +113,7 @@ class CriminalMindsAPI {
       console.log('🗄️ Conectando com PostgreSQL para registrar usuário...');
       
       if (!API_CONFIG.hasAPIEndpoint) {
-        throw new Error('URL da API não configurada - deploy necessário');
+        throw new Error('⚠️ API não deployada ainda!\n\n📋 PASSOS PARA RESOLVER:\n1. Acesse https://railway.app\n2. Conecte seu GitHub\n3. Deploy da pasta /api\n4. Copie a URL gerada\n5. Configure no js/api-client.js\n\n📖 Guia completo: RAILWAY-DEPLOY-GUIDE.md');
       }
 
       // Sempre tentar API PostgreSQL
@@ -149,7 +149,7 @@ class CriminalMindsAPI {
       console.log('🗄️ Conectando com PostgreSQL para login...');
       
       if (!API_CONFIG.hasAPIEndpoint) {
-        throw new Error('URL da API não configurada - deploy necessário');
+        throw new Error('⚠️ API não deployada ainda!\n\n📋 PASSOS PARA RESOLVER:\n1. Acesse https://railway.app\n2. Conecte seu GitHub\n3. Deploy da pasta /api\n4. Copie a URL gerada\n5. Configure no js/api-client.js\n\n📖 Guia completo: RAILWAY-DEPLOY-GUIDE.md');
       }
 
       // Sempre tentar API PostgreSQL
