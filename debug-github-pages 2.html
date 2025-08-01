@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Debug GitHub Pages - Criminal Minds</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0f0f23;
+            color: #00ff00;
+            padding: 20px;
+            margin: 0;
+        }
+        .debug-panel {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .debug-title {
+            color: #fbbf24;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .debug-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .warning { color: #f59e0b; }
+        .info { color: #3b82f6; }
+        button {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #0f0f23;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+            font-family: 'Courier New', monospace;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+        }
+        .log-output {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 DEBUG GITHUB PAGES - CRIMINAL MINDS GAME</h1>
+    <p style="color: #f59e0b;">Diagnóstico específico para problemas de persistência no GitHub Pages</p>
+
+    <!-- Informações do Ambiente -->
+    <div class="debug-panel">
+        <div class="debug-title">🌐 INFORMAÇÕES DO AMBIENTE</div>
+        <div class="debug-item">
+            <strong>URL atual:</strong> <span id="current-url"></span>
+        </div>
+        <div class="debug-item">
+            <strong>Hostname:</strong> <span id="hostname"></span>
+        </div>
+        <div class="debug-item">
+            <strong>É GitHub Pages:</strong> <span id="is-github-pages"></span>
+        </div>
+        <div class="debug-item">
+            <strong>localStorage disponível:</strong> <span id="localstorage-available"></span>
+        </div>
+        <div class="debug-item">
+            <strong>Sessão ativa:</strong> <span id="session-status"></span>
+        </div>
+    </div>
+
+    <!-- Teste de localStorage -->
+    <div class="debug-panel">
+        <div class="debug-title">💾 TESTE DIRETO DO LOCALSTORAGE</div>
+        <button onclick="testLocalStorage()">🧪 Testar localStorage</button>
+        <button onclick="clearAllData()">🗑️ Limpar Dados</button>
+        <div id="localstorage-result" class="debug-item"></div>
+    </div>
+
+    <!-- Teste de Cadastro -->
+    <div class="debug-panel">
+        <div class="debug-title">📝 TESTE DE CADASTRO SIMPLIFICADO</div>
+        <input type="text" id="test-name" placeholder="Nome completo" value="Teste Debug">
+        <input type="email" id="test-email" placeholder="Email" value="debug@teste.com">
+        <input type="text" id="test-detective" placeholder="Nome Detetive" value="DebugDet">
+        <button onclick="testSimpleRegister()">📝 Cadastrar (Simples)</button>
+        <button onclick="testAPIRegister()">🔧 Cadastrar (via API)</button>
+        <div id="register-result" class="debug-item"></div>
+    </div>
+
+    <!-- Verificar Dados Salvos -->
+    <div class="debug-panel">
+        <div class="debug-title">🔍 DADOS SALVOS NO NAVEGADOR</div>
+        <button onclick="checkSavedData()">🔍 Verificar Dados</button>
+        <button onclick="showAllStorage()">📋 Mostrar Tudo</button>
+        <div id="saved-data" class="debug-item"></div>
+    </div>
+
+    <!-- Console Logs -->
+    <div class="debug-panel">
+        <div class="debug-title">📋 LOGS DO SISTEMA</div>
+        <button onclick="clearLogs()">🗑️ Limpar Logs</button>
+        <div id="debug-logs" class="log-output"></div>
+    </div>
+
+    <script src="github-secrets-config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script>
+        // Sistema de logs personalizado
+        let debugLogs = [];
+        
+        function debugLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            debugLogs.push(logEntry);
+            
+            const logsDiv = document.getElementById('debug-logs');
+            logsDiv.textContent = debugLogs.join('\n');
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            
+            console.log(logEntry);
+        }
+        
+        function clearLogs() {
+            debugLogs = [];
+            document.getElementById('debug-logs').textContent = '';
+        }
+
+        // Interceptar console.log para mostrar na página
+        const originalLog = console.log;
+        console.log = function(...args) {
+            debugLog(args.join(' '), 'info');
+            originalLog.apply(console, args);
+        };
+
+        // Interceptar console.error
+        const originalError = console.error;
+        console.error = function(...args) {
+            debugLog('ERROR: ' + args.join(' '), 'error');
+            originalError.apply(console, args);
+        };
+
+        // Carregar informações do ambiente
+        function loadEnvironmentInfo() {
+            document.getElementById('current-url').textContent = window.location.href;
+            document.getElementById('hostname').textContent = window.location.hostname;
+            
+            const isGitHubPages = window.location.hostname.includes('github.io');
+            document.getElementById('is-github-pages').textContent = isGitHubPages ? 'SIM' : 'NÃO';
+            document.getElementById('is-github-pages').className = isGitHubPages ? 'success' : 'warning';
+            
+            const hasLocalStorage = typeof(Storage) !== 'undefined';
+            document.getElementById('localstorage-available').textContent = hasLocalStorage ? 'SIM' : 'NÃO';
+            document.getElementById('localstorage-available').className = hasLocalStorage ? 'success' : 'error';
+            
+            const hasSession = localStorage.getItem('criminalMinds_token') ? 'SIM' : 'NÃO';
+            document.getElementById('session-status').textContent = hasSession;
+            document.getElementById('session-status').className = hasSession === 'SIM' ? 'success' : 'warning';
+        }
+
+        // Testar localStorage diretamente
+        function testLocalStorage() {
+            debugLog('🧪 Iniciando teste direto do localStorage...');
+            
+            try {
+                // Teste básico de escrita
+                const testKey = 'criminalMinds_test';
+                const testValue = JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    test: 'localStorage funcionando'
+                });
+                
+                localStorage.setItem(testKey, testValue);
+                debugLog('✅ Escrita no localStorage: SUCESSO');
+                
+                // Teste de leitura
+                const readValue = localStorage.getItem(testKey);
+                if (readValue) {
+                    const parsed = JSON.parse(readValue);
+                    debugLog('✅ Leitura do localStorage: SUCESSO');
+                    debugLog(`📄 Dados lidos: ${JSON.stringify(parsed, null, 2)}`);
+                } else {
+                    debugLog('❌ Leitura do localStorage: FALHOU');
+                }
+                
+                // Limpar teste
+                localStorage.removeItem(testKey);
+                debugLog('🗑️ Limpeza do teste: CONCLUÍDA');
+                
+                document.getElementById('localstorage-result').innerHTML = '<span class="success">✅ localStorage funcionando corretamente!</span>';
+                
+            } catch (error) {
+                debugLog(`❌ Erro no teste localStorage: ${error.message}`);
+                document.getElementById('localstorage-result').innerHTML = `<span class="error">❌ Erro: ${error.message}</span>`;
+            }
+        }
+
+        // Teste de cadastro simplificado (sem API)
+        function testSimpleRegister() {
+            debugLog('📝 Iniciando cadastro simplificado...');
+            
+            const userData = {
+                fullName: document.getElementById('test-name').value,
+                email: document.getElementById('test-email').value,
+                detectiveName: document.getElementById('test-detective').value,
+                password: '123456'
+            };
+            
+            debugLog(`📤 Dados a cadastrar: ${JSON.stringify(userData, null, 2)}`);
+            
+            try {
+                // Simular o processo de registerLocalStorage
+                const users = JSON.parse(localStorage.getItem('criminalMinds_users') || '[]');
+                debugLog(`📋 Usuários existentes: ${users.length}`);
+                
+                // Verificar duplicatas
+                const existingEmail = users.find(u => u.email.toLowerCase() === userData.email.toLowerCase());
+                if (existingEmail) {
+                    debugLog(`⚠️ Email já existe: ${userData.email}`);
+                    document.getElementById('register-result').innerHTML = '<span class="warning">⚠️ Email já cadastrado</span>';
+                    return;
+                }
+                
+                // Criar usuário
+                const newUser = {
+                    id: Date.now(),
+                    email: userData.email,
+                    fullName: userData.fullName,
+                    detectiveName: userData.detectiveName,
+                    createdAt: new Date().toISOString(),
+                    isActive: true
+                };
+                
+                // Salvar
+                users.push(newUser);
+                localStorage.setItem('criminalMinds_users', JSON.stringify(users));
+                
+                // Verificar se foi salvo
+                const savedUsers = JSON.parse(localStorage.getItem('criminalMinds_users') || '[]');
+                const userSaved = savedUsers.find(u => u.id === newUser.id);
+                
+                if (userSaved) {
+                    debugLog('✅ Usuário salvo com sucesso!');
+                    debugLog(`👤 Usuário criado: ${JSON.stringify(newUser, null, 2)}`);
+                    document.getElementById('register-result').innerHTML = `<span class="success">✅ Cadastro realizado! ID: ${newUser.id}</span>`;
+                } else {
+                    debugLog('❌ Usuário NÃO foi salvo!');
+                    document.getElementById('register-result').innerHTML = '<span class="error">❌ Falha ao salvar usuário</span>';
+                }
+                
+            } catch (error) {
+                debugLog(`❌ Erro no cadastro: ${error.message}`);
+                document.getElementById('register-result').innerHTML = `<span class="error">❌ Erro: ${error.message}</span>`;
+            }
+        }
+
+        // Teste via API
+        async function testAPIRegister() {
+            debugLog('🔧 Testando cadastro via API...');
+            
+            if (typeof window.CriminalMindsAPI === 'undefined') {
+                debugLog('❌ CriminalMindsAPI não está disponível');
+                document.getElementById('register-result').innerHTML = '<span class="error">❌ API não carregada</span>';
+                return;
+            }
+            
+            const userData = {
+                fullName: document.getElementById('test-name').value,
+                email: document.getElementById('test-email').value,
+                detectiveName: document.getElementById('test-detective').value,
+                password: '123456'
+            };
+            
+            try {
+                const api = new window.CriminalMindsAPI();
+                debugLog(`📡 API Base URL: ${api.baseURL}`);
+                
+                const result = await api.register(userData);
+                debugLog(`📥 Resultado da API: ${JSON.stringify(result, null, 2)}`);
+                
+                if (result.success) {
+                    document.getElementById('register-result').innerHTML = `<span class="success">✅ API Success: ${result.message}</span>`;
+                } else {
+                    document.getElementById('register-result').innerHTML = `<span class="error">❌ API Error: ${result.error}</span>`;
+                }
+                
+            } catch (error) {
+                debugLog(`❌ Erro na API: ${error.message}`);
+                document.getElementById('register-result').innerHTML = `<span class="error">❌ API Exception: ${error.message}</span>`;
+            }
+        }
+
+        // Verificar dados salvos
+        function checkSavedData() {
+            debugLog('🔍 Verificando dados salvos...');
+            
+            const users = localStorage.getItem('criminalMinds_users');
+            const token = localStorage.getItem('criminalMinds_token');
+            const userData = localStorage.getItem('criminalMinds_user');
+            
+            let html = '<div>';
+            
+            if (users) {
+                const parsedUsers = JSON.parse(users);
+                html += `<div class="success">👥 Usuários salvos: ${parsedUsers.length}</div>`;
+                parsedUsers.forEach((user, index) => {
+                    html += `<div>   ${index + 1}. ${user.email} (${user.detectiveName}) - ID: ${user.id}</div>`;
+                });
+            } else {
+                html += '<div class="warning">⚠️ Nenhum usuário salvo</div>';
+            }
+            
+            if (token) {
+                html += `<div class="success">🔐 Token: Presente</div>`;
+            } else {
+                html += '<div class="warning">⚠️ Token: Ausente</div>';
+            }
+            
+            if (userData) {
+                html += `<div class="success">👤 Dados do usuário: Presente</div>`;
+            } else {
+                html += '<div class="warning">⚠️ Dados do usuário: Ausente</div>';
+            }
+            
+            html += '</div>';
+            document.getElementById('saved-data').innerHTML = html;
+        }
+
+        // Mostrar todo o localStorage
+        function showAllStorage() {
+            debugLog('📋 Mostrando todo o localStorage...');
+            
+            let html = '<div>';
+            let count = 0;
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('criminalMinds_')) {
+                    const value = localStorage.getItem(key);
+                    html += `<div><strong>${key}:</strong></div>`;
+                    html += `<div style="margin-left: 20px; color: #888;">${value}</div>`;
+                    count++;
+                }
+            }
+            
+            if (count === 0) {
+                html += '<div class="warning">⚠️ Nenhum dado do Criminal Minds encontrado</div>';
+            } else {
+                html += `<div class="info">📊 Total de itens: ${count}</div>`;
+            }
+            
+            html += '</div>';
+            document.getElementById('saved-data').innerHTML = html;
+        }
+
+        // Limpar todos os dados
+        function clearAllData() {
+            debugLog('🗑️ Limpando todos os dados...');
+            
+            const keys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('criminalMinds_')) {
+                    keys.push(key);
+                }
+            }
+            
+            keys.forEach(key => localStorage.removeItem(key));
+            
+            debugLog(`🗑️ ${keys.length} itens removidos`);
+            loadEnvironmentInfo();
+            checkSavedData();
+        }
+
+        // Inicializar página
+        window.onload = function() {
+            debugLog('🚀 Debug GitHub Pages iniciado');
+            loadEnvironmentInfo();
+            
+            // Testar automaticamente após 2 segundos
+            setTimeout(() => {
+                debugLog('🔄 Executando testes automáticos...');
+                testLocalStorage();
+                checkSavedData();
+            }, 2000);
+        };
+
+        // Interceptar erros
+        window.onerror = function(msg, url, line, col, error) {
+            debugLog(`❌ JavaScript Error: ${msg} (linha ${line})`);
+        };
+    </script>
+</body>
+</html>

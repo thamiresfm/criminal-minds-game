@@ -9,10 +9,11 @@
 
 // URLs da API baseado no ambiente - SOMENTE BANCO POSTGRESQL
 const API_CONFIG = {
-  // Produção - API Vercel com PostgreSQL (BD_URL)
-  // MIGRAÇÃO: Railway → Vercel (mais confiável)
-  // Vercel detecta Node.js automaticamente
-  production: 'https://criminal-minds-game.vercel.app/api',
+  // Produção - API Railway com PostgreSQL (BD_URL)
+  // NOVA URL: https://criminal-minds-game-production.up.railway.app
+  // ATENÇÃO: Deploy INCORRETO - servindo HTML em vez de API
+  // Root Directory deve ser /api (atualmente está na raiz /)
+  production: null, // Aguardando: https://criminal-minds-game-production.up.railway.app/api
   
   // Desenvolvimento local
   development: 'http://localhost:3001/api',
@@ -127,8 +128,8 @@ class CriminalMindsAPI {
         // Salvar apenas token para sessão (não dados completos)
         this.setToken(response.token);
         
-                            console.log('✅ Usuário registrado no PostgreSQL via Vercel:', response.user.email);
-                    console.log('🗄️ Dados salvos no banco de dados PostgreSQL');
+        console.log('✅ Usuário registrado no PostgreSQL:', response.user.email);
+        console.log('🗄️ Dados salvos no banco de dados');
         return response;
       }
 

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Criminal Minds Game</title>
+    <meta name="description" content="Cadastre-se no Criminal Minds Game - Digite nome, email e senha">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f23);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .background-effects {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(234, 179, 8, 0.1), transparent);
+            pointer-events: none;
+        }
+
+        .glow-1 {
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(234, 179, 8, 0.05);
+            border-radius: 50%;
+            filter: blur(3rem);
+        }
+
+        .glow-2 {
+            position: absolute;
+            bottom: 20%;
+            right: 10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(239, 68, 68, 0.05);
+            border-radius: 50%;
+            filter: blur(3rem);
+        }
+
+        .login-card {
+            background: rgba(31, 41, 55, 0.5);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(55, 65, 81, 0.5);
+            border-radius: 2rem;
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(to right, #fbbf24, #f59e0b, #f97316);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            color: #9ca3af;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #f3f4f6;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(75, 85, 99, 0.5);
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+            z-index: 1;
+        }
+
+        .password-toggle:hover {
+            color: #fbbf24;
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .password-toggle span {
+            font-size: 1.1rem;
+            display: block;
+        }
+
+        .password-container .form-input {
+            padding-right: 3rem;
+        }
+
+        .login-button {
+            width: 100%;
+            background: linear-gradient(to right, #f59e0b, #f97316);
+            color: black;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-button:hover {
+            background: linear-gradient(to right, #fbbf24, #f59e0b);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -3px rgba(251, 191, 36, 0.25);
+        }
+
+
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #fbbf24;
+        }
+
+        .login-link {
+            text-align: center;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .login-link p {
+            color: #9ca3af;
+        }
+
+        .login-link a {
+            color: #fbbf24;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #f59e0b;
+            text-decoration: underline;
+        }
+
+        .features {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .features span {
+            margin: 0 0.5rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-card {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+    <script src="firebase-config-injected.js"></script>
+    <script src="github-secrets-config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="api-direct-postgres.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="background-effects">
+            <div class="glow-1"></div>
+            <div class="glow-2"></div>
+        </div>
+
+        <div class="login-card">
+            <div class="logo">
+                <h1>🎯 Criminal Minds</h1>
+                <p>Cadastre-se para entrar na investigação</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="fullName">Nome Completo</label>
+                    <input type="text" id="fullName" name="fullName" class="form-input" 
+                           placeholder="Digite seu nome completo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-input" 
+                           placeholder="Digite seu email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" class="form-input" 
+                               placeholder="Digite sua senha (mín. 6 caracteres)" required minlength="6">
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <span id="passwordIcon">👁️</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="detectiveName">Nome do Detetive (Apelido no Jogo)</label>
+                    <input type="text" id="detectiveName" name="detectiveName" class="form-input" 
+                           placeholder="Como você quer ser chamado no jogo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="gameCode">Código da Sala (Opcional)</label>
+                    <input type="text" id="gameCode" name="gameCode" class="form-input" 
+                           placeholder="Digite o código da sala" maxlength="10">
+                </div>
+
+                <button type="submit" class="login-button">
+                    🕵️ Criar Conta e Entrar
+                </button>
+            </form>
+
+            <div class="login-link">
+                <p>Já tem uma conta? <a href="login.html">Faça login aqui</a></p>
+            </div>
+
+            <div class="features">
+                <span>🎮 Multiplayer</span>
+                <span>•</span>
+                <span>🕵️ Investigação</span>
+                <span>•</span>
+                <span>⚡ Tempo Real</span>
+            </div>
+
+            <div class="back-link">
+                <a href="index.html">← Voltar ao início</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para alternar visibilidade da senha
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.textContent = '👁️';
+            }
+        }
+
+        // Validação de email
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Função para lidar com o cadastro
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitButton = document.querySelector('.login-button');
+            const originalText = submitButton.innerHTML;
+            
+            try {
+                // Desabilitar botão durante processamento
+                submitButton.disabled = true;
+                submitButton.innerHTML = '⏳ Criando conta...';
+                submitButton.style.background = 'linear-gradient(to right, #6b7280, #4b5563)';
+            
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const detectiveName = document.getElementById('detectiveName').value.trim();
+            const gameCode = document.getElementById('gameCode').value.trim();
+            
+            // Validações
+            if (!fullName) {
+                    throw new Error('Por favor, digite seu nome completo.');
+            }
+            
+            if (!email || !isValidEmail(email)) {
+                    throw new Error('Por favor, digite um email válido.');
+            }
+            
+            if (!password || password.length < 6) {
+                    throw new Error('A senha deve ter pelo menos 6 caracteres.');
+            }
+            
+            if (!detectiveName) {
+                    throw new Error('Por favor, digite seu nome de detetive.');
+            }
+            
+                // Preparar dados para API
+            const userData = {
+                fullName: fullName,
+                email: email,
+                    password: password,
+                detectiveName: detectiveName,
+                    gameCode: gameCode || undefined
+                };
+                
+                // Tentar registrar via API, se falhar usar modo local
+                const api = window.CriminalMindsAPI;
+                let response;
+                
+                try {
+                    response = await api.register(userData);
+                } catch (apiError) {
+                    console.warn('⚠️ API principal offline, tentando API direta PostgreSQL:', apiError.message);
+                    
+                    // Tentar API direta PostgreSQL
+                    try {
+                        response = await window.DirectPostgreSQL.register(userData);
+                        
+                        if (response.success) {
+                            console.log('✅ Cadastro realizado via API direta PostgreSQL');
+                        }
+                    } catch (directError) {
+                        console.warn('⚠️ API direta também falhou, usando modo offline:', directError.message);
+                        throw new Error('API_OFFLINE');
+                    }
+                }
+                
+                if (response.success) {
+            // Feedback visual de sucesso
+                    submitButton.innerHTML = '✅ Conta criada com sucesso!';
+            submitButton.style.background = 'linear-gradient(to right, #10b981, #059669)';
+                    
+                    console.log('🎉 Usuário registrado no MySQL:', response.user.email);
+            
+            // Redirecionar para o lobby após 2 segundos
+            setTimeout(() => {
+                window.location.href = 'lobby.html';
+            }, 2000);
+                } else {
+                    throw new Error(response.error || 'Erro desconhecido no cadastro');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro no cadastro:', error);
+                
+                // Verificar se é erro de rede (API offline)
+                const isNetworkError = error.message.includes('fetch') || 
+                                     error.message.includes('Failed to fetch') ||
+                                     error.message.includes('NetworkError') ||
+                                     error.message.includes('net::') ||
+                                     error.message === 'API_OFFLINE';
+                
+                if (isNetworkError) {
+                    console.warn('⚠️ API offline, usando modo local temporário');
+                    
+                    try {
+                        // Fallback para localStorage (modo offline)
+                        const fallbackData = {
+                            fullName: document.getElementById('fullName').value.trim(),
+                            email: document.getElementById('email').value.trim(),
+                            password: document.getElementById('password').value,
+                            detectiveName: document.getElementById('detectiveName').value.trim(),
+                            gameCode: document.getElementById('gameCode').value.trim(),
+                registrationDate: new Date().toISOString(),
+                            isGuest: false,
+                            isOfflineAccount: true // Flag para identificar conta offline
+                        };
+                        
+                        localStorage.setItem('criminalMinds_userData', JSON.stringify(fallbackData));
+                        localStorage.setItem('criminalMinds_username', fallbackData.detectiveName);
+                        localStorage.setItem('criminalMinds_userEmail', fallbackData.email);
+                        localStorage.setItem('criminalMinds_isLoggedIn', 'true');
+                        
+                        if (fallbackData.gameCode) {
+                            localStorage.setItem('criminalMinds_gameCode', fallbackData.gameCode);
+                        }
+                        
+                        // Feedback de modo offline
+                        submitButton.innerHTML = '⚠️ Conta criada (modo offline)';
+                        submitButton.style.background = 'linear-gradient(to right, #f59e0b, #f97316)';
+                        
+                        console.log('📴 Conta salva offline, será sincronizada quando API estiver disponível');
+                        
+                        // Redirecionar
+                        setTimeout(() => {
+            window.location.href = 'lobby.html';
+                        }, 2500);
+                        
+                        return; // Sair da função sem mostrar erro
+                        
+                    } catch (fallbackError) {
+                        console.error('❌ Erro no fallback offline:', fallbackError);
+                        error.message = 'API offline e erro no modo local: ' + fallbackError.message;
+                    }
+                }
+                
+                // Mostrar erro para o usuário
+                let errorMessage = error.message;
+                
+                // Customizar mensagens de erro comuns
+                if (errorMessage.includes('Email já cadastrado')) {
+                    errorMessage = 'Este email já está cadastrado. Tente fazer login.';
+                } else if (errorMessage.includes('Nome de detetive já em uso')) {
+                    errorMessage = 'Este nome de detetive já está em uso. Escolha outro.';
+                } else if (errorMessage.includes('fetch')) {
+                    errorMessage = 'Erro de conexão. Verifique sua internet.';
+                }
+                
+                // Feedback visual de erro
+                submitButton.innerHTML = '❌ ' + errorMessage;
+                submitButton.style.background = 'linear-gradient(to right, #ef4444, #dc2626)';
+                
+                // Restaurar botão após 4 segundos
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalText;
+                    submitButton.style.background = 'linear-gradient(to right, #f59e0b, #f97316)';
+                }, 4000);
+            }
+        });
+
+
+
+        // Efeito de foco nos inputs com ajuste para password container
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                const container = this.closest('.password-container') || this.parentElement;
+                container.style.transform = 'scale(1.02)';
+                container.style.transition = 'transform 0.3s ease';
+            });
+            
+            input.addEventListener('blur', function() {
+                const container = this.closest('.password-container') || this.parentElement;
+                container.style.transform = 'scale(1)';
+            });
+        });
+
+        // Auto-preenchimento do nome do detetive baseado no nome completo
+        document.getElementById('fullName').addEventListener('input', function() {
+            const fullName = this.value.trim();
+            const detectiveNameInput = document.getElementById('detectiveName');
+            
+            if (fullName && !detectiveNameInput.value) {
+                // Gerar nome de detetive baseado no primeiro nome
+                const firstName = fullName.split(' ')[0];
+                const suggestions = [
+                    `Detetive ${firstName}`,
+                    `Agente ${firstName}`,
+                    `Inspector ${firstName}`,
+                    firstName + '_Detective'
+                ];
+                
+                detectiveNameInput.placeholder = `Sugestão: ${suggestions[0]}`;
+            }
+        });
+
+        // Feedback visual para email válido
+        document.getElementById('email').addEventListener('input', function() {
+            const email = this.value.trim();
+            if (email && isValidEmail(email)) {
+                this.style.borderColor = '#10b981';
+                this.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
+            } else if (email) {
+                this.style.borderColor = '#ef4444';
+                this.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
+            } else {
+                this.style.borderColor = 'rgba(75, 85, 99, 0.5)';
+                this.style.boxShadow = 'none';
+            }
+        });
+
+        // Feedback visual para senha
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            if (password.length >= 6) {
+                this.style.borderColor = '#10b981';
+                this.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
+            } else if (password.length > 0) {
+                this.style.borderColor = '#f59e0b';
+                this.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
+            } else {
+                this.style.borderColor = 'rgba(75, 85, 99, 0.5)';
+                this.style.boxShadow = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

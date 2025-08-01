@@ -1,0 +1,11 @@
+id,email,password_hash,full_name,detective_name,game_code,registration_date,last_login,is_active,email_verified,created_at,updated_at
+1,admin@criminalmindsgame.com,5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8,Administrador do Sistema,Admin_Detective,,2024-01-20 10:00:00,2024-01-20 10:00:00,1,1,2024-01-20 10:00:00,2024-01-20 10:00:00
+2,joao.silva@email.com,ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f,João Silva Santos,Detetive_Joao,SALA123,2024-01-20 14:30:00,2024-01-20 15:45:00,1,1,2024-01-20 14:30:00,2024-01-20 15:45:00
+3,maria.oliveira@email.com,b5d4045c3f466fa91fe2cc6abe79232a1a57cdf104f7a26e716e0a1e2789df78,Maria Oliveira,Detetive_Maria,SALA123,2024-01-20 14:35:00,2024-01-20 16:20:00,1,1,2024-01-20 14:35:00,2024-01-20 16:20:00
+4,carlos.pereira@email.com,a4b6157319038724e091f8ace4959e3fb954ebb5b7ea3ec7d5e6a92a7c9ff4a2,Carlos Pereira,Detetive_Carlos,SALA456,2024-01-20 15:00:00,2024-01-20 16:30:00,1,0,2024-01-20 15:00:00,2024-01-20 16:30:00
+5,ana.costa@email.com,7d865e959b2466918c9863afca942d0fb89d7c9ac0c99bafc3749504ded97730,Ana Costa,Detetive_Ana,SALA789,2024-01-20 15:15:00,2024-01-20 17:00:00,1,1,2024-01-20 15:15:00,2024-01-20 17:00:00
+6,pedro.santos@email.com,2cf24dba4f21d4288094e9b35e12c9a3c33e7a4c40e6f6abfb7b2c3b0b8c5c3d,Pedro Santos,Detetive_Pedro,SALA123,2024-01-20 16:00:00,2024-01-20 17:30:00,1,1,2024-01-20 16:00:00,2024-01-20 17:30:00
+7,luciana.alves@email.com,b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb9,Luciana Alves,Detetive_Luciana,,2024-01-20 16:30:00,2024-01-20 18:00:00,1,1,2024-01-20 16:30:00,2024-01-20 18:00:00
+8,rafael.lima@email.com,3dfbc06d2e7c6b32fb4c1c67dce0e8b5c4d4ae98daa6f79a0d3e6b8e7a4c5a6b,Rafael Lima,Detetive_Rafael,SALA456,2024-01-20 17:00:00,2024-01-20 18:30:00,0,1,2024-01-20 17:00:00,2024-01-20 18:30:00
+9,fernanda.rocha@email.com,c1d9c2fa7f8a2a3b7e4e7c4d6d2e8a9b1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6,Fernanda Rocha,Detetive_Fernanda,SALA789,2024-01-20 17:30:00,2024-01-20 19:00:00,1,0,2024-01-20 17:30:00,2024-01-20 19:00:00
+10,guest001@temp.com,temp_hash_001,Convidado 001,Guest_Detective_001,,2024-01-20 18:00:00,2024-01-20 18:00:00,1,0,2024-01-20 18:00:00,2024-01-20 18:00:00

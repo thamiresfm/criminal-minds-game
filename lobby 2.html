@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lobby - Criminal Minds Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f23);
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(to right, #fbbf24, #f59e0b, #f97316);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-message {
+            background: rgba(31, 41, 55, 0.5);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(55, 65, 81, 0.5);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .game-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex: 1;
+            align-content: start;
+        }
+
+        .info-card {
+            background: rgba(31, 41, 55, 0.5);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(55, 65, 81, 0.5);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            height: fit-content;
+        }
+
+        .info-card h3 {
+            color: #fbbf24;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .start-button {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 2rem auto;
+            background: linear-gradient(to right, #f59e0b, #f97316);
+            color: black;
+            border: none;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .start-button:hover {
+            background: linear-gradient(to right, #fbbf24, #f59e0b);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -3px rgba(251, 191, 36, 0.25);
+        }
+
+        /* ESTILO PARA O JOGO ÚNICO - COMPACTO */
+        .game-start {
+            margin: 1rem 0;
+            display: flex;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .start-card {
+            background: linear-gradient(135deg, rgba(15, 15, 35, 0.95), rgba(22, 33, 62, 0.95));
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            border-radius: 20px;
+            padding: 1.8rem;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            max-width: 450px;
+            width: 100%;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .start-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            padding: 3px;
+            background: linear-gradient(45deg, #fbbf24, #f59e0b, #8b5cf6, #a78bfa, #fbbf24);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            animation: borderRotate 4s linear infinite;
+        }
+
+        @keyframes borderRotate {
+            0% { background: linear-gradient(45deg, #fbbf24, #f59e0b, #8b5cf6, #a78bfa, #fbbf24); }
+            25% { background: linear-gradient(135deg, #f59e0b, #8b5cf6, #a78bfa, #fbbf24, #f59e0b); }
+            50% { background: linear-gradient(225deg, #8b5cf6, #a78bfa, #fbbf24, #f59e0b, #8b5cf6); }
+            75% { background: linear-gradient(315deg, #a78bfa, #fbbf24, #f59e0b, #8b5cf6, #a78bfa); }
+            100% { background: linear-gradient(45deg, #fbbf24, #f59e0b, #8b5cf6, #a78bfa, #fbbf24); }
+        }
+
+        .start-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 35px 70px rgba(251, 191, 36, 0.3);
+        }
+
+        .start-icon {
+            font-size: 3rem;
+            margin-bottom: 0.8rem;
+            animation: cardFloat 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.5));
+        }
+
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-3px) rotate(1deg); }
+            66% { transform: translateY(3px) rotate(-1deg); }
+        }
+
+        .start-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #fbbf24, #f59e0b, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+
+        .start-subtitle {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            margin-bottom: 1.2rem;
+            font-weight: 500;
+        }
+
+        .start-features {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 1.5rem;
+            gap: 0.8rem;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.8rem;
+            color: #e2e8f0;
+        }
+
+        .feature-icon {
+            font-size: 1.4rem;
+            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.4));
+        }
+
+        .ultimate-start-button {
+            position: relative;
+            display: inline-block;
+            padding: 0.9rem 2rem;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b, #f97316);
+            border: none;
+            border-radius: 12px;
+            color: #0f0f23;
+            font-weight: 800;
+            font-size: 0.95rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+            overflow: hidden;
+        }
+
+        .ultimate-start-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(251, 191, 36, 0.6);
+            background: linear-gradient(135deg, #f59e0b, #fbbf24, #f97316);
+        }
+
+        .button-shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .ultimate-start-button:hover .button-shine {
+            left: 100%;
+        }
+
+        .button-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .button-icon {
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .ultimate-start-button:hover .button-icon {
+            transform: translateX(3px);
+        }
+
+        /* RESPONSIVIDADE OTIMIZADA */
+        @media (max-width: 1024px) {
+            .game-info {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+            
+            .start-card {
+                max-width: 400px;
+                padding: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.8rem;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .welcome-message {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .players-list {
+                max-height: 150px;
+            }
+            
+            .players-list li {
+                padding: 0.5rem 0.6rem;
+                font-size: 0.8rem;
+                margin: 0.2rem 0;
+            }
+            
+            .players-list span:first-child span {
+                max-width: 100px;
+            }
+            
+            .start-card {
+                padding: 1.2rem;
+                margin: 0 0.5rem;
+            }
+            
+            .start-title {
+                font-size: 1.4rem;
+            }
+            
+            .start-features {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .feature-item {
+                flex-direction: row;
+                justify-content: center;
+                font-size: 0.75rem;
+            }
+            
+            .ultimate-start-button {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .game-info {
+                gap: 0.5rem;
+            }
+            
+            .info-card {
+                padding: 1rem;
+            }
+            
+            .players-list {
+                max-height: 120px;
+            }
+            
+            .players-list li {
+                padding: 0.4rem 0.5rem;
+                font-size: 0.75rem;
+                margin: 0.15rem 0;
+            }
+            
+            .players-list span:first-child span {
+                max-width: 80px;
+            }
+            
+            .player-online {
+                width: 5px;
+                height: 5px;
+                margin-right: 0.3rem;
+            }
+            
+            .start-card {
+                padding: 1rem;
+            }
+            
+            .start-features {
+                gap: 0.3rem;
+            }
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .back-link a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #fbbf24;
+        }
+
+        .players-list {
+            list-style: none;
+            max-height: 180px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(251, 191, 36, 0.5) transparent;
+        }
+
+        .players-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .players-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .players-list::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.5);
+            border-radius: 2px;
+        }
+
+        .players-list li {
+            background: rgba(17, 24, 39, 0.6);
+            margin: 0.3rem 0;
+            padding: 0.6rem 0.8rem;
+            border-radius: 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            border: 1px solid rgba(55, 65, 81, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .players-list li:hover {
+            background: rgba(17, 24, 39, 0.8);
+            border-color: rgba(251, 191, 36, 0.3);
+            transform: translateX(2px);
+        }
+
+        .player-online {
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+            margin-right: 0.4rem;
+            box-shadow: 0 0 4px rgba(34, 197, 94, 0.5);
+            flex-shrink: 0;
+        }
+
+        .players-list span:first-child {
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .players-list span:first-child span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+    </style>
+    <script src="firebase-config-injected.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Criminal Minds</h1>
+            <div class="status-indicator">
+                <div class="player-online"></div>
+                <span>Online • Pronto para jogar</span>
+            </div>
+        </div>
+
+        <div class="welcome-message">
+            <h2 id="welcomeText">Bem-vindo, Detetive!</h2>
+            <p>Prepare-se para uma investigação criminal intensa. Trabalhe em equipe para desvendar o mistério!</p>
+        </div>
+
+        <div class="game-info">
+            <div class="info-card">
+                <h3>🕵️ Jogadores</h3>
+                <p><strong>Conectados:</strong> <span id="playerCount">1</span>/6</p>
+                <ul class="players-list" id="playersList">
+                    <li>
+                        <span>
+                            <div class="player-online"></div>
+                            <span id="currentPlayer">Você</span>
+                        </span>
+                        <span>🕵️ Detetive</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3>🎮 Informações do Jogo</h3>
+                <p><strong>Modo:</strong> Investigação Colaborativa</p>
+                <p><strong>Duração:</strong> 15-30 minutos</p>
+                <p><strong>Dificuldade:</strong> Intermediário</p>
+                <p><strong>Código da Sala:</strong> <span id="roomCode">LOBBY-001</span></p>
+            </div>
+
+            <div class="info-card">
+                <h3>📋 Regras Rápidas</h3>
+                <ul style="list-style: disc; margin-left: 1.5rem; line-height: 1.6;">
+                    <li>Explore locais e colete pistas</li>
+                    <li>Comunique-se com sua equipe</li>
+                    <li>Analise evidências no laboratório</li>
+                    <li>Faça acusações quando tiver certeza</li>
+                    <li>Trabalhe em equipe para vencer!</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="game-start">
+            <div class="start-card">
+                <div class="start-icon">🃏</div>
+                <h2 class="start-title">Criminal Minds: Digital Cards</h2>
+                <p class="start-subtitle">Sistema de investigação com cartas digitais</p>
+                
+                <div class="start-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">⚡</span>
+                        <span>Sistema de Combos</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">💎</span>
+                        <span>4 Níveis de Raridade</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🎯</span>
+                        <span>Estratégias Avançadas</span>
+                    </div>
+                </div>
+                
+                <a href="investigation-cards.html" class="ultimate-start-button">
+                    <span class="button-shine"></span>
+                    <span class="button-content">
+                        <span class="button-icon">🚀</span>
+                        <span class="button-text">INICIAR INVESTIGAÇÃO</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="login.html">← Sair do Lobby</a>
+        </div>
+    </div>
+
+    <script>
+        // Recuperar nome do usuário do localStorage
+        const username = localStorage.getItem('criminalMinds_username') || 'Detetive Anônimo';
+        const isGuest = localStorage.getItem('criminalMinds_isGuest') === 'true';
+        const gameCode = localStorage.getItem('criminalMinds_gameCode') || 'LOBBY-001';
+
+        // Atualizar interface com dados do usuário
+        document.getElementById('welcomeText').textContent = `Bem-vindo, ${username}!`;
+        document.getElementById('currentPlayer').textContent = username;
+        document.getElementById('roomCode').textContent = gameCode;
+
+        // Simular outros jogadores (para demonstração)
+        const mockPlayers = [
+            'Detetive_Holmes',
+            'Inspector_Poirot', 
+            'Agent_Scully',
+            'Detective_Morse'
+        ];
+
+        let connectedPlayers = 1;
+        const maxPlayers = 6;
+
+        // Simular entrada de jogadores com animação
+        function simulatePlayerJoin() {
+            if (connectedPlayers < maxPlayers && mockPlayers.length > 0) {
+                const randomPlayer = mockPlayers.splice(Math.floor(Math.random() * mockPlayers.length), 1)[0];
+                
+                const playersList = document.getElementById('playersList');
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>
+                        <div class="player-online"></div>
+                        <span>${randomPlayer}</span>
+                    </span>
+                    <span>🕵️ Detetive</span>
+                `;
+                
+                // Animação de entrada
+                li.style.opacity = '0';
+                li.style.transform = 'translateX(-20px)';
+                li.style.transition = 'all 0.4s ease';
+                
+                playersList.appendChild(li);
+                
+                // Trigger da animação
+                setTimeout(() => {
+                    li.style.opacity = '1';
+                    li.style.transform = 'translateX(0)';
+                }, 50);
+                
+                connectedPlayers++;
+                document.getElementById('playerCount').textContent = connectedPlayers;
+                
+                // Scroll suave para mostrar novo jogador se necessário
+                const playersList = document.getElementById('playersList');
+                playersList.scrollTop = playersList.scrollHeight;
+                
+                // Próximo jogador em 3-8 segundos
+                if (connectedPlayers < maxPlayers && mockPlayers.length > 0) {
+                    setTimeout(simulatePlayerJoin, Math.random() * 5000 + 3000);
+                }
+            }
+        }
+
+        // Iniciar simulação após 2 segundos
+        setTimeout(simulatePlayerJoin, 2000);
+
+        // Salvar estado automaticamente ao iniciar investigação
+        document.addEventListener('DOMContentLoaded', function() {
+            const ultimateButton = document.querySelector('.ultimate-start-button');
+            if (ultimateButton) {
+                ultimateButton.addEventListener('click', function() {
+                    localStorage.setItem('criminalMinds_gameStarted', 'true');
+                    localStorage.setItem('criminalMinds_playerCount', connectedPlayers);
+                    localStorage.setItem('criminalMinds_gameMode', 'cards');
+                });
+            }
+        });
+
+        // Efeitos visuais
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.info-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+# ========================================
+# CRIMINAL MINDS GAME - ENVIRONMENT VARIABLES
+# Arquivo de exemplo de variáveis de ambiente
+# ========================================
+
+# ========================================
+# DATABASE CONFIGURATION
+# ========================================
+
+# Configuração para desenvolvimento local
+# BD_URL="postgresql://username:password@localhost:5432/criminal_minds_game"
+
+# Configuração para produção (Retool Database, Supabase, Railway, etc.)
+# BD_URL="postgresql://username:password@host:port/database_name?sslmode=require"
+
+# Exemplo para Retool Database:
+# BD_URL="postgresql://retool:your_password@ep-example.us-west-2.retooldb.com/retool?sslmode=require"
+
+# Exemplo para Supabase:
+# BD_URL="postgresql://postgres:password@db.project.supabase.co:5432/postgres"
+
+# Exemplo para local development:
+BD_URL="postgresql://postgres:password@localhost:5432/criminal_minds_game"
+
+# ========================================
+# RETOOL CONFIGURATION
+# ========================================
+
+# Retool API configuration
+RETOOL_API_URL="https://yourapp.retool.com/api"
+RETOOL_API_KEY="retool_api_key_here"
+RETOOL_APP_ID="your_retool_app_id"
+
+# Retool webhook endpoints
+RETOOL_WEBHOOK_LOGIN="https://yourapp.retool.com/api/webhook/login"
+RETOOL_WEBHOOK_REGISTER="https://yourapp.retool.com/api/webhook/register"
+RETOOL_WEBHOOK_GAME_DATA="https://yourapp.retool.com/api/webhook/game-data"
+
+# ========================================
+# AUTHENTICATION & SECURITY
+# ========================================
+
+# JWT Secret for session tokens
+JWT_SECRET="your_super_secure_jwt_secret_key_here"
+JWT_EXPIRES_IN="24h"
+
+# Password hashing
+BCRYPT_ROUNDS="12"
+
+# Session configuration
+SESSION_SECRET="your_session_secret_key_here"
+SESSION_EXPIRES_HOURS="24"
+
+# ========================================
+# APPLICATION CONFIGURATION
+# ========================================
+
+# Environment
+NODE_ENV="development"
+
+# Server configuration
+PORT="3000"
+HOST="localhost"
+
+# CORS origins (comma separated)
+CORS_ORIGINS="http://localhost:3000,http://localhost:8000,https://thamiresfm.github.io"
+
+# ========================================
+# EXTERNAL SERVICES
+# ========================================
+
+# Email service (optional)
+EMAIL_SERVICE="gmail"
+EMAIL_USER="your_email@gmail.com"
+EMAIL_PASS="your_app_password"
+
+# File upload (optional)
+UPLOAD_MAX_SIZE="10mb"
+UPLOAD_ALLOWED_TYPES="image/jpeg,image/png,image/gif"
+
+# ========================================
+# LOGGING & MONITORING
+# ========================================
+
+# Log level
+LOG_LEVEL="info"
+
+# Monitoring (optional)
+SENTRY_DSN=""
+ANALYTICS_ID=""
+
+# ========================================
+# GAME SPECIFIC CONFIGURATION
+# ========================================
+
+# Game settings
+DEFAULT_GAME_TIME_MINUTES="60"
+MAX_PLAYERS_PER_GAME="6"
+MIN_PLAYERS_TO_START="2"
+
+# Scoring system
+BASE_SCORE_PER_EVIDENCE="100"
+COMBO_MULTIPLIER="1.5"
+TIME_BONUS_MULTIPLIER="2.0"
+
+# ========================================
+# DEVELOPMENT TOOLS
+# ========================================
+
+# Database tools
+PRISMA_STUDIO_PORT="5555"
+DATABASE_RESET_ALLOWED="true"
+
+# Debug settings
+DEBUG="criminal-minds:*"
+VERBOSE_LOGGING="false"
+
+# ========================================
+# PRODUCTION OVERRIDES
+# ========================================
+
+# Para produção, sobrescreva estas variáveis:
+# NODE_ENV="production"
+# DATABASE_URL="mysql://prod_user:prod_pass@prod_host:port/prod_db"
+# JWT_SECRET="production_jwt_secret"
+# SESSION_SECRET="production_session_secret"
+# CORS_ORIGINS="https://thamiresfm.github.io"
+
+# ========================================
+# INSTRUÇÕES DE USO
+# ========================================
+
+# 1. Copie este arquivo para .env:
+#    cp env.example .env
+#
+# 2. Configure suas variáveis reais no arquivo .env
+#
+# 3. NUNCA commite o arquivo .env no git
+#    (já está no .gitignore)
+#
+# 4. Para produção, configure as variáveis no seu host
+#    (Vercel, Railway, PlanetScale, etc.)
+#
+# 5. Para Retool, configure os webhooks e API keys
+#    no painel administrativo do Retool
