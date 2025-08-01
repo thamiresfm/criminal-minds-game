@@ -345,36 +345,36 @@
                 submitButton.disabled = true;
                 submitButton.innerHTML = '⏳ Criando conta...';
                 submitButton.style.background = 'linear-gradient(to right, #6b7280, #4b5563)';
-                
-                const fullName = document.getElementById('fullName').value.trim();
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value;
-                const detectiveName = document.getElementById('detectiveName').value.trim();
-                const gameCode = document.getElementById('gameCode').value.trim();
-                
-                // Validações
-                if (!fullName) {
+            
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const detectiveName = document.getElementById('detectiveName').value.trim();
+            const gameCode = document.getElementById('gameCode').value.trim();
+            
+            // Validações
+            if (!fullName) {
                     throw new Error('Por favor, digite seu nome completo.');
-                }
-                
-                if (!email || !isValidEmail(email)) {
+            }
+            
+            if (!email || !isValidEmail(email)) {
                     throw new Error('Por favor, digite um email válido.');
-                }
-                
-                if (!password || password.length < 6) {
+            }
+            
+            if (!password || password.length < 6) {
                     throw new Error('A senha deve ter pelo menos 6 caracteres.');
-                }
-                
-                if (!detectiveName) {
+            }
+            
+            if (!detectiveName) {
                     throw new Error('Por favor, digite seu nome de detetive.');
-                }
-                
+            }
+            
                 // Preparar dados para API
-                const userData = {
-                    fullName: fullName,
-                    email: email,
+            const userData = {
+                fullName: fullName,
+                email: email,
                     password: password,
-                    detectiveName: detectiveName,
+                detectiveName: detectiveName,
                     gameCode: gameCode || undefined
                 };
                 
@@ -401,16 +401,16 @@
                 }
                 
                 if (response.success) {
-                    // Feedback visual de sucesso
+            // Feedback visual de sucesso
                     submitButton.innerHTML = '✅ Conta criada com sucesso!';
-                    submitButton.style.background = 'linear-gradient(to right, #10b981, #059669)';
+            submitButton.style.background = 'linear-gradient(to right, #10b981, #059669)';
                     
                     console.log('🎉 Usuário registrado no MySQL:', response.user.email);
-                    
-                    // Redirecionar para o lobby após 2 segundos
-                    setTimeout(() => {
-                        window.location.href = 'lobby.html';
-                    }, 2000);
+            
+            // Redirecionar para o lobby após 2 segundos
+            setTimeout(() => {
+                window.location.href = 'lobby.html';
+            }, 2000);
                 } else {
                     throw new Error(response.error || 'Erro desconhecido no cadastro');
                 }
@@ -436,7 +436,7 @@
                             password: document.getElementById('password').value,
                             detectiveName: document.getElementById('detectiveName').value.trim(),
                             gameCode: document.getElementById('gameCode').value.trim(),
-                            registrationDate: new Date().toISOString(),
+                registrationDate: new Date().toISOString(),
                             isGuest: false,
                             isOfflineAccount: true // Flag para identificar conta offline
                         };
@@ -458,7 +458,7 @@
                         
                         // Redirecionar
                         setTimeout(() => {
-                            window.location.href = 'lobby.html';
+            window.location.href = 'lobby.html';
                         }, 2500);
                         
                         return; // Sair da função sem mostrar erro
