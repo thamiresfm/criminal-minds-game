@@ -238,6 +238,7 @@
     </style>
     <script src="firebase-config-injected.js"></script>
     <script src="js/api-client.js"></script>
+    <script src="api-direct-postgres.js"></script>
 </head>
 <body>
     <div class="container">
@@ -377,9 +378,27 @@
                     gameCode: gameCode || undefined
                 };
                 
-                // Registrar via API MySQL
+                // Tentar registrar via API, se falhar usar modo local
                 const api = window.CriminalMindsAPI;
-                const response = await api.register(userData);
+                let response;
+                
+                try {
+                    response = await api.register(userData);
+                } catch (apiError) {
+                    console.warn('⚠️ API principal offline, tentando API direta PostgreSQL:', apiError.message);
+                    
+                    // Tentar API direta PostgreSQL
+                    try {
+                        response = await window.DirectPostgreSQL.register(userData);
+                        
+                        if (response.success) {
+                            console.log('✅ Cadastro realizado via API direta PostgreSQL');
+                        }
+                    } catch (directError) {
+                        console.warn('⚠️ API direta também falhou, usando modo offline:', directError.message);
+                        throw new Error('API_OFFLINE');
+                    }
+                }
                 
                 if (response.success) {
                     // Feedback visual de sucesso
@@ -403,7 +422,8 @@
                 const isNetworkError = error.message.includes('fetch') || 
                                      error.message.includes('Failed to fetch') ||
                                      error.message.includes('NetworkError') ||
-                                     error.message.includes('net::');
+                                     error.message.includes('net::') ||
+                                     error.message === 'API_OFFLINE';
                 
                 if (isNetworkError) {
                     console.warn('⚠️ API offline, usando modo local temporário');

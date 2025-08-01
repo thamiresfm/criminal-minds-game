@@ -238,6 +238,7 @@
     </style>
     <script src="firebase-config-injected.js"></script>
     <script src="js/api-client.js"></script>
+    <script src="api-direct-postgres.js"></script>
 </head>
 <body>
     <div class="container">
@@ -347,7 +348,25 @@
                 
                 // Fazer login via API MySQL
                 const api = window.CriminalMindsAPI;
-                const response = await api.login(credentials);
+                let response;
+                
+                try {
+                    response = await api.login(credentials);
+                } catch (apiError) {
+                    console.warn('⚠️ API principal offline, tentando API direta PostgreSQL:', apiError.message);
+                    
+                    // Tentar API direta PostgreSQL
+                    try {
+                        response = await window.DirectPostgreSQL.login(credentials);
+                        
+                        if (response.success) {
+                            console.log('✅ Login realizado via API direta PostgreSQL');
+                        }
+                    } catch (directError) {
+                        console.warn('⚠️ API direta também falhou, tentando modo offline:', directError.message);
+                        throw apiError; // Manter erro original da API principal
+                    }
+                }
                 
                 if (response.success) {
                     // Feedback visual de sucesso
