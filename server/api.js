@@ -1,6 +1,6 @@
 // ========================================
 // CRIMINAL MINDS GAME - API SERVER
-// Servidor Express para conectar HTMLs ao MySQL
+// Servidor Express para conectar HTMLs ao PostgreSQL Retool
 // ========================================
 
 const express = require('express');
@@ -470,7 +470,7 @@ async function startServer() {
   try {
     // Testar conexão com banco
     await prisma.$connect();
-    console.log('✅ Conexão com MySQL estabelecida');
+    console.log('✅ Conexão com PostgreSQL Retool estabelecida');
 
     // Inicializar servidor
     const server = app.listen(PORT, () => {
@@ -478,7 +478,7 @@ async function startServer() {
       console.log(`🌐 Health check: http://localhost:${PORT}/api/health`);
       console.log(`📡 CORS configurado para GitHub Pages`);
       console.log(`🔐 JWT Secret configurado`);
-      console.log(`🗄️ Banco MySQL conectado via Prisma`);
+      console.log(`🗄️ Banco PostgreSQL Retool conectado via Prisma`);
     });
 
     // Graceful shutdown
@@ -487,7 +487,7 @@ async function startServer() {
       server.close(() => {
         console.log('✅ Servidor HTTP fechado');
         prisma.$disconnect().then(() => {
-          console.log('✅ Conexão MySQL fechada');
+          console.log('✅ Conexão PostgreSQL fechada');
           process.exit(0);
         });
       });

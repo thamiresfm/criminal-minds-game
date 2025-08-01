@@ -334,4 +334,5 @@ document.addEventListener('DOMContentLoaded', migrateLocalDataToAPI);
 
 console.log('🎮 Criminal Minds API Client carregado!');
 console.log('📡 Endpoint:', API_CONFIG.baseURL);
+console.log('🗄️ Database: PostgreSQL Retool');
 console.log('🔧 Modo:', window.location.hostname === 'localhost' ? 'Desenvolvimento' : 'Produção');
