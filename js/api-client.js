@@ -12,7 +12,7 @@ const API_CONFIG = {
   // Produção - API Vercel com PostgreSQL (BD_URL)
   // MIGRAÇÃO: Railway → Vercel (mais confiável)
   // Vercel detecta Node.js automaticamente
-  production: 'https://criminal-minds-game.vercel.app/api',
+  production: 'https://criminal-minds-game-api.vercel.app/api',
   
   // Desenvolvimento local
   development: 'http://localhost:3001/api',
