@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug API - Criminal Minds</title>
+    <script src="js/api-client-melhorado.js"></script>
+    <script src="js/game-functions.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            padding: 2rem;
+        }
+        .debug-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #16213e;
+            padding: 2rem;
+            border-radius: 1rem;
+        }
+        .debug-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #0f0f23;
+            border-radius: 0.5rem;
+        }
+        .debug-button {
+            background: #fbbf24;
+            color: #1a1a2e;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin: 0.5rem;
+            font-weight: bold;
+        }
+        .debug-result {
+            background: #111827;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🔧 Debug API - Criminal Minds</h1>
+        
+        <div class="debug-section">
+            <h2>1. Configuração da API</h2>
+            <button class="debug-button" onclick="debugConfig()">Verificar Configuração</button>
+            <div id="configResult" class="debug-result"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>2. Teste de Conectividade</h2>
+            <button class="debug-button" onclick="debugHealth()">Testar Health Check</button>
+            <div id="healthResult" class="debug-result"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>3. Teste de Registro</h2>
+            <button class="debug-button" onclick="debugRegister()">Testar Registro</button>
+            <div id="registerResult" class="debug-result"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>4. Console Logs</h2>
+            <div id="consoleLogs" class="debug-result">
+                <em>Logs aparecerão aqui...</em>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Interceptar console.log para mostrar na página também
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        const logContainer = document.getElementById('consoleLogs');
+        
+        function addToLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.createElement('div');
+            logElement.className = type;
+            logElement.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logElement);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToLog(args.join(' '), 'info');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToLog(args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToLog(args.join(' '), 'error');
+        };
+
+        // Aguardar API carregar
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.CriminalMindsAPI) {
+                    console.log('✅ CriminalMindsAPI carregada com sucesso');
+                    debugConfig();
+                } else {
+                    console.error('❌ CriminalMindsAPI não foi carregada');
+                }
+            }, 1000);
+        });
+
+        function debugConfig() {
+            const result = document.getElementById('configResult');
+            
+            if (!window.CriminalMindsAPI) {
+                result.textContent = '❌ API não carregada';
+                result.className = 'debug-result error';
+                return;
+            }
+
+            const config = {
+                baseURL: API_CONFIG.baseURL,
+                isGitHubPages: API_CONFIG.isGitHubPages,
+                hasAPIEndpoint: API_CONFIG.hasAPIEndpoint,
+                hostname: window.location.hostname,
+                production: API_CONFIG.production,
+                development: API_CONFIG.development
+            };
+
+            result.textContent = JSON.stringify(config, null, 2);
+            result.className = 'debug-result success';
+            
+            console.log('🔧 Configuração da API:', config);
+        }
+
+        async function debugHealth() {
+            const result = document.getElementById('healthResult');
+            
+            if (!window.CriminalMindsAPI) {
+                result.textContent = '❌ API não carregada';
+                result.className = 'debug-result error';
+                return;
+            }
+
+            try {
+                console.log('🏥 Testando health check...');
+                const health = await window.CriminalMindsAPI.checkHealth();
+                
+                result.textContent = JSON.stringify(health, null, 2);
+                result.className = 'debug-result success';
+                
+                console.log('✅ Health check OK:', health);
+            } catch (error) {
+                result.textContent = `❌ Erro: ${error.message}`;
+                result.className = 'debug-result error';
+                
+                console.error('❌ Health check falhou:', error);
+            }
+        }
+
+        async function debugRegister() {
+            const result = document.getElementById('registerResult');
+            
+            if (!window.CriminalMindsAPI) {
+                result.textContent = '❌ API não carregada';
+                result.className = 'debug-result error';
+                return;
+            }
+
+            try {
+                console.log('👤 Testando registro de usuário...');
+                
+                const testUser = {
+                    fullName: 'Debug User',
+                    email: `debug.${Date.now()}@test.com`,
+                    detectiveName: `Debug${Date.now()}`,
+                    password: '123456'
+                };
+                
+                console.log('📝 Dados do teste:', testUser);
+                
+                const response = await window.CriminalMindsAPI.register(
+                    testUser.fullName,
+                    testUser.email, 
+                    testUser.detectiveName,
+                    testUser.password
+                );
+                
+                result.textContent = JSON.stringify(response, null, 2);
+                result.className = 'debug-result success';
+                
+                console.log('✅ Registro OK:', response);
+                
+            } catch (error) {
+                result.textContent = `❌ Erro: ${error.message}`;
+                result.className = 'debug-result error';
+                
+                console.error('❌ Registro falhou:', error);
+            }
+        }
+    </script>
+</body>
+</html>
