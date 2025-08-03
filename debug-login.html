@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEBUG - Login Loop Issue</title>
+    <style>
+        body { font-family: monospace; background: #1a1a1a; color: #00ff00; padding: 20px; }
+        .debug { background: #000; padding: 10px; margin: 10px 0; border: 1px solid #333; }
+        .error { color: #ff0000; }
+        .success { color: #00ff00; }
+        .warning { color: #ffaa00; }
+    </style>
+</head>
+<body>
+    <h1>🔧 DEBUG - Problema do Loop Infinito</h1>
+    
+    <div class="debug">
+        <h3>1. Informações da Página:</h3>
+        <div id="page-info"></div>
+    </div>
+    
+    <div class="debug">
+        <h3>2. API Configuration:</h3>
+        <div id="api-info"></div>
+    </div>
+    
+    <div class="debug">
+        <h3>3. Authentication Check:</h3>
+        <div id="auth-info"></div>
+    </div>
+    
+    <div class="debug">
+        <h3>4. Console Logs:</h3>
+        <div id="console-logs"></div>
+    </div>
+
+    <script src="js/api-client-melhorado.js"></script>
+    <script>
+        // Override console.log para capturar logs
+        const originalLog = console.log;
+        const logs = [];
+        console.log = function(...args) {
+            logs.push(args.join(' '));
+            originalLog.apply(console, arguments);
+            document.getElementById('console-logs').innerHTML = logs.slice(-10).join('<br>');
+        };
+
+        // Debug informações da página
+        const pageInfo = document.getElementById('page-info');
+        pageInfo.innerHTML = `
+            <div>Hostname: ${window.location.hostname}</div>
+            <div>Pathname: ${window.location.pathname}</div>
+            <div>Full URL: ${window.location.href}</div>
+            <div>User Agent: ${navigator.userAgent}</div>
+        `;
+
+        // Debug API config
+        const apiInfo = document.getElementById('api-info');
+        if (typeof API_CONFIG !== 'undefined') {
+            apiInfo.innerHTML = `
+                <div class="success">✅ API_CONFIG encontrado</div>
+                <div>Production URL: ${API_CONFIG.production}</div>
+                <div>Development URL: ${API_CONFIG.development}</div>
+                <div>Base URL: ${API_CONFIG.baseURL}</div>
+                <div>Is GitHub Pages: ${API_CONFIG.isGitHubPages}</div>
+                <div>Has API Endpoint: ${API_CONFIG.hasAPIEndpoint}</div>
+            `;
+        } else {
+            apiInfo.innerHTML = '<div class="error">❌ API_CONFIG não encontrado</div>';
+        }
+
+        // Debug autenticação
+        const authInfo = document.getElementById('auth-info');
+        setTimeout(() => {
+            if (window.CriminalMindsAPI) {
+                const api = new window.CriminalMindsAPI();
+                authInfo.innerHTML = `
+                    <div class="success">✅ CriminalMindsAPI encontrada</div>
+                    <div>Token: ${api.token ? '✅ Presente' : '❌ Ausente'}</div>
+                    <div>User: ${api.user ? '✅ Presente' : '❌ Ausente'}</div>
+                    <div>Is Authenticated: ${api.isAuthenticated()}</div>
+                    <div>Has API Endpoint: ${api.hasAPIEndpoint || 'undefined'}</div>
+                `;
+            } else {
+                authInfo.innerHTML = '<div class="error">❌ CriminalMindsAPI não encontrada</div>';
+            }
+        }, 1000);
+
+        // Interceptar redirects
+        const originalAssign = window.location.assign;
+        const originalReplace = window.location.replace;
+        
+        Object.defineProperty(window.location, 'href', {
+            set: function(url) {
+                console.log('🚨 REDIRECT DETECTADO para:', url);
+                alert('REDIRECT BLOQUEADO: ' + url);
+                return false;
+            }
+        });
+        
+        window.location.assign = function(url) {
+            console.log('🚨 ASSIGN DETECTADO para:', url);
+            alert('ASSIGN BLOQUEADO: ' + url);
+            return false;
+        };
+        
+        window.location.replace = function(url) {
+            console.log('🚨 REPLACE DETECTADO para:', url);
+            alert('REPLACE BLOQUEADO: ' + url);
+            return false;
+        };
+
+        console.log('🔧 Debug page carregada - monitorando redirects...');
+    </script>
+    
+    <!-- NÃO carregar game-functions.js aqui para evitar loop -->
+    <script>
+        console.log('⚠️ game-functions.js NÃO carregado intencionalmente para debug');
+    </script>
+</body>
+</html>

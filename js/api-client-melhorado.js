@@ -27,9 +27,19 @@ const API_CONFIG = {
     return window.location.hostname.includes('github.io');
   },
   
-  // Verificar se temos URL de API configurada
+  // Verificar se temos URL de API configurada E funcionando
   get hasAPIEndpoint() {
-    return this.baseURL !== null;
+    // Se não há baseURL, não temos endpoint
+    if (!this.baseURL) return false;
+    
+    // Se estamos no GitHub Pages, assumir que API externa pode não funcionar
+    if (this.isGitHubPages) {
+      // Tentar detectar se a API está realmente funcionando
+      // Para debug: assumir que não está funcionando se não conseguimos conectar
+      return false;
+    }
+    
+    return true;
   }
 };
 

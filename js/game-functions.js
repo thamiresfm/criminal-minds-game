@@ -42,12 +42,29 @@ class CriminalMindsGame {
    * Verificar se usuário está autenticado
    */
   checkAuthentication() {
-    const publicPages = ['/', '/index.html', '/login.html', '/register.html'];
     const currentPage = window.location.pathname;
+    const currentFile = currentPage.split('/').pop() || 'index.html';
     
-    // CORREÇÃO: Não verificar autenticação em páginas públicas ou se API não funciona
-    if (publicPages.includes(currentPage) || !this.api || !this.api.hasAPIEndpoint) {
-      console.log('📄 Página pública ou API indisponível - pulando verificação de auth');
+    // Lista expandida de páginas públicas (diferentes formatos de path)
+    const publicPages = [
+      '/',
+      '/index.html',
+      '/login.html', 
+      '/register.html',
+      '/criminal-minds-game/',
+      '/criminal-minds-game/index.html',
+      '/criminal-minds-game/login.html',
+      '/criminal-minds-game/register.html'
+    ];
+    
+    const publicFiles = ['index.html', 'login.html', 'register.html', ''];
+    
+    // CORREÇÃO MELHORADA: Múltiplas verificações
+    const isPublicPage = publicPages.includes(currentPage) || publicFiles.includes(currentFile);
+    const hasWorkingAPI = this.api && this.api.hasAPIEndpoint;
+    
+    if (isPublicPage || !hasWorkingAPI) {
+      console.log(`📄 Verificação de auth pulada: página="${currentPage}", arquivo="${currentFile}", isPublic=${isPublicPage}, hasAPI=${hasWorkingAPI}`);
       return;
     }
     
