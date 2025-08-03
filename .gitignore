@@ -1,36 +1,22 @@
-# ========================================
-# CRIMINAL MINDS GAME - .gitignore
-# Arquivos e diretórios a serem ignorados
-# ========================================
-
-# ========================================
-# FIREBASE CONFIGURATION
-# ========================================
-
-# Configuração Firebase injetada localmente
-firebase-config-injected.js
-
-# Configurações sensíveis
-.env
-.env.local
-.env.development
-.env.production
-
-# Firebase cache e logs
-.firebaserc
-firebase-debug.log
-firebase-debug.*.log
-
-# ========================================
-# NODE.JS
-# ========================================
-
 # Dependencies
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist/
+build/
+
+# Logs
+*.log
 
 # Runtime data
 pids
@@ -40,239 +26,22 @@ pids
 
 # Coverage directory used by tools like istanbul
 coverage/
-*.lcov
 
-# nyc test coverage
-.nyc_output
-
-# ========================================
-# OPERATING SYSTEM
-# ========================================
-
-# macOS
+# OS generated files
 .DS_Store
-.AppleDouble
-.LSOverride
-Icon
+.DS_Store?
 ._*
-.DocumentRevisions-V100
-.fseventsd
 .Spotlight-V100
-.TemporaryItems
 .Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-# Windows
-Thumbs.db
-Thumbs.db:encryptable
 ehthumbs.db
-ehthumbs_vista.db
-*.stackdump
-[Dd]esktop.ini
-$RECYCLE.BIN/
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
-*.lnk
+Thumbs.db
 
-# Linux
-*~
-.fuse_hidden*
-.directory
-.Trash-*
-.nfs*
-
-# ========================================
-# EDITORS & IDEs
-# ========================================
-
-# Visual Studio Code
+# IDE files
 .vscode/
-*.code-workspace
-
-# Sublime Text
-*.sublime-workspace
-*.sublime-project
-
-# IntelliJ IDEA
 .idea/
-*.iws
-*.iml
-*.ipr
-
-# Vim
 *.swp
 *.swo
-*~
-
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
-
-# ========================================
-# BUILD & DEPLOY
-# ========================================
-
-# Build outputs
-build/
-dist/
-out/
-.next/
-.nuxt/
 
 # Temporary files
-tmp/
-temp/
 *.tmp
 *.temp
-
-# Log files
-*.log
-logs/
-
-# ========================================
-# BACKUP FILES
-# ========================================
-
-# Arquivos de backup (mantidos para histórico)
-# *.bak - Comentado para manter backups existentes
-
-# Arquivos temporários do projeto
-*.orig
-*.rej
-
-# ========================================
-# GAME SPECIFIC
-# ========================================
-
-# Dados locais de desenvolvimento
-game-data-local.json
-user-data-local.json
-test-users.json
-
-# Screenshots de desenvolvimento
-screenshots/
-dev-images/
-
-# ========================================
-# SECURITY & SECRETS
-# ========================================
-
-# Chaves e secrets (NUNCA commitar)
-*.pem
-*.key
-*.crt
-*.p12
-.secret
-secrets.json
-config.secret.json
-
-# Variáveis de ambiente sensíveis
-.env.secret
-.env.keys
-
-# ========================================
-# TESTING
-# ========================================
-
-# Test results
-test-results/
-coverage/
-.nyc_output/
-
-# Jest
-jest.config.js
-.jest/
-
-# Cypress
-cypress/videos/
-cypress/screenshots/
-cypress/downloads/
-
-# ========================================
-# MISCELLANEOUS
-# ========================================
-
-# Thumbnails
-*.thumb
-
-# Archives
-*.zip
-*.tar.gz
-*.rar
-*.7z
-
-# Package managers
-.npm
-.yarn/
-.pnp.*
-.yarn-integrity
-
-# Optional eslint cache
-.eslintcache
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# dotenv environment variables file
-.env
-
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
-
-# next.js build output
-.next
-
-# nuxt.js build output
-.nuxt
-
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless/
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
-
-# ========================================
-# FINAL NOTE
-# ========================================
-
-# Este .gitignore protege:
-# ✅ Configurações Firebase sensíveis
-# ✅ Dados de desenvolvimento local
-# ✅ Cache e arquivos temporários
-# ✅ Configurações específicas do SO
-# ✅ Secrets e chaves privadas
-# 
-# Arquivos importantes INCLUÍDOS no git:
-# ✅ firebase-config.js (template público)
-# ✅ firebase-integration-example.js (código de exemplo)
-# ✅ .github/workflows/ (automação de deploy)
-# ✅ Todos os arquivos HTML, CSS, JS do jogo
-# ✅ FIREBASE-SETUP.md (documentação)
-# ✅ package.json (configuração do projeto)
-/src/generated/prisma

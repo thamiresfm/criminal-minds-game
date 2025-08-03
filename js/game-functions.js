@@ -45,7 +45,13 @@ class CriminalMindsGame {
     const publicPages = ['/', '/index.html', '/login.html', '/register.html'];
     const currentPage = window.location.pathname;
     
-    if (!publicPages.includes(currentPage) && !this.api.isAuthenticated()) {
+    // CORREÇÃO: Não verificar autenticação em páginas públicas ou se API não funciona
+    if (publicPages.includes(currentPage) || !this.api || !this.api.hasAPIEndpoint) {
+      console.log('📄 Página pública ou API indisponível - pulando verificação de auth');
+      return;
+    }
+    
+    if (!this.api.isAuthenticated()) {
       console.log('🔐 Redirecionando para login...');
       window.location.href = 'login.html';
       return;
