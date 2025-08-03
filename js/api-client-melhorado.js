@@ -32,10 +32,10 @@ const API_CONFIG = {
     // Se não há baseURL, não temos endpoint
     if (!this.baseURL) return false;
     
-    // Se estamos no GitHub Pages, assumir que API externa pode não funcionar
+    // Se estamos no GitHub Pages, verificar se API está funcionando
     if (this.isGitHubPages) {
-      // Tentar detectar se a API está realmente funcionando
-      // Para debug: assumir que não está funcionando se não conseguimos conectar
+      // Modo temporário: API com problemas de DB - desabilitar auth forçada
+      console.log('⚠️ GitHub Pages detectado - API com problemas conhecidos de DB');
       return false;
     }
     

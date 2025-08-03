@@ -452,7 +452,11 @@
                 } else if (errorMessage.includes('Conta desativada')) {
                     errorMessage = 'Sua conta foi desativada. Entre em contato com o suporte.';
                 } else if (errorMessage.includes('fetch')) {
-                    errorMessage = 'Erro de conexão. Verifique sua internet.';
+                    errorMessage = 'Não foi possível conectar com o servidor. Verifique sua internet.';
+                } else if (errorMessage.includes('Database connection failed')) {
+                    errorMessage = '⚠️ Sistema temporariamente indisponível. Tente novamente em alguns minutos.';
+                } else if (errorMessage.includes('unhealthy')) {
+                    errorMessage = '🔧 Sistema em manutenção. Acesse novamente em breve.';
                 }
                 
                 // Feedback visual de erro
