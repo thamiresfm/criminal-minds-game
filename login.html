@@ -236,8 +236,8 @@
             animation: fadeIn 0.6s ease-out;
         }
     </style>
-    <!-- Criminal Minds API v2.0 - Sistema Melhorado -->
-    <script src="js/api-client-melhorado.js"></script>
+    <!-- Criminal Minds API Simplificado - Sem headers customizados -->
+    <script src="js/api-client-simple.js"></script>
     <script src="js/game-functions.js"></script>
 </head>
 <body>
@@ -347,7 +347,7 @@
                 };
                 
                 // Fazer login via API MySQL
-                const api = window.CriminalMindsAPI;
+                const api = window.CriminalMindsAPISimple;
                 let response;
                 
                 try {
