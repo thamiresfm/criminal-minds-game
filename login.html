@@ -451,12 +451,22 @@
                     errorMessage = 'Usuário não encontrado. Faça seu cadastro primeiro.';
                 } else if (errorMessage.includes('Conta desativada')) {
                     errorMessage = 'Sua conta foi desativada. Entre em contato com o suporte.';
-                } else if (errorMessage.includes('fetch')) {
-                    errorMessage = 'Não foi possível conectar com o servidor. Verifique sua internet.';
+                } else if (errorMessage.includes('Não foi possível conectar com o servidor')) {
+                    errorMessage = '🔌 Não foi possível conectar com o servidor. Verifique sua conexão.';
+                } else if (errorMessage.includes('Tempo limite excedido')) {
+                    errorMessage = '⏱️ Tempo limite excedido. Verifique sua conexão.';
+                } else if (errorMessage.includes('Erro de conexão')) {
+                    errorMessage = '🌐 Erro de conexão. Verifique sua internet.';
+                } else if (errorMessage.includes('Problema de rede')) {
+                    errorMessage = '📡 Problema de rede. Tente novamente.';
+                } else if (errorMessage.includes('Servidor temporariamente indisponível')) {
+                    errorMessage = '⚠️ Servidor temporariamente indisponível. Tente novamente em alguns minutos.';
                 } else if (errorMessage.includes('Database connection failed')) {
                     errorMessage = '⚠️ Sistema temporariamente indisponível. Tente novamente em alguns minutos.';
                 } else if (errorMessage.includes('unhealthy')) {
                     errorMessage = '🔧 Sistema em manutenção. Acesse novamente em breve.';
+                } else if (errorMessage.includes('fetch')) {
+                    errorMessage = '🔌 Não foi possível conectar com o servidor. Verifique sua conexão.';
                 }
                 
                 // Feedback visual de erro

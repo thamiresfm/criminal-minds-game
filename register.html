@@ -385,19 +385,8 @@
                 try {
                     response = await api.register(userData);
                 } catch (apiError) {
-                    console.warn('⚠️ API principal offline, tentando API direta PostgreSQL:', apiError.message);
-                    
-                    // Tentar API direta PostgreSQL
-                    try {
-                        response = await window.DirectPostgreSQL.register(userData);
-                        
-                        if (response.success) {
-                            console.log('✅ Cadastro realizado via API direta PostgreSQL');
-                        }
-                    } catch (directError) {
-                        console.warn('⚠️ API direta também falhou, usando modo offline:', directError.message);
-                        throw new Error('API_OFFLINE');
-                    }
+                    console.error('❌ Erro na API:', apiError.message);
+                    throw new Error('API_OFFLINE');
                 }
                 
                 if (response.success) {
@@ -432,58 +421,6 @@
             } catch (error) {
                 console.error('❌ Erro no cadastro:', error);
                 
-                // Verificar se é erro de rede (API offline)
-                const isNetworkError = error.message.includes('fetch') || 
-                                     error.message.includes('Failed to fetch') ||
-                                     error.message.includes('NetworkError') ||
-                                     error.message.includes('net::') ||
-                                     error.message === 'API_OFFLINE';
-                
-                if (isNetworkError) {
-                    console.warn('⚠️ API offline, usando modo local temporário');
-                    
-                    try {
-                        // Fallback para localStorage (modo offline)
-                        const fallbackData = {
-                            fullName: document.getElementById('fullName').value.trim(),
-                            email: document.getElementById('email').value.trim(),
-                            password: document.getElementById('password').value,
-                            detectiveName: document.getElementById('detectiveName').value.trim(),
-                            gameCode: document.getElementById('gameCode').value.trim(),
-                registrationDate: new Date().toISOString(),
-                            isGuest: false,
-                            isOfflineAccount: true // Flag para identificar conta offline
-                        };
-                        
-                        localStorage.setItem('criminalMinds_userData', JSON.stringify(fallbackData));
-                        localStorage.setItem('criminalMinds_username', fallbackData.detectiveName);
-                        localStorage.setItem('criminalMinds_userEmail', fallbackData.email);
-                        localStorage.setItem('criminalMinds_isLoggedIn', 'true');
-                        
-                        if (fallbackData.gameCode) {
-                            localStorage.setItem('criminalMinds_gameCode', fallbackData.gameCode);
-                        }
-                        
-                        // Feedback de modo offline
-                        submitButton.innerHTML = '⚠️ Conta criada (modo offline)';
-                        submitButton.style.background = 'linear-gradient(to right, #f59e0b, #f97316)';
-                        
-                        console.log('📴 Conta salva offline, será sincronizada quando API estiver disponível');
-                        
-                        // NÃO FAZER LOGIN AUTOMÁTICO EM MODO OFFLINE
-                        // Usuário deve fazer login manual quando API estiver disponível
-                        setTimeout(() => {
-                            window.location.href = 'login.html';
-                        }, 2500);
-                        
-                        return; // Sair da função sem mostrar erro
-                        
-                    } catch (fallbackError) {
-                        console.error('❌ Erro no fallback offline:', fallbackError);
-                        error.message = 'API offline e erro no modo local: ' + fallbackError.message;
-                    }
-                }
-                
                 // Mostrar erro para o usuário
                 let errorMessage = error.message;
                 
@@ -492,24 +429,31 @@
                     errorMessage = 'Este email já está cadastrado. Tente fazer login.';
                 } else if (errorMessage.includes('Nome de detetive já em uso')) {
                     errorMessage = 'Este nome de detetive já está em uso. Escolha outro.';
-                } else if (errorMessage.includes('fetch')) {
-                    errorMessage = 'Não foi possível conectar com o servidor. Verifique sua internet.';
-                } else if (errorMessage.includes('Database connection failed')) {
-                    errorMessage = '⚠️ Sistema temporariamente indisponível. Tente novamente em alguns minutos.';
-                } else if (errorMessage.includes('unhealthy')) {
-                    errorMessage = '🔧 Sistema em manutenção. Acesse novamente em breve.';
+                } else if (errorMessage.includes('Não foi possível conectar com o servidor')) {
+                    errorMessage = '🔌 Não foi possível conectar com o servidor. Verifique sua conexão.';
+                } else if (errorMessage.includes('Tempo limite excedido')) {
+                    errorMessage = '⏱️ Tempo limite excedido. Verifique sua conexão.';
+                } else if (errorMessage.includes('Erro de conexão')) {
+                    errorMessage = '🌐 Erro de conexão. Verifique sua internet.';
+                } else if (errorMessage.includes('Problema de rede')) {
+                    errorMessage = '📡 Problema de rede. Tente novamente.';
+                } else if (errorMessage.includes('Servidor temporariamente indisponível')) {
+                    errorMessage = '⚠️ Servidor temporariamente indisponível. Tente novamente em alguns minutos.';
+                } else if (errorMessage.includes('API_OFFLINE') || 
+                          errorMessage.includes('fetch') || 
+                          errorMessage.includes('Failed to fetch') ||
+                          errorMessage.includes('NetworkError') ||
+                          errorMessage.includes('net::')) {
+                    errorMessage = '🔌 Não foi possível conectar com o servidor. Verifique sua conexão.';
                 }
                 
-                // Feedback visual de erro
-                submitButton.innerHTML = '❌ ' + errorMessage;
-                submitButton.style.background = 'linear-gradient(to right, #ef4444, #dc2626)';
+                // Restaurar botão
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalText;
+                submitButton.style.background = 'linear-gradient(to right, #f97316, #ea580c)';
                 
-                // Restaurar botão após 4 segundos
-                setTimeout(() => {
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = originalText;
-                    submitButton.style.background = 'linear-gradient(to right, #f59e0b, #f97316)';
-                }, 4000);
+                // Mostrar erro
+                alert(`❌ Erro no cadastro: ${errorMessage}`);
             }
         });
 

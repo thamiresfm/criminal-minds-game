@@ -3,6 +3,12 @@
 // Cliente JavaScript otimizado para integração com API
 // ========================================
 
+// Função para validar email
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
 // URLs da API baseado no ambiente - SOMENTE BANCO POSTGRESQL
 const API_CONFIG = {
   // Produção - API Vercel com PostgreSQL (BD_URL)
@@ -83,7 +89,16 @@ class CriminalMindsAPI {
     try {
       console.log(`🔗 API Request: ${finalOptions.method} ${url}`);
       
-      const response = await fetch(url, finalOptions);
+      // Adicionar timeout para evitar espera infinita
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos
+      
+      const response = await fetch(url, {
+        ...finalOptions,
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
       const data = await response.json();
 
       console.log(`📡 API Response:`, data);
@@ -96,9 +111,34 @@ class CriminalMindsAPI {
     } catch (error) {
       console.error(`❌ API Error:`, error);
       
-      // Tratamento específico de erros
+      // Tratamento específico de erros melhorado
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
         throw new Error('Não foi possível conectar com o servidor. Verifique sua conexão.');
+      }
+      
+      if (error.name === 'AbortError') {
+        throw new Error('Tempo limite excedido. Verifique sua conexão.');
+      }
+      
+      if (error.message.includes('Failed to fetch')) {
+        throw new Error('Erro de conexão. Verifique sua internet.');
+      }
+      
+      if (error.message.includes('NetworkError')) {
+        throw new Error('Problema de rede. Tente novamente.');
+      }
+      
+      // Se é um erro HTTP específico
+      if (error.message.includes('HTTP')) {
+        if (error.message.includes('HTTP 502') || error.message.includes('HTTP 503')) {
+          throw new Error('Servidor temporariamente indisponível. Tente novamente em alguns minutos.');
+        }
+        if (error.message.includes('HTTP 404')) {
+          throw new Error('Endpoint não encontrado. Verifique a configuração.');
+        }
+        if (error.message.includes('HTTP 500')) {
+          throw new Error('Erro interno do servidor. Tente novamente.');
+        }
       }
       
       throw error;
@@ -158,9 +198,14 @@ class CriminalMindsAPI {
         throw new Error('Senha deve ter pelo menos 6 caracteres');
       }
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        throw new Error('Email deve ter um formato válido');
+      if (!isValidEmail(email)) {
+        throw new Error('Email inválido');
+      }
+
+      // Verificar conectividade antes de tentar registro
+      const isConnected = await this.checkConnectivity();
+      if (!isConnected) {
+        throw new Error('Não foi possível conectar com o servidor. Verifique sua conexão.');
       }
 
       const data = await this.makeRequest('/auth/register', {
@@ -195,6 +240,12 @@ class CriminalMindsAPI {
       // Validações frontend
       if (!email || !password) {
         throw new Error('Email e senha são obrigatórios');
+      }
+
+      // Verificar conectividade antes de tentar login
+      const isConnected = await this.checkConnectivity();
+      if (!isConnected) {
+        throw new Error('Não foi possível conectar com o servidor. Verifique sua conexão.');
       }
 
       const data = await this.makeRequest('/auth/login', {
@@ -279,6 +330,61 @@ class CriminalMindsAPI {
       console.error('❌ API não está disponível:', error.message);
       throw error;
     }
+  }
+
+  /**
+   * Verificar conectividade da API antes de operações críticas
+   */
+  async checkConnectivity() {
+    try {
+      console.log('🔍 Verificando conectividade da API...');
+      const health = await this.checkHealth();
+      
+      if (health.success && health.status === 'healthy') {
+        console.log('✅ API está funcionando normalmente');
+        return true;
+      } else {
+        console.log('⚠️ API retornou status não saudável');
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Problema de conectividade:', error.message);
+      return false;
+    }
+  }
+
+  /**
+   * Tentar conectar com retry automático
+   */
+  async connectWithRetry(maxRetries = 3, delay = 1000) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`🔄 Tentativa ${attempt}/${maxRetries} de conexão...`);
+        
+        const isConnected = await this.checkConnectivity();
+        if (isConnected) {
+          console.log('✅ Conexão estabelecida com sucesso');
+          return true;
+        }
+        
+        if (attempt < maxRetries) {
+          console.log(`⏳ Aguardando ${delay}ms antes da próxima tentativa...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      } catch (error) {
+        console.error(`❌ Tentativa ${attempt} falhou:`, error.message);
+        
+        if (attempt === maxRetries) {
+          throw new Error('Não foi possível conectar com o servidor após várias tentativas. Verifique sua conexão.');
+        }
+        
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+    
+    return false;
   }
 
   // ========================================
