@@ -444,11 +444,15 @@
                     errorMessage = '📡 Problema de rede. Tente novamente.';
                 } else if (errorMessage.includes('Servidor temporariamente indisponível')) {
                     errorMessage = '⚠️ Servidor temporariamente indisponível. Tente novamente em alguns minutos.';
-                } else if (errorMessage.includes('API_OFFLINE') || 
-                          errorMessage.includes('fetch') || 
-                          errorMessage.includes('Failed to fetch') ||
-                          errorMessage.includes('NetworkError') ||
-                          errorMessage.includes('net::')) {
+                } else if (errorMessage.includes('API_OFFLINE')) {
+                    errorMessage = '🔌 Não foi possível conectar com o servidor. Verifique sua conexão.';
+                } else if (errorMessage.includes('fetch') && !errorMessage.includes('Email já cadastrado')) {
+                    errorMessage = '🔌 Não foi possível conectar com o servidor. Verifique sua conexão.';
+                } else if (errorMessage.includes('Failed to fetch') && !errorMessage.includes('Email já cadastrado')) {
+                    errorMessage = '🔌 Não foi possível conectar com o servidor. Verifique sua conexão.';
+                } else if (errorMessage.includes('NetworkError') && !errorMessage.includes('Email já cadastrado')) {
+                    errorMessage = '🔌 Não foi possível conectar com o servidor. Verifique sua conexão.';
+                } else if (errorMessage.includes('net::') && !errorMessage.includes('Email já cadastrado')) {
                     errorMessage = '🔌 Não foi possível conectar com o servidor. Verifique sua conexão.';
                 }
                 
