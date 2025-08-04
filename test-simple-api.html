@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste API Simplificada - Criminal Minds</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: #e2e8f0;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #fbbf24;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .test-button {
+            background: linear-gradient(to right, #f59e0b, #f97316);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+        
+        .success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            color: #10b981;
+        }
+        
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+        
+        .info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid #f59e0b;
+            color: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Teste API Simplificada - Criminal Minds</h1>
+        
+        <div class="test-section">
+            <h3>📡 Teste de Conectividade</h3>
+            <button class="test-button" onclick="testHealth()">Testar Health Check</button>
+            <button class="test-button" onclick="testConnectivity()">Testar Conectividade</button>
+            <button class="test-button" onclick="testSimpleFetch()">Testar Fetch Simples</button>
+            <div id="connectivityResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔐 Teste de Autenticação</h3>
+            <button class="test-button" onclick="testRegistration()">Testar Registro</button>
+            <button class="test-button" onclick="testLogin()">Testar Login</button>
+            <button class="test-button" onclick="testAPI()">Testar API Client</button>
+            <div id="authResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 Status Geral</h3>
+            <div id="statusResult" class="result info">
+                Clique nos botões acima para executar os testes...
+            </div>
+        </div>
+    </div>
+
+    <!-- Incluir o API client simplificado -->
+    <script src="js/api-client-simple.js"></script>
+    
+    <script>
+        const api = window.CriminalMindsAPISimple;
+        let testResults = {
+            health: false,
+            connectivity: false,
+            simpleFetch: false,
+            registration: false,
+            login: false,
+            apiClient: false
+        };
+
+        function logResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.textContent = message;
+        }
+
+        function updateStatus() {
+            const statusElement = document.getElementById('statusResult');
+            const successCount = Object.values(testResults).filter(Boolean).length;
+            const totalCount = Object.keys(testResults).length;
+            
+            let status = `📊 STATUS API SIMPLIFICADA:\n`;
+            status += `✅ Testes aprovados: ${successCount}/${totalCount}\n\n`;
+            
+            Object.entries(testResults).forEach(([test, passed]) => {
+                const icon = passed ? '✅' : '❌';
+                const status = passed ? 'APROVADO' : 'FALHOU';
+                status += `${icon} ${test}: ${status}\n`;
+            });
+            
+            statusElement.className = `result ${successCount === totalCount ? 'success' : 'warning'}`;
+            statusElement.textContent = status;
+        }
+
+        async function testHealth() {
+            try {
+                logResult('connectivityResult', '🔍 Testando Health Check...', 'info');
+                
+                const response = await fetch('https://criminal-minds-game-api.vercel.app/api/health');
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    testResults.health = true;
+                    logResult('connectivityResult', `✅ Health Check: SUCESSO\n📊 Status: ${data.status}\n🎉 Database: ${data.database}`, 'success');
+                } else {
+                    testResults.health = false;
+                    logResult('connectivityResult', `❌ Health Check: FALHOU\n📊 Status: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                testResults.health = false;
+                logResult('connectivityResult', `❌ Health Check: ERRO\n💬 ${error.message}`, 'error');
+            }
+            updateStatus();
+        }
+
+        async function testConnectivity() {
+            try {
+                logResult('connectivityResult', '🔍 Testando Conectividade...', 'info');
+                
+                const isConnected = await api.checkConnectivity();
+                
+                if (isConnected) {
+                    testResults.connectivity = true;
+                    logResult('connectivityResult', `✅ Conectividade: SUCESSO\n🔗 API respondendo normalmente`, 'success');
+                } else {
+                    testResults.connectivity = false;
+                    logResult('connectivityResult', `❌ Conectividade: FALHOU\n🔗 API não respondendo`, 'error');
+                }
+            } catch (error) {
+                testResults.connectivity = false;
+                logResult('connectivityResult', `❌ Conectividade: ERRO\n💬 ${error.message}`, 'error');
+            }
+            updateStatus();
+        }
+
+        async function testSimpleFetch() {
+            try {
+                logResult('connectivityResult', '🔍 Testando Fetch Simples...', 'info');
+                
+                const response = await fetch('https://criminal-minds-game-api.vercel.app/api/health', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    testResults.simpleFetch = true;
+                    logResult('connectivityResult', `✅ Fetch Simples: SUCESSO\n📊 Status: ${response.status}`, 'success');
+                } else {
+                    testResults.simpleFetch = false;
+                    logResult('connectivityResult', `❌ Fetch Simples: FALHOU\n📊 Status: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                testResults.simpleFetch = false;
+                logResult('connectivityResult', `❌ Fetch Simples: ERRO\n💬 ${error.message}`, 'error');
+            }
+            updateStatus();
+        }
+
+        async function testRegistration() {
+            try {
+                logResult('authResult', '🔍 Testando Registro...', 'info');
+                
+                const response = await api.register('Teste Simples', 'teste@simples.com', 'DetetiveSimples', '123456');
+                
+                if (response.success) {
+                    testResults.registration = true;
+                    logResult('authResult', `✅ Registro: SUCESSO\n🎉 Usuário criado: ${response.user.email}`, 'success');
+                } else {
+                    testResults.registration = false;
+                    logResult('authResult', `❌ Registro: FALHOU\n💬 ${response.error}`, 'error');
+                }
+            } catch (error) {
+                testResults.registration = false;
+                logResult('authResult', `❌ Registro: ERRO\n💬 ${error.message}`, 'error');
+            }
+            updateStatus();
+        }
+
+        async function testLogin() {
+            try {
+                logResult('authResult', '🔍 Testando Login...', 'info');
+                
+                const response = await api.login('teste@simples.com', '123456');
+                
+                if (response.success) {
+                    testResults.login = true;
+                    logResult('authResult', `✅ Login: SUCESSO\n🎉 Usuário logado: ${response.user.email}`, 'success');
+                } else {
+                    testResults.login = false;
+                    logResult('authResult', `❌ Login: FALHOU\n💬 ${response.error}`, 'error');
+                }
+            } catch (error) {
+                testResults.login = false;
+                logResult('authResult', `❌ Login: ERRO\n💬 ${error.message}`, 'error');
+            }
+            updateStatus();
+        }
+
+        async function testAPI() {
+            try {
+                logResult('authResult', '🔍 Testando API Client...', 'info');
+                
+                const health = await api.checkHealth();
+                
+                if (health.success && health.status === 'healthy') {
+                    testResults.apiClient = true;
+                    logResult('authResult', `✅ API Client: SUCESSO\n📊 Status: ${health.status}`, 'success');
+                } else {
+                    testResults.apiClient = false;
+                    logResult('authResult', `❌ API Client: FALHOU\n📊 Status: ${health.status || 'N/A'}`, 'error');
+                }
+            } catch (error) {
+                testResults.apiClient = false;
+                logResult('authResult', `❌ API Client: ERRO\n💬 ${error.message}`, 'error');
+            }
+            updateStatus();
+        }
+
+        // Executar testes automáticos ao carregar
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testHealth();
+                testConnectivity();
+                testSimpleFetch();
+                testAPI();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 
