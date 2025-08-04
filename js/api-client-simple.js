@@ -1,6 +1,7 @@
 // ========================================
-// CRIMINAL MINDS GAME - API CLIENT SIMPLIFICADO
+// CRIMINAL MINDS GAME - API CLIENT SIMPLIFICADO v2.0
 // Versão sem headers customizados para evitar problemas CORS
+// ENDPOINT CORRIGIDO PARA RAILWAY
 // ========================================
 
 // URLs da API
@@ -247,4 +248,5 @@ class CriminalMindsAPISimple {
 
 // Criar instância global
 window.CriminalMindsAPISimple = new CriminalMindsAPISimple();
-console.log('✅ Criminal Minds API Client Simplificado v1.0.0 inicializado'); 
+console.log('✅ Criminal Minds API Client Simplificado v2.0 inicializado');
+console.log('🔗 Endpoint: ' + API_CONFIG.baseURL); 
