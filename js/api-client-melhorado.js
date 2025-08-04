@@ -63,7 +63,6 @@ class CriminalMindsAPI {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Version': this.apiVersion,
         'X-Client': 'Criminal-Minds-Frontend',
         ...options.headers
       }
