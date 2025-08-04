@@ -32,6 +32,24 @@ const prisma = new PrismaClient({
 // MIDDLEWARES
 // ========================================
 
+// Middleware CORS direto - garantir que funcione
+app.use((req, res, next) => {
+  // Permitir todas as origens para desenvolvimento
+  res.header('Access-Control-Allow-Origin', 'https://thamiresfm.github.io');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Version, X-Client, x-api-version, x-client, User-Agent');
+  res.header('Access-Control-Expose-Headers', 'X-API-Version, X-Client');
+  
+  // Responder a requisições OPTIONS
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
+
 // Segurança
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
@@ -43,34 +61,6 @@ app.use(helmet({
       imgSrc: ["'self'", "data:", "https:"],
     },
   },
-}));
-
-// CORS - permitir requisições do frontend
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'https://thamiresfm.github.io',
-    /https:\/\/.*\.github\.io$/
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type', 
-    'Authorization', 
-    'X-Requested-With', 
-    'Origin', 
-    'X-API-Version', 
-    'X-Client',
-    'x-api-version',
-    'x-client',
-    'X-API-Version',
-    'Accept',
-    'User-Agent'
-  ],
-  exposedHeaders: ['X-API-Version', 'X-Client']
 }));
 
 // Rate limiting
