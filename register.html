@@ -426,9 +426,13 @@
                 
                 // Customizar mensagens de erro comuns
                 if (errorMessage.includes('Email já cadastrado')) {
-                    errorMessage = 'Este email já está cadastrado. Tente fazer login.';
+                    errorMessage = '📧 Este email já está cadastrado. Tente fazer login ou use outro email.';
                 } else if (errorMessage.includes('Nome de detetive já em uso')) {
-                    errorMessage = 'Este nome de detetive já está em uso. Escolha outro.';
+                    errorMessage = '🕵️ Este nome de detetive já está em uso. Escolha outro.';
+                } else if (errorMessage.includes('Email já existe')) {
+                    errorMessage = '📧 Este email já está cadastrado. Tente fazer login ou use outro email.';
+                } else if (errorMessage.includes('Email already exists')) {
+                    errorMessage = '📧 Este email já está cadastrado. Tente fazer login ou use outro email.';
                 } else if (errorMessage.includes('Não foi possível conectar com o servidor')) {
                     errorMessage = '🔌 Não foi possível conectar com o servidor. Verifique sua conexão.';
                 } else if (errorMessage.includes('Tempo limite excedido')) {

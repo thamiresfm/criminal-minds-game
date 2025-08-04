@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Endpoint Issue - Criminal Minds</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .debug-section {
+            background: #2a2a2a;
+            border: 1px solid #00ff00;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .error { color: #ff0000; }
+        .success { color: #00ff00; }
+        .warning { color: #ffff00; }
+        .info { color: #00ffff; }
+        
+        pre {
+            background: #000;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+        
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #00cc00;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐛 DEBUG ENDPOINT ISSUE</h1>
+    
+    <div class="debug-section">
+        <h3>🔍 VERIFICAÇÃO DE ENDPOINT</h3>
+        <button onclick="checkEndpoint()">Verificar Endpoint</button>
+        <button onclick="testBothEndpoints()">Testar Ambos Endpoints</button>
+        <button onclick="clearCache()">Limpar Cache</button>
+        <div id="endpointStatus"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>📋 CONSOLE LOGS</h3>
+        <div id="consoleLogs"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>🌐 NETWORK REQUESTS</h3>
+        <div id="networkLogs"></div>
+    </div>
+
+    <script>
+        // Capturar logs do console
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        const logs = [];
+        
+        function captureLog(type, ...args) {
+            const timestamp = new Date().toLocaleTimeString();
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            
+            logs.push({ timestamp, type, message });
+            updateConsoleLogs();
+        }
+        
+        console.log = (...args) => {
+            captureLog('log', ...args);
+            originalLog.apply(console, args);
+        };
+        
+        console.error = (...args) => {
+            captureLog('error', ...args);
+            originalError.apply(console, args);
+        };
+        
+        console.warn = (...args) => {
+            captureLog('warn', ...args);
+            originalWarn.apply(console, args);
+        };
+        
+        function updateConsoleLogs() {
+            const element = document.getElementById('consoleLogs');
+            element.innerHTML = logs.map(log => 
+                `<div class="${log.type}">[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}</div>`
+            ).join('');
+        }
+        
+        // Monitorar requisições de rede
+        const originalFetch = window.fetch;
+        const networkLogs = [];
+        
+        window.fetch = function(...args) {
+            const url = args[0];
+            const options = args[1] || {};
+            
+            const log = {
+                timestamp: new Date().toLocaleTimeString(),
+                url: url,
+                method: options.method || 'GET',
+                headers: options.headers || {}
+            };
+            
+            networkLogs.push(log);
+            updateNetworkLogs();
+            
+            return originalFetch.apply(this, args);
+        };
+        
+        function updateNetworkLogs() {
+            const element = document.getElementById('networkLogs');
+            element.innerHTML = networkLogs.map(log => 
+                `<div class="info">[${log.timestamp}] ${log.method} ${log.url}</div>`
+            ).join('');
+        }
+        
+        function checkEndpoint() {
+            const statusElement = document.getElementById('endpointStatus');
+            let status = '';
+            
+            if (window.CriminalMindsAPISimple) {
+                const api = window.CriminalMindsAPISimple;
+                
+                // Verificar se o endpoint está correto
+                const expectedEndpoint = 'https://criminal-minds-game-production.up.railway.app/api';
+                const actualEndpoint = api.constructor.name === 'CriminalMindsAPISimple' ? 
+                    'Railway (Simplificado)' : 'Vercel (Antigo)';
+                
+                status += `<div class="success">✅ API Client: ${actualEndpoint}</div>`;
+                status += `<div class="info">🔗 Endpoint esperado: ${expectedEndpoint}</div>`;
+                
+                // Testar requisição real
+                api.checkHealth().then(result => {
+                    status += `<div class="success">✅ Health Check: ${JSON.stringify(result)}</div>`;
+                    statusElement.innerHTML = status;
+                }).catch(error => {
+                    status += `<div class="error">❌ Health Check: ${error.message}</div>`;
+                    statusElement.innerHTML = status;
+                });
+            } else {
+                status += `<div class="error">❌ CriminalMindsAPISimple não encontrado</div>`;
+                statusElement.innerHTML = status;
+            }
+        }
+        
+        async function testBothEndpoints() {
+            console.log('🧪 TESTANDO AMBOS ENDPOINTS...');
+            
+            const endpoints = [
+                'https://criminal-minds-game-api.vercel.app/api',
+                'https://criminal-minds-game-production.up.railway.app/api'
+            ];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    console.log(`🔍 Testando: ${endpoint}`);
+                    const response = await fetch(`${endpoint}/health`);
+                    const data = await response.json();
+                    console.log(`✅ ${endpoint}: ${JSON.stringify(data)}`);
+                } catch (error) {
+                    console.error(`❌ ${endpoint}: ${error.message}`);
+                }
+            }
+        }
+        
+        function clearCache() {
+            console.log('🧹 LIMPANDO CACHE...');
+            
+            // Limpar localStorage
+            localStorage.clear();
+            console.log('✅ localStorage limpo');
+            
+            // Recarregar página
+            setTimeout(() => {
+                window.location.reload(true);
+            }, 1000);
+        }
+        
+        // Executar verificação automática
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                checkEndpoint();
+            }, 1000);
+        });
+    </script>
+
+    <!-- Carregar script com timestamp atualizado -->
+    <script src="js/api-client-simple.js?v=20241205"></script>
+    
+    <script>
+        // Teste adicional após carregamento
+        setTimeout(() => {
+            console.log('🔍 VERIFICAÇÃO FINAL DE ENDPOINT');
+            
+            if (window.CriminalMindsAPISimple) {
+                console.log('✅ CriminalMindsAPISimple carregado');
+                
+                // Verificar qual endpoint está sendo usado
+                const api = window.CriminalMindsAPISimple;
+                console.log('🔗 API Client:', api.constructor.name);
+                
+                // Testar health check
+                api.checkHealth().then(result => {
+                    console.log('✅ Health Check:', result);
+                }).catch(error => {
+                    console.error('❌ Health Check failed:', error);
+                });
+            } else {
+                console.error('❌ CriminalMindsAPISimple NÃO carregado');
+            }
+        }, 2000);
+    </script>
+</body>
+</html> 
