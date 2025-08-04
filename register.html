@@ -383,7 +383,7 @@
                 let response;
                 
                 try {
-                    response = await api.register(userData);
+                    response = await api.register(fullName, email, detectiveName, password);
                 } catch (apiError) {
                     console.error('❌ Erro na API:', apiError.message);
                     throw new Error('API_OFFLINE');
