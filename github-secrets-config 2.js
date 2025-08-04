@@ -55,7 +55,7 @@ const GitHubSecretsConfig = {
     } else if (this.hasSecrets()) {
       return {
         type: 'database',
-        reason: 'Backend disponível com BD_URL',
+        reason: 'Backend disponível com DATABASE_URL',
         features: ['registro', 'login', 'persistência banco', 'sincronização']
       };
     } else {
@@ -77,20 +77,20 @@ const GitHubSecretsConfig = {
     console.log(`   Features: ${config.features.join(', ')}`);
     
     if (this.isGitHubPages()) {
-      console.log('💡 Para usar BD_URL em produção, implemente um backend em:');
+      console.log('💡 Para usar DATABASE_URL em produção, implemente um backend em:');
       console.log('   - Vercel, Netlify, Railway, Heroku, etc.');
       console.log('   - Configure CORS para https://thamiresfm.github.io');
-      console.log('   - Use a variável BD_URL nos ambientes do backend');
+      console.log('   - Use a variável DATABASE_URL nos ambientes do backend');
     }
   }
 };
 
 // ========================================
-// INSTRUÇÕES PARA USO DA VARIÁVEL BD_URL
+// INSTRUÇÕES PARA USO DA VARIÁVEL DATABASE_URL
 // ========================================
 
-const BD_URL_INSTRUCTIONS = {
-  current_status: 'BD_URL configurada no GitHub, mas GitHub Pages não pode acessá-la diretamente',
+const DATABASE_URL_INSTRUCTIONS = {
+  current_status: 'DATABASE_URL configurada no GitHub, mas GitHub Pages não pode acessá-la diretamente',
   
   solutions: {
     option1: {
@@ -99,7 +99,7 @@ const BD_URL_INSTRUCTIONS = {
       services: ['Vercel', 'Netlify Functions', 'Railway', 'Heroku'],
       steps: [
         '1. Fazer deploy do server/api.js em um desses serviços',
-        '2. Configurar BD_URL como variável de ambiente no serviço',
+        '2. Configurar DATABASE_URL como variável de ambiente no serviço',
         '3. Atualizar js/api-client.js com URL do backend',
         '4. Configurar CORS para GitHub Pages'
       ]
@@ -107,17 +107,17 @@ const BD_URL_INSTRUCTIONS = {
     
     option2: {
       title: 'Sistema Atual (Funcionando)',
-      description: 'localStorage para GitHub Pages, BD_URL para desenvolvimento local',
+      description: 'localStorage para GitHub Pages, DATABASE_URL para desenvolvimento local',
       features: [
         'GitHub Pages: localStorage (dados locais do usuário)',
-        'Localhost: PostgreSQL com BD_URL (desenvolvimento)',
+        'Localhost: PostgreSQL com DATABASE_URL (desenvolvimento)',
         'Experiência idêntica em ambos ambientes',
         'Fallbacks automáticos garantem funcionamento'
       ]
     }
   },
   
-  recommendation: 'O sistema atual está funcionando perfeitamente. BD_URL está sendo usada no desenvolvimento local.'
+  recommendation: 'O sistema atual está funcionando perfeitamente. DATABASE_URL está sendo usada no desenvolvimento local.'
 };
 
 // ========================================
@@ -126,7 +126,7 @@ const BD_URL_INSTRUCTIONS = {
 
 // Tornar disponível globalmente
 window.GitHubSecretsConfig = GitHubSecretsConfig;
-window.BD_URL_INSTRUCTIONS = BD_URL_INSTRUCTIONS;
+window.DATABASE_URL_INSTRUCTIONS = DATABASE_URL_INSTRUCTIONS;
 
 // Log automático da configuração
 document.addEventListener('DOMContentLoaded', () => {
@@ -136,5 +136,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 console.log('🔐 GitHub Secrets Config carregado!');
-console.log('💡 Variável BD_URL detectada no GitHub, mas GitHub Pages usa localStorage');
+console.log('💡 Variável DATABASE_URL detectada no GitHub, mas GitHub Pages usa localStorage');
 console.log('🎮 Sistema funcionando perfeitamente em ambos ambientes!');

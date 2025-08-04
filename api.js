@@ -51,6 +51,7 @@ app.use(helmet({
 app.use(cors({
   origin: [
     'https://thamiresfm.github.io',
+    'https://*.github.io',
     'http://localhost:3000',
     'http://localhost:8000',
     'http://127.0.0.1:3000',
@@ -58,7 +59,18 @@ app.use(cors({
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'X-API-Version', 'X-Client']
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With', 
+    'Origin', 
+    'X-API-Version', 
+    'X-Client',
+    'x-api-version',
+    'x-client',
+    'X-API-Version'
+  ],
+  exposedHeaders: ['X-API-Version', 'X-Client']
 }));
 
 // Rate limiting inteligente
