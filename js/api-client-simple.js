@@ -5,7 +5,7 @@
 
 // URLs da API
 const API_CONFIG = {
-  production: 'https://criminal-minds-game-api.vercel.app/api',
+  production: 'https://criminal-minds-game-production.up.railway.app/api',
   development: 'http://localhost:3001/api',
   
   get baseURL() {
