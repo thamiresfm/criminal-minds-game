@@ -35,7 +35,7 @@ const API_CONFIG = {
     // Se estamos no GitHub Pages, verificar se API está funcionando
     if (this.isGitHubPages) {
       // Modo temporário: API com problemas de DB - desabilitar auth forçada
-      console.log('⚠️ GitHub Pages detectado - API com problemas conhecidos de DB');
+      console.log('⚠️ GitHub Pages detectado - Modo desenvolvimento ativado');
       return false;
     }
     
