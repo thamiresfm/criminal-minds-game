@@ -386,7 +386,8 @@
                     response = await api.register(fullName, email, detectiveName, password);
                 } catch (apiError) {
                     console.error('❌ Erro na API:', apiError.message);
-                    throw new Error('API_OFFLINE');
+                    // Passar o erro original em vez de criar um novo
+                    throw apiError;
                 }
                 
                 if (response.success) {
