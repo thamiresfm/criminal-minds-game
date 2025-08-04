@@ -32,22 +32,6 @@ const prisma = new PrismaClient({
 // MIDDLEWARES
 // ========================================
 
-// Middleware para tratar CORS manualmente
-app.use((req, res, next) => {
-  // Permitir todos os headers
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Version, X-Client, x-api-version, x-client');
-  res.header('Access-Control-Expose-Headers', 'X-API-Version, X-Client');
-  
-  // Responder a requisições OPTIONS
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
-
 // Segurança
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
@@ -82,7 +66,9 @@ app.use(cors({
     'X-Client',
     'x-api-version',
     'x-client',
-    'X-API-Version'
+    'X-API-Version',
+    'Accept',
+    'User-Agent'
   ],
   exposedHeaders: ['X-API-Version', 'X-Client']
 }));
