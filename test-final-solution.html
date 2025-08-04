@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Solução Final - Criminal Minds</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: #e2e8f0;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #fbbf24;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .test-button {
+            background: linear-gradient(to right, #f59e0b, #f97316);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+        
+        .success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            color: #10b981;
+        }
+        
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+        
+        .info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid #f59e0b;
+            color: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Teste Solução Final - Criminal Minds</h1>
+        
+        <div class="test-section">
+            <h3>🔧 Teste de API Client</h3>
+            <button class="test-button" onclick="testAPIClient()">Testar API Client</button>
+            <button class="test-button" onclick="testGameFunctions()">Testar Game Functions</button>
+            <button class="test-button" onclick="testRegistration()">Testar Registro</button>
+            <div id="apiResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 Status Geral</h3>
+            <div id="statusResult" class="result info">
+                Clique nos botões acima para executar os testes...
+            </div>
+        </div>
+    </div>
+
+    <!-- Incluir os scripts na ordem correta -->
+    <script src="js/api-client-simple.js"></script>
+    <script src="js/game-functions.js"></script>
+    
+    <script>
+        let testResults = {
+            apiClient: false,
+            gameFunctions: false,
+            registration: false
+        };
+
+        function logResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.textContent = message;
+        }
+
+        function updateStatus() {
+            const statusElement = document.getElementById('statusResult');
+            const successCount = Object.values(testResults).filter(Boolean).length;
+            const totalCount = Object.keys(testResults).length;
+            
+            let status = `📊 STATUS SOLUÇÃO FINAL:\n`;
+            status += `✅ Testes aprovados: ${successCount}/${totalCount}\n\n`;
+            
+            Object.entries(testResults).forEach(([test, passed]) => {
+                const icon = passed ? '✅' : '❌';
+                const status = passed ? 'APROVADO' : 'FALHOU';
+                status += `${icon} ${test}: ${status}\n`;
+            });
+            
+            statusElement.className = `result ${successCount === totalCount ? 'success' : 'warning'}`;
+            statusElement.textContent = status;
+        }
+
+        async function testAPIClient() {
+            try {
+                logResult('apiResult', '🔍 Testando API Client...', 'info');
+                
+                // Verificar se a API simplificada está carregada
+                if (window.CriminalMindsAPISimple) {
+                    testResults.apiClient = true;
+                    logResult('apiResult', `✅ API Client: SUCESSO\n🎉 CriminalMindsAPISimple carregado`, 'success');
+                } else {
+                    testResults.apiClient = false;
+                    logResult('apiResult', `❌ API Client: FALHOU\n💬 CriminalMindsAPISimple não encontrado`, 'error');
+                }
+            } catch (error) {
+                testResults.apiClient = false;
+                logResult('apiResult', `❌ API Client: ERRO\n💬 ${error.message}`, 'error');
+            }
+            updateStatus();
+        }
+
+        async function testGameFunctions() {
+            try {
+                logResult('apiResult', '🔍 Testando Game Functions...', 'info');
+                
+                // Verificar se o game está usando a API correta
+                if (window.CriminalMindsGame && window.CriminalMindsGame.prototype.api) {
+                    const game = new window.CriminalMindsGame();
+                    
+                    if (game.api === window.CriminalMindsAPISimple) {
+                        testResults.gameFunctions = true;
+                        logResult('apiResult', `✅ Game Functions: SUCESSO\n🎉 Game usando API simplificada`, 'success');
+                    } else {
+                        testResults.gameFunctions = false;
+                        logResult('apiResult', `❌ Game Functions: FALHOU\n💬 Game usando API antiga`, 'error');
+                    }
+                } else {
+                    testResults.gameFunctions = false;
+                    logResult('apiResult', `❌ Game Functions: FALHOU\n💬 CriminalMindsGame não encontrado`, 'error');
+                }
+            } catch (error) {
+                testResults.gameFunctions = false;
+                logResult('apiResult', `❌ Game Functions: ERRO\n💬 ${error.message}`, 'error');
+            }
+            updateStatus();
+        }
+
+        async function testRegistration() {
+            try {
+                logResult('apiResult', '🔍 Testando Registro...', 'info');
+                
+                const api = window.CriminalMindsAPISimple;
+                const response = await api.register('Teste Final', 'teste@final.com', 'DetetiveFinal', '123456');
+                
+                if (response.success) {
+                    testResults.registration = true;
+                    logResult('apiResult', `✅ Registro: SUCESSO\n🎉 Usuário criado: ${response.user.email}`, 'success');
+                } else {
+                    testResults.registration = false;
+                    logResult('apiResult', `❌ Registro: FALHOU\n💬 ${response.error}`, 'error');
+                }
+            } catch (error) {
+                testResults.registration = false;
+                logResult('apiResult', `❌ Registro: ERRO\n💬 ${error.message}`, 'error');
+            }
+            updateStatus();
+        }
+
+        // Executar testes automáticos ao carregar
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testAPIClient();
+                testGameFunctions();
+                testRegistration();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 
