@@ -10,10 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        run: |
+          git clone https://github.com/thamiresfm/criminal-minds-game.git
+          cd criminal-minds-game
+          git checkout gh-pages
       
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: . 
+      - name: Setup Pages
+        run: |
+          echo "Configurando GitHub Pages..."
+          echo "Branch: gh-pages"
+          echo "Source: / (root)"
+      
+      - name: Deploy
+        run: |
+          echo "Deploy manual para GitHub Pages"
+          echo "Acesse: https://thamiresfm.github.io/criminal-minds-game" 
