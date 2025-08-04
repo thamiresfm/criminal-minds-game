@@ -8,7 +8,7 @@
  */
 class CriminalMindsGame {
   constructor() {
-    this.api = window.CriminalMindsAPI;
+    this.api = window.CriminalMindsAPISimple;
     this.gameState = {
       isPlaying: false,
       currentPage: window.location.pathname,
