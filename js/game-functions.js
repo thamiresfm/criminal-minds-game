@@ -63,8 +63,14 @@ class CriminalMindsGame {
     const isPublicPage = publicPages.includes(currentPage) || publicFiles.includes(currentFile);
     const hasWorkingAPI = this.api && this.api.hasAPIEndpoint;
     
-    if (isPublicPage || !hasWorkingAPI) {
-      console.log(`📄 Verificação de auth pulada: página="${currentPage}", arquivo="${currentFile}", isPublic=${isPublicPage}, hasAPI=${hasWorkingAPI}`);
+    // API está funcionando - permitir autenticação
+    if (isPublicPage) {
+      console.log(`📄 Página pública detectada: "${currentPage}" - Auth não obrigatória`);
+      return;
+    }
+    
+    if (!hasWorkingAPI) {
+      console.log(`⚠️ API não disponível - Modo offline`);
       return;
     }
     

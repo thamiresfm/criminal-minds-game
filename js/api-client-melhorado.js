@@ -32,13 +32,8 @@ const API_CONFIG = {
     // Se não há baseURL, não temos endpoint
     if (!this.baseURL) return false;
     
-    // Se estamos no GitHub Pages, verificar se API está funcionando
-    if (this.isGitHubPages) {
-      // Modo temporário: API com problemas de DB - desabilitar auth forçada
-      console.log('⚠️ GitHub Pages detectado - Modo desenvolvimento ativado');
-      return false;
-    }
-    
+    // API está funcionando - habilitar autenticação
+    console.log('✅ API Vercel detectada - Autenticação habilitada');
     return true;
   }
 };
