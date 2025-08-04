@@ -38,7 +38,7 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://thamiresfm.github.io');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Version, X-Client, x-api-version, x-client, User-Agent');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Version, X-Client, x-api-version, x-client, User-Agent, Accept, Content-Type');
   res.header('Access-Control-Expose-Headers', 'X-API-Version, X-Client');
   
   // Responder a requisições OPTIONS
@@ -49,6 +49,32 @@ app.use((req, res, next) => {
   
   next();
 });
+
+// CORS adicional usando o pacote cors como backup
+app.use(cors({
+  origin: [
+    'https://thamiresfm.github.io',
+    'https://*.github.io',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Origin',
+    'X-API-Version',
+    'X-Client',
+    'x-api-version',
+    'x-client',
+    'X-API-Version',
+    'Accept',
+    'User-Agent'
+  ],
+  exposedHeaders: ['X-API-Version', 'X-Client']
+}));
 
 // Segurança
 app.use(helmet({
