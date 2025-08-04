@@ -401,16 +401,30 @@
                 }
                 
                 if (response.success) {
-            // Feedback visual de sucesso
+                    // Feedback visual de sucesso
                     submitButton.innerHTML = '✅ Conta criada com sucesso!';
-            submitButton.style.background = 'linear-gradient(to right, #10b981, #059669)';
+                    submitButton.style.background = 'linear-gradient(to right, #10b981, #059669)';
                     
-                    console.log('🎉 Usuário registrado no MySQL:', response.user.email);
-            
-            // Redirecionar para o lobby após 2 segundos
-            setTimeout(() => {
-                window.location.href = 'lobby.html';
-            }, 2000);
+                    console.log('🎉 Usuário registrado no banco:', response.user.email);
+                    
+                    // SALVAR DADOS DO USUÁRIO E FAZER LOGIN AUTOMÁTICO
+                    if (response.user && response.token) {
+                        // Salvar dados do usuário
+                        localStorage.setItem('auth_token', response.token);
+                        localStorage.setItem('user_data', JSON.stringify(response.user));
+                        localStorage.setItem('criminalMinds_isLoggedIn', 'true');
+                        localStorage.setItem('criminalMinds_username', response.user.detectiveName);
+                        localStorage.setItem('criminalMinds_userEmail', response.user.email);
+                        
+                        console.log('🔐 Login automático realizado após registro bem-sucedido');
+                        
+                        // Redirecionar para o lobby após 2 segundos
+                        setTimeout(() => {
+                            window.location.href = 'lobby.html';
+                        }, 2000);
+                    } else {
+                        throw new Error('Dados de usuário incompletos após registro');
+                    }
                 } else {
                     throw new Error(response.error || 'Erro desconhecido no cadastro');
                 }
@@ -456,9 +470,10 @@
                         
                         console.log('📴 Conta salva offline, será sincronizada quando API estiver disponível');
                         
-                        // Redirecionar
+                        // NÃO FAZER LOGIN AUTOMÁTICO EM MODO OFFLINE
+                        // Usuário deve fazer login manual quando API estiver disponível
                         setTimeout(() => {
-            window.location.href = 'lobby.html';
+                            window.location.href = 'login.html';
                         }, 2500);
                         
                         return; // Sair da função sem mostrar erro
