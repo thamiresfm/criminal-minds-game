@@ -809,6 +809,7 @@
     <script src="js/game-functions.js"></script>
     <script src="js/comprehensive-test-system.js"></script>
     <script src="js/enhanced-game-system.js"></script>
+    <script src="js/complete-hand-system.js"></script>
 </head>
 <body>
     <div class="game-container">
@@ -1624,6 +1625,16 @@
                     console.log('🎮 Sistema aprimorado do jogo inicializado');
                 } catch (error) {
                     console.error('Erro ao inicializar sistema aprimorado:', error);
+                }
+            }
+            
+            // Inicializar sistema de mão completa
+            if (typeof CompleteHandSystem !== 'undefined') {
+                try {
+                    window.completeHandSystem = new CompleteHandSystem();
+                    console.log('🃏 Sistema de mão completa inicializado');
+                } catch (error) {
+                    console.error('Erro ao inicializar sistema de mão completa:', error);
                 }
             }
         };
