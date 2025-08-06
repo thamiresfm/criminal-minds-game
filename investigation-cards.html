@@ -808,6 +808,7 @@
     <script src="js/api-client-simple.js?v=20241205"></script>
     <script src="js/game-functions.js"></script>
     <script src="js/comprehensive-test-system.js"></script>
+    <script src="js/enhanced-game-system.js"></script>
 </head>
 <body>
     <div class="game-container">
@@ -1613,6 +1614,16 @@
                     console.log('🧪 Sistema completo de testes e melhorias inicializado');
                 } catch (error) {
                     console.error('Erro ao inicializar sistema de testes:', error);
+                }
+            }
+            
+            // Inicializar sistema aprimorado do jogo
+            if (typeof EnhancedGameSystem !== 'undefined') {
+                try {
+                    window.enhancedGameSystem = new EnhancedGameSystem();
+                    console.log('🎮 Sistema aprimorado do jogo inicializado');
+                } catch (error) {
+                    console.error('Erro ao inicializar sistema aprimorado:', error);
                 }
             }
         };
