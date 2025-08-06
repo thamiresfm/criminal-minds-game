@@ -811,6 +811,7 @@
     <script src="js/enhanced-game-system.js"></script>
     <script src="js/complete-hand-system.js"></script>
     <script src="js/aggressive-fix-system.js"></script>
+    <script src="js/layout-fix-system.js"></script>
 </head>
 <body>
     <div class="game-container">
@@ -1651,6 +1652,21 @@
                     }, 1000);
                 } catch (error) {
                     console.error('Erro ao inicializar sistema de correção agressiva:', error);
+                }
+            }
+            
+            // Inicializar sistema de correção de layout
+            if (typeof LayoutFixSystem !== 'undefined') {
+                try {
+                    window.layoutFixSystem = new LayoutFixSystem();
+                    console.log('🎨 Sistema de correção de layout inicializado');
+                    
+                    // Executar correção de layout
+                    setTimeout(() => {
+                        window.layoutFixSystem.run();
+                    }, 1500);
+                } catch (error) {
+                    console.error('Erro ao inicializar sistema de correção de layout:', error);
                 }
             }
         };
