@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎯 Criminal Minds Game</title>
     <meta name="description" content="Jogo de investigação criminal online para até 6 jogadores">
+    <script src="js/compact-layout-system.js"></script>
     <style>
         * {
             margin: 0;
@@ -321,7 +322,7 @@
                 🕵️ Investigação Criminal Online • Até 6 Jogadores • Tempo Real
             </p>
 
-                            <a href="login-bypass.html" class="play-button">
+                            <a href="login.html" class="play-button">
                 <span>🎮 Começar a Jogar</span>
                 <div class="play-button-icon">
                     <span>→</span>
@@ -412,6 +413,21 @@
         // Animação de entrada
         window.addEventListener('load', () => {
             document.querySelector('.content').style.animation = 'fadeInUp 1s ease-out';
+            
+            // Inicializar sistema de layout compacto
+            if (typeof CompactLayoutSystem !== 'undefined') {
+                try {
+                    window.compactLayoutSystem = new CompactLayoutSystem();
+                    console.log('📐 Sistema de layout compacto inicializado');
+                    
+                    // Executar sistema
+                    setTimeout(() => {
+                        window.compactLayoutSystem.run();
+                    }, 500);
+                } catch (error) {
+                    console.error('Erro ao inicializar sistema de layout compacto:', error);
+                }
+            }
         });
         </script>
 </body>
