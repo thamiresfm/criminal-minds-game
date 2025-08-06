@@ -807,6 +807,7 @@
     <!-- Criminal Minds API v2.0 - Sistema Melhorado -->
     <script src="js/api-client-simple.js?v=20241205"></script>
     <script src="js/game-functions.js"></script>
+    <script src="js/comprehensive-test-system.js"></script>
 </head>
 <body>
     <div class="game-container">
@@ -1603,6 +1604,16 @@
                 userDiv.className = 'chat-message';
                 userDiv.innerHTML = `<span class="chat-user">🕵️ ${detectiveName}:</span> Online - 47 cartas`;
                 teamList.appendChild(userDiv);
+            }
+            
+            // Inicializar sistema completo de testes e melhorias
+            if (typeof ComprehensiveTestSystem !== 'undefined') {
+                try {
+                    window.comprehensiveTestSystem = new ComprehensiveTestSystem();
+                    console.log('🧪 Sistema completo de testes e melhorias inicializado');
+                } catch (error) {
+                    console.error('Erro ao inicializar sistema de testes:', error);
+                }
             }
         };
     </script>
