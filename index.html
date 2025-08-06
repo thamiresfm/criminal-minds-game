@@ -6,6 +6,7 @@
     <title>🎯 Criminal Minds Game</title>
     <meta name="description" content="Jogo de investigação criminal online para até 6 jogadores">
     <script src="js/compact-layout-system.js"></script>
+    <script src="js/real-status-system.js"></script>
     <style>
         * {
             margin: 0;
@@ -426,6 +427,21 @@
                     }, 500);
                 } catch (error) {
                     console.error('Erro ao inicializar sistema de layout compacto:', error);
+                }
+            }
+            
+            // Inicializar sistema de status real
+            if (typeof RealStatusSystem !== 'undefined') {
+                try {
+                    window.realStatusSystem = new RealStatusSystem();
+                    console.log('🔄 Sistema de status real inicializado');
+                    
+                    // Executar sistema
+                    setTimeout(() => {
+                        window.realStatusSystem.run();
+                    }, 1000);
+                } catch (error) {
+                    console.error('Erro ao inicializar sistema de status real:', error);
                 }
             }
         });
