@@ -7,6 +7,10 @@
     <meta name="description" content="Jogo de investigação criminal online para até 6 jogadores">
     <script src="js/compact-layout-system.js"></script>
     <script src="js/real-status-system.js"></script>
+    <script src="js/layout-alignment-fix.js"></script>
+    <script src="js/perfect-alignment-fix.js"></script>
+    <script src="js/remove-online-text.js"></script>
+    <script src="js/remove-online-complete.js"></script>
     <style>
         * {
             margin: 0;
@@ -442,6 +446,66 @@
                     }, 1000);
                 } catch (error) {
                     console.error('Erro ao inicializar sistema de status real:', error);
+                }
+            }
+            
+            // Inicializar sistema de correção de alinhamento
+            if (typeof LayoutAlignmentFix !== 'undefined') {
+                try {
+                    window.layoutAlignmentFix = new LayoutAlignmentFix();
+                    console.log('🔧 Sistema de correção de alinhamento inicializado');
+                    
+                    // Executar sistema
+                    setTimeout(() => {
+                        window.layoutAlignmentFix.run();
+                    }, 1500);
+                } catch (error) {
+                    console.error('Erro ao inicializar sistema de correção de alinhamento:', error);
+                }
+            }
+            
+            // Inicializar sistema de correção de alinhamento perfeito
+            if (typeof PerfectAlignmentFix !== 'undefined') {
+                try {
+                    window.perfectAlignmentFix = new PerfectAlignmentFix();
+                    console.log('🎯 Sistema de correção de alinhamento perfeito inicializado');
+                    
+                    // Executar sistema
+                    setTimeout(() => {
+                        window.perfectAlignmentFix.run();
+                    }, 2000);
+                } catch (error) {
+                    console.error('Erro ao inicializar sistema de correção de alinhamento perfeito:', error);
+                }
+            }
+            
+            // Inicializar sistema de remoção do texto "Online"
+            if (typeof RemoveOnlineText !== 'undefined') {
+                try {
+                    window.removeOnlineText = new RemoveOnlineText();
+                    console.log('🗑️ Sistema de remoção do texto "Online" inicializado');
+                    
+                    // Executar sistema
+                    setTimeout(() => {
+                        window.removeOnlineText.run();
+                    }, 2500);
+                } catch (error) {
+                    console.error('Erro ao inicializar sistema de remoção do texto "Online":', error);
+                }
+            }
+            
+            // Inicializar sistema de remoção completa do elemento Online
+            if (typeof RemoveOnlineComplete !== 'undefined') {
+                try {
+                    window.removeOnlineComplete = new RemoveOnlineComplete();
+                    console.log('🗑️ Sistema de remoção completa do elemento Online inicializado');
+                    
+                    // Executar sistema
+                    setTimeout(() => {
+                        window.removeOnlineComplete.run();
+                    }, 3000);
+                } catch (error) {
+                    console.error('Erro ao inicializar sistema de remoção completa do elemento Online:', error);
                 }
             }
         });
