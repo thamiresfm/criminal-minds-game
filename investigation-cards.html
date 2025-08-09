@@ -97,6 +97,15 @@
             flex-shrink: 0;
         }
 
+        /* OCULTAR SEÇÃO MINHA MÃO */
+        .deck-area,
+        [class*="hand"],
+        [id*="hand"],
+        [class*="mao"],
+        [id*="mao"] {
+            display: none !important;
+        }
+        
         /* SISTEMA DE CARTAS - GRID RESPONSIVO BASEADO NA DIFICULDADE */
         .cards-container {
             display: grid;
