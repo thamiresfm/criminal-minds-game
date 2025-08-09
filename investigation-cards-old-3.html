@@ -807,12 +807,12 @@
     <!-- Criminal Minds API v2.0 - Sistema Melhorado -->
     <script src="js/api-client-simple.js?v=20241205"></script>
     <script src="js/game-functions.js"></script>
-    <script defer src="js/comprehensive-test-system.js"></script>
-    <script defer src="js/enhanced-game-system.js"></script>
-    <script defer src="js/complete-hand-system.js"></script>
-    <!-- AggressiveFix desativado nesta tela -->
-    <script defer src="js/layout-fix-system.js"></script>
-    <script defer src="js/layout-diagnostic-system.js"></script>
+    <script src="js/comprehensive-test-system.js"></script>
+    <script src="js/enhanced-game-system.js"></script>
+    <script src="js/complete-hand-system.js"></script>
+    <script src="js/aggressive-fix-system.js"></script>
+    <script src="js/layout-fix-system.js"></script>
+    <script src="js/layout-diagnostic-system.js"></script>
 </head>
 <body>
     <div class="game-container">
@@ -1460,14 +1460,12 @@
 
         function addChatMessage(message, sender) {
             const chatContainer = document.getElementById('chatContainer');
-            if (!chatContainer) {
-                console.warn('⚠️ chatContainer não encontrado. Mensagem ignorada:', message);
-                return;
-            }
             const userName = sender === 'self' ? (localStorage.getItem('detectiveName') || 'Detetive') : sender;
+            
             const messageDiv = document.createElement('div');
             messageDiv.className = 'chat-message';
             messageDiv.innerHTML = `<span class="chat-user">${sender === 'self' ? '🕵️' : ''} ${userName}:</span> ${message}`;
+            
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
@@ -1662,8 +1660,20 @@
                 }
             }
 
-            // Desabilitado: AggressiveFixSystem estava limpando o DOM e causando loops
-            // Caso necessário no futuro, reativar com muito cuidado
+            // Inicializar sistema de correção agressiva (somente fallback)
+            if (typeof AggressiveFixSystem !== 'undefined') {
+                try {
+                    window.aggressiveFixSystem = new AggressiveFixSystem();
+                    console.log('⚡ Sistema de correção agressiva disponível (modo passivo se layout presente)');
+                    
+                    // Executar apenas se necessário (o próprio sistema decide)
+                    setTimeout(() => {
+                        window.aggressiveFixSystem.run();
+                    }, 1500);
+                } catch (error) {
+                    console.error('Erro ao inicializar sistema de correção agressiva:', error);
+                }
+            }
             
             // Inicializar sistema de correção de layout
             if (typeof LayoutFixSystem !== 'undefined') {

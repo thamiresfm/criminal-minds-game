@@ -109,11 +109,7 @@ class LayoutFixSystem {
             }
         `;
         
-        if (document.head) {
-            document.head.appendChild(gridStyle);
-        } else {
-            console.warn('⚠️ HEAD ausente ao aplicar gridStyle');
-        }
+        document.head.appendChild(gridStyle);
         
         console.log('✅ Layout do grid corrigido');
     }
@@ -193,11 +189,7 @@ class LayoutFixSystem {
             }
         `;
         
-        if (document.head) {
-            document.head.appendChild(cardStyle);
-        } else {
-            console.warn('⚠️ HEAD ausente ao aplicar cardStyle');
-        }
+        document.head.appendChild(cardStyle);
         
         console.log('✅ Design das cartas melhorado');
     }
@@ -274,11 +266,7 @@ class LayoutFixSystem {
             }
         `;
         
-        if (document.head) {
-            document.head.appendChild(headerStyle);
-        } else {
-            console.warn('⚠️ HEAD ausente ao aplicar headerStyle');
-        }
+        document.head.appendChild(headerStyle);
         
         console.log('✅ Layout do header otimizado');
     }
@@ -344,11 +332,7 @@ class LayoutFixSystem {
             }
         `;
         
-        if (document.head) {
-            document.head.appendChild(sidebarStyle);
-        } else {
-            console.warn('⚠️ HEAD ausente ao aplicar sidebarStyle');
-        }
+        document.head.appendChild(sidebarStyle);
         
         console.log('✅ Alinhamento das sidebars corrigido');
     }
@@ -430,11 +414,7 @@ class LayoutFixSystem {
             }
         `;
         
-        if (document.head) {
-            document.head.appendChild(responsiveStyle);
-        } else {
-            console.warn('⚠️ HEAD ausente ao aplicar responsiveStyle');
-        }
+        document.head.appendChild(responsiveStyle);
         
         console.log('✅ Responsividade melhorada');
     }

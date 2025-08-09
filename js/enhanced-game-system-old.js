@@ -32,19 +32,13 @@ class EnhancedGameSystem {
         console.log('🎮 EnhancedGameSystem: Inicializando sistema aprimorado...');
         
         try {
-            // Microtask batching para não bloquear o thread principal
-            Promise.resolve()
-                .then(() => this.setupCardSystem())
-                .then(() => this.setupAccusationSystem())
-                .then(() => this.setupGameFlow())
-                .then(() => this.setupInfrastructure())
-                .then(() => this.runSystemTests())
-                .then(() => {
-                    // Sinalizar que o markup/estado inicial do jogo está pronto
-                    document.dispatchEvent(new CustomEvent('enhanced:ready'));
-                    console.log('✅ EnhancedGameSystem: Sistema inicializado com sucesso');
-                })
-                .catch((error) => console.error('❌ EnhancedGameSystem: Erro na inicialização', error));
+            this.setupCardSystem();
+            this.setupAccusationSystem();
+            this.setupGameFlow();
+            this.setupInfrastructure();
+            this.runSystemTests();
+            
+            console.log('✅ EnhancedGameSystem: Sistema inicializado com sucesso');
         } catch (error) {
             console.error('❌ EnhancedGameSystem: Erro na inicialização', error);
         }

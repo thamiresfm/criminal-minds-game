@@ -32,14 +32,6 @@ class ComprehensiveTestSystem {
         this.init();
     }
 
-    // Stub opcional para evitar quebras caso algum código externo espere este nome
-    initLevelSystemModule() {
-        if (typeof this.initLevelSystem === 'function') {
-            return this.initLevelSystem();
-        }
-        console.warn('initLevelSystemModule(): não implementado; ignorando.');
-    }
-
     /**
      * Inicialização do sistema
      */
@@ -82,14 +74,7 @@ class ComprehensiveTestSystem {
         
         // Módulo de sistema de níveis
         if (this.config.testModules.levelSystem) {
-            // chamar método existente com fallback seguro
-            if (typeof this.initLevelSystemModule === 'function') {
-                this.initLevelSystemModule();
-            } else if (typeof this.initLevelSystem === 'function') {
-                this.initLevelSystem();
-            } else {
-                console.warn('initLevelSystemModule: módulo não implementado (no-op)');
-            }
+            this.initLevelSystemModule();
         }
         
         // Módulo de coleção dinâmica

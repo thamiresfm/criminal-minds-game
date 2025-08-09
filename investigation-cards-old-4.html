@@ -807,12 +807,12 @@
     <!-- Criminal Minds API v2.0 - Sistema Melhorado -->
     <script src="js/api-client-simple.js?v=20241205"></script>
     <script src="js/game-functions.js"></script>
-    <script defer src="js/comprehensive-test-system.js"></script>
-    <script defer src="js/enhanced-game-system.js"></script>
-    <script defer src="js/complete-hand-system.js"></script>
-    <!-- AggressiveFix desativado nesta tela -->
-    <script defer src="js/layout-fix-system.js"></script>
-    <script defer src="js/layout-diagnostic-system.js"></script>
+    <script src="js/comprehensive-test-system.js"></script>
+    <script src="js/enhanced-game-system.js"></script>
+    <script src="js/complete-hand-system.js"></script>
+    <script src="js/aggressive-fix-system.js"></script>
+    <script src="js/layout-fix-system.js"></script>
+    <script src="js/layout-diagnostic-system.js"></script>
 </head>
 <body>
     <div class="game-container">
@@ -1662,8 +1662,23 @@
                 }
             }
 
-            // Desabilitado: AggressiveFixSystem estava limpando o DOM e causando loops
-            // Caso necessário no futuro, reativar com muito cuidado
+            // Adiar o AggressiveFix para depois de 4s (fallback extremo)
+            setTimeout(() => {
+                if (typeof AggressiveFixSystem !== 'undefined') {
+                    try {
+                        // Só rodar se não existir o layout principal ainda
+                        if (!document.querySelector('.game-container')) {
+                            window.aggressiveFixSystem = new AggressiveFixSystem();
+                            console.log('⚡ AggressiveFixSystem executado como fallback (layout ausente após 4s)');
+                            window.aggressiveFixSystem.run();
+                        } else {
+                            console.log('✅ Layout principal presente. AggressiveFixSystem não será executado.');
+                        }
+                    } catch (error) {
+                        console.error('Erro ao executar AggressiveFixSystem:', error);
+                    }
+                }
+            }, 4000);
             
             // Inicializar sistema de correção de layout
             if (typeof LayoutFixSystem !== 'undefined') {

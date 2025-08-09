@@ -807,12 +807,12 @@
     <!-- Criminal Minds API v2.0 - Sistema Melhorado -->
     <script src="js/api-client-simple.js?v=20241205"></script>
     <script src="js/game-functions.js"></script>
-    <script defer src="js/comprehensive-test-system.js"></script>
-    <script defer src="js/enhanced-game-system.js"></script>
-    <script defer src="js/complete-hand-system.js"></script>
-    <!-- AggressiveFix desativado nesta tela -->
-    <script defer src="js/layout-fix-system.js"></script>
-    <script defer src="js/layout-diagnostic-system.js"></script>
+    <script src="js/comprehensive-test-system.js"></script>
+    <script src="js/enhanced-game-system.js"></script>
+    <script src="js/complete-hand-system.js"></script>
+    <script src="js/aggressive-fix-system.js"></script>
+    <script src="js/layout-fix-system.js"></script>
+    <script src="js/layout-diagnostic-system.js"></script>
 </head>
 <body>
     <div class="game-container">
@@ -1145,10 +1145,7 @@
             const timer = setInterval(() => {
                 const minutes = Math.floor(gameTime / 60);
                 const seconds = gameTime % 60;
-                const timerEl = document.getElementById('gameTimer');
-                if (timerEl) {
-                    timerEl.textContent = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
-                }
+                document.getElementById('gameTimer').textContent = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
                 
                 if (gameTime <= 0) {
                     clearInterval(timer);
@@ -1460,14 +1457,12 @@
 
         function addChatMessage(message, sender) {
             const chatContainer = document.getElementById('chatContainer');
-            if (!chatContainer) {
-                console.warn('⚠️ chatContainer não encontrado. Mensagem ignorada:', message);
-                return;
-            }
             const userName = sender === 'self' ? (localStorage.getItem('detectiveName') || 'Detetive') : sender;
+            
             const messageDiv = document.createElement('div');
             messageDiv.className = 'chat-message';
             messageDiv.innerHTML = `<span class="chat-user">${sender === 'self' ? '🕵️' : ''} ${userName}:</span> ${message}`;
+            
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
@@ -1646,6 +1641,21 @@
                 }
             }
             
+            // Inicializar sistema de correção agressiva
+            if (typeof AggressiveFixSystem !== 'undefined') {
+                try {
+                    window.aggressiveFixSystem = new AggressiveFixSystem();
+                    console.log('⚡ Sistema de correção agressiva inicializado');
+                    
+                    // Executar correção agressiva
+                    setTimeout(() => {
+                        window.aggressiveFixSystem.run();
+                    }, 1000);
+                } catch (error) {
+                    console.error('Erro ao inicializar sistema de correção agressiva:', error);
+                }
+            }
+            
             // Inicializar sistema de diagnóstico de layout PRIMEIRO
             if (typeof LayoutDiagnosticSystem !== 'undefined') {
                 try {
@@ -1656,15 +1666,12 @@
                     setTimeout(() => {
                         window.layoutDiagnostic.forceFixBasedOnDiagnostic();
                         window.layoutDiagnostic.runRealTimeDiagnostic();
-                    }, 500);
+                    }, 1000);
                 } catch (error) {
                     console.error('Erro ao inicializar sistema de diagnóstico:', error);
                 }
             }
 
-            // Desabilitado: AggressiveFixSystem estava limpando o DOM e causando loops
-            // Caso necessário no futuro, reativar com muito cuidado
-            
             // Inicializar sistema de correção de layout
             if (typeof LayoutFixSystem !== 'undefined') {
                 try {

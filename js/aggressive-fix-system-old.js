@@ -26,17 +26,10 @@ class AggressiveFixSystem {
         console.log('⚡ AggressiveFixSystem: Inicializando correção agressiva...');
         
         try {
-            // Se a estrutura principal do jogo já existe, NÃO sobrescrever o DOM
-            const existingGameLayout = document.querySelector('.game-container');
-            if (existingGameLayout) {
-                console.log('🛑 Estrutura principal existente detectada (.game-container). AggressiveFixSystem ficará em modo passivo.');
-                this.applySafeStyles();
-            } else {
-                this.forceCleanState();
-                this.removeAllConflicts();
-                this.recreateBasicStructure();
-                this.ensureCoreFunctionality();
-            }
+            this.forceCleanState();
+            this.removeAllConflicts();
+            this.recreateBasicStructure();
+            this.ensureCoreFunctionality();
             
             console.log('✅ AggressiveFixSystem: Sistema inicializado com sucesso');
         } catch (error) {
@@ -462,18 +455,12 @@ class AggressiveFixSystem {
     run() {
         console.log('⚡ Executando correção agressiva...');
         
-        // Aplicar correções somente se a estrutura principal não existir
-        const existingGameLayout = document.querySelector('.game-container');
-        if (existingGameLayout) {
-            console.log('🛑 Execução interrompida: layout principal já presente. Aplicando apenas estilos seguros.');
-            this.applySafeStyles();
-        } else {
-            this.forceCleanState();
-            this.removeAllConflicts();
-            this.recreateBasicStructure();
-            this.ensureCoreFunctionality();
-            this.applySafeStyles();
-        }
+        // Aplicar correções
+        this.forceCleanState();
+        this.removeAllConflicts();
+        this.recreateBasicStructure();
+        this.ensureCoreFunctionality();
+        this.applySafeStyles();
         
         // Verificar status
         setTimeout(() => {

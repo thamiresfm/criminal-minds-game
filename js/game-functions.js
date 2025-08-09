@@ -532,3 +532,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 console.log('✅ Game Functions carregadas com sucesso!');
+
+// ================================
+// Helpers de performance (globais)
+// ================================
+window.requestIdle = (cb) => {
+  if ('requestIdleCallback' in window) return window.requestIdleCallback(cb);
+  return setTimeout(cb, 1);
+};
+
+window.deferTask = (cb) => Promise.resolve().then(cb);

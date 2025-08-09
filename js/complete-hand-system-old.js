@@ -9,7 +9,6 @@
 
 class CompleteHandSystem {
     constructor() {
-        this._initialized = false;
         this.config = {
             enableCompleteHand: true,
             showAllCards: true,
@@ -27,19 +26,13 @@ class CompleteHandSystem {
             { id: 7, name: "Confissão", description: "Admissão de culpa", rarity: "Legendary", power: 7 }
         ];
         
-        // Aguardar o evento do sistema aprimorado para evitar correr antes do DOM
-        document.addEventListener('enhanced:ready', () => this.init(), { once: true });
+        this.init();
     }
 
     /**
      * Inicialização do sistema
      */
     init() {
-        if (this._initialized) {
-            console.debug('CompleteHandSystem: init ignorado (já inicializado).');
-            return;
-        }
-        this._initialized = true;
         console.log('🃏 CompleteHandSystem: Inicializando sistema de mão completa...');
         
         try {
@@ -188,9 +181,7 @@ class CompleteHandSystem {
             }
         `;
         
-        if (document.head) {
-            document.head.appendChild(handStyle);
-        }
+        document.head.appendChild(handStyle);
         
         console.log('✅ Mão completa configurada');
     }
@@ -233,12 +224,7 @@ class CompleteHandSystem {
             
             // Inserir no local apropriado
             const gameContainer = document.querySelector('.game-container') || document.querySelector('.content') || document.body;
-            if (gameContainer) {
-                gameContainer.appendChild(handContainer);
-            } else {
-                console.warn('⚠️ gameContainer não encontrado ao criar hand-container. Abortando.');
-                return;
-            }
+            gameContainer.appendChild(handContainer);
         }
         
         // Adicionar todas as 7 cartas
@@ -260,9 +246,7 @@ class CompleteHandSystem {
                 this.playCard(card, cardElement);
             });
             
-            if (handContainer) {
-                handContainer.appendChild(cardElement);
-            }
+            handContainer.appendChild(cardElement);
         });
         
         console.log('✅ Todas as 7 cartas garantidas visíveis');
