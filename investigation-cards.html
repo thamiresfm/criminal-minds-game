@@ -84,6 +84,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            min-height: calc(100vh - 140px);
         }
 
         .section-title {
@@ -120,31 +121,35 @@
             overflow: hidden !important;
         }
         
-        /* SISTEMA DE CARTAS - GRID 3 COLUNAS EXATO DA IMAGEM */
+        /* SISTEMA DE CARTAS - GRID QUADRADO 3 COLUNAS */
         .cards-container {
             display: grid;
             grid-template-columns: repeat(3, 208px) !important;
             gap: 0.8rem;
             justify-content: center;
-            align-content: start;
+            align-content: center;
             width: 100%;
             max-width: 100%;
             padding: 0 0.8rem;
+            min-height: calc(100vh - 200px);
         }
         
         /* Grid específico para iniciante (6 cartas = 2x3) */
         .cards-container.beginner {
             grid-template-rows: repeat(2, 130px) !important;
+            align-content: center;
         }
         
         /* Grid específico para intermediário (9 cartas = 3x3) */
         .cards-container.intermediate {
             grid-template-rows: repeat(3, 130px) !important;
+            align-content: center;
         }
         
         /* Grid específico para difícil (12 cartas = 4x3) */
         .cards-container.hard {
             grid-template-rows: repeat(4, 130px) !important;
+            align-content: center;
         }
         
         /* Media queries para responsividade */
@@ -153,6 +158,7 @@
                 grid-template-columns: repeat(3, 180px) !important;
                 gap: 0.6rem;
                 padding: 0 0.6rem;
+                align-content: center;
             }
             
             .card {
@@ -163,27 +169,28 @@
         
         @media (max-width: 768px) {
             .cards-container {
-                grid-template-columns: repeat(2, 160px) !important;
-                gap: 0.6rem;
+                grid-template-columns: repeat(3, 140px) !important;
+                gap: 0.5rem;
+                align-content: center;
             }
             
             .card {
-                width: 160px;
-                height: 100px;
+                width: 140px;
+                height: 90px;
             }
         }
         
         @media (max-width: 480px) {
             .cards-container {
-                grid-template-columns: 1fr !important;
-                gap: 0.5rem;
-                padding: 0 0.4rem;
+                grid-template-columns: repeat(2, 120px) !important;
+                gap: 0.4rem;
+                padding: 0 0.3rem;
+                align-content: center;
             }
             
             .card {
-                width: 100%;
-                max-width: 200px;
-                height: 120px;
+                width: 120px;
+                height: 80px;
             }
         }
 
