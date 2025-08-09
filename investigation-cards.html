@@ -3135,15 +3135,82 @@
         // Inicializar
         simulateTeamActivity();
 
-        // SISTEMA DE CARTAS INTERATIVAS
+        // SISTEMA DE CARTAS INTERATIVAS COMPLETO
         let cardsPlayed = 0;
         let comboStreak = 0;
         let playerCoins = 500;
+        let totalEvidence = 0;
+        let currentCase = {
+            id: 'case-001',
+            title: 'Assassinato no Condomínio Luxo',
+            description: 'Uma mulher foi encontrada morta em seu apartamento. Todas as portas estavam trancadas por dentro.',
+            targetEvidence: 100,
+            collectedEvidence: 0,
+            suspects: ['Marcus Thompson', 'João Silva', 'Maria Santos'],
+            clues: []
+        };
+
+        // Configuração das cartas com evidências específicas
+        const cardEffects = {
+            interrogation: {
+                evidence: 8,
+                description: 'Revelou informações sobre o relacionamento conturbado da vítima',
+                clue: 'Vítima tinha problemas com ex-marido'
+            },
+            forensic: {
+                evidence: 12,
+                description: 'Encontrou fibras de tecido e impressões digitais',
+                clue: 'Impressões digitais de pessoa conhecida'
+            },
+            surveillance: {
+                evidence: 5,
+                description: 'Câmeras mostraram entrada e saída de pessoas',
+                clue: 'Suspeito visto no local na noite do crime'
+            },
+            search: {
+                evidence: 10,
+                description: 'Encontrou objetos pessoais e documentos',
+                clue: 'Documentos financeiros comprometedores'
+            },
+            psychology: {
+                evidence: 15,
+                description: 'Análise revelou padrão comportamental do assassino',
+                clue: 'Assassino tem conhecimento da vítima'
+            },
+            dna: {
+                evidence: 20,
+                description: 'DNA encontrado na cena do crime',
+                clue: 'DNA corresponde a um dos suspeitos'
+            },
+            witness: {
+                evidence: 6,
+                description: 'Testemunha viu atividade suspeita',
+                clue: 'Barulhos estranhos na noite do crime'
+            },
+            cameras: {
+                evidence: 9,
+                description: 'Gravações revelaram movimentação suspeita',
+                clue: 'Pessoa não identificada no elevador'
+            },
+            database: {
+                evidence: 11,
+                description: 'Histórico criminal revelou antecedentes',
+                clue: 'Suspeito tem histórico de violência'
+            }
+        };
 
         // Função para jogar uma carta
         function playCard(cardElement) {
             if (cardElement.classList.contains('played')) {
                 return; // Carta já foi jogada
+            }
+
+            const cardType = cardElement.getAttribute('data-type');
+            const cardEffect = cardEffects[cardType];
+            
+            if (!cardEffect) {
+                console.error('Tipo de carta não encontrado:', cardType);
+                return;
             }
 
             // Marcar carta como jogada
@@ -3153,11 +3220,25 @@
             cardsPlayed++;
             comboStreak++;
             
+            // Calcular evidências com combo
+            const baseEvidence = cardEffect.evidence;
+            const comboMultiplier = 1 + (comboStreak * 0.1); // 10% por combo
+            const totalEvidenceGained = Math.floor(baseEvidence * comboMultiplier);
+            
+            // Adicionar evidências ao caso
+            totalEvidence += totalEvidenceGained;
+            currentCase.collectedEvidence += totalEvidenceGained;
+            
+            // Adicionar pista ao caso
+            if (!currentCase.clues.includes(cardEffect.clue)) {
+                currentCase.clues.push(cardEffect.clue);
+            }
+            
             // Atualizar estatísticas
             updateStats();
             
             // Mostrar feedback visual
-            showCardPlayedFeedback(cardElement);
+            showCardPlayedFeedback(cardElement, totalEvidenceGained, cardEffect.description);
             
             // Adicionar moedas baseado no combo
             const baseCoins = 10;
@@ -3168,60 +3249,77 @@
             // Atualizar display de moedas
             document.getElementById('coin-display').textContent = playerCoins;
             
-            // Mostrar notificação de moedas ganhas
-            showCoinNotification(totalCoins, comboStreak);
+            // Mostrar notificação de evidências e moedas
+            showEvidenceNotification(totalEvidenceGained, cardEffect.description, totalCoins, comboStreak);
             
-            // Verificar se atingiu objetivo de cartas
-            if (cardsPlayed >= 20) {
+            // Verificar se atingiu objetivo de evidências
+            if (currentCase.collectedEvidence >= currentCase.targetEvidence) {
                 showGameEndModal('victory');
             }
         }
 
         // Função para mostrar feedback visual ao jogar carta
-        function showCardPlayedFeedback(cardElement) {
+        function showCardPlayedFeedback(cardElement, evidenceGained, description) {
             const feedback = document.createElement('div');
             feedback.style.cssText = `
                 position: absolute;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                background: linear-gradient(135deg, #fbbf24, #f59e0b);
-                color: #0f0f23;
-                padding: 0.5rem 1rem;
-                border-radius: 20px;
+                background: linear-gradient(135deg, #10b981, #059669);
+                color: white;
+                padding: 0.8rem 1.2rem;
+                border-radius: 25px;
                 font-weight: bold;
-                font-size: 0.9rem;
+                font-size: 1rem;
                 z-index: 1000;
-                animation: cardPlayedAnim 1s ease-out forwards;
+                animation: cardPlayedAnim 1.5s ease-out forwards;
+                text-align: center;
+                box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
             `;
-            feedback.textContent = `+${comboStreak}x COMBO!`;
+            feedback.innerHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 0.3rem;">🔍</div>
+                <div style="font-size: 0.9rem;">+${evidenceGained} Evidências</div>
+                <div style="font-size: 0.7rem; opacity: 0.9; margin-top: 0.2rem;">${description}</div>
+            `;
             
             cardElement.style.position = 'relative';
             cardElement.appendChild(feedback);
             
             setTimeout(() => {
                 feedback.remove();
-            }, 1000);
+            }, 1500);
         }
 
-        // Função para mostrar notificação de moedas
-        function showCoinNotification(coins, combo) {
+        // Função para mostrar notificação de evidências e moedas
+        function showEvidenceNotification(evidence, description, coins, combo) {
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: linear-gradient(135deg, #fbbf24, #f59e0b);
-                color: #0f0f23;
-                padding: 1rem;
-                border-radius: 10px;
+                background: linear-gradient(135deg, #1e40af, #3b82f6);
+                color: white;
+                padding: 1.2rem;
+                border-radius: 12px;
                 font-weight: bold;
                 z-index: 2000;
                 animation: slideInRight 0.5s ease-out;
+                box-shadow: 0 8px 25px rgba(30, 64, 175, 0.4);
+                max-width: 300px;
             `;
             notification.innerHTML = `
-                💰 +${coins} Moedas<br>
-                🔥 Combo ${combo}x
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <span style="font-size: 1.2rem;">🔍</span>
+                    <span style="font-size: 1.1rem;">+${evidence} Evidências</span>
+                </div>
+                <div style="font-size: 0.8rem; opacity: 0.9; margin-bottom: 0.5rem; line-height: 1.3;">
+                    ${description}
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+                    <span>💰 +${coins} Moedas</span>
+                    <span>🔥 Combo ${combo}x</span>
+                </div>
             `;
             
             document.body.appendChild(notification);
@@ -3229,20 +3327,48 @@
             setTimeout(() => {
                 notification.style.animation = 'slideOutRight 0.5s ease-in';
                 setTimeout(() => notification.remove(), 500);
-            }, 3000);
+            }, 4000);
         }
 
         // Função para atualizar estatísticas
         function updateStats() {
+            // Atualizar cartas jogadas
             document.getElementById('cardsPlayed').textContent = `${cardsPlayed}/20`;
             document.getElementById('comboStreak').textContent = `${comboStreak}x`;
             
             // Atualizar barras de progresso
             const cardsProgress = (cardsPlayed / 20) * 100;
             const comboProgress = Math.min((comboStreak / 10) * 100, 100);
+            const evidenceProgress = (currentCase.collectedEvidence / currentCase.targetEvidence) * 100;
             
             document.getElementById('cardsProgress').style.width = `${cardsProgress}%`;
             document.getElementById('comboProgress').style.width = `${comboProgress}%`;
+            
+            // Adicionar indicador de evidências se não existir
+            let evidenceIndicator = document.getElementById('evidenceProgress');
+            if (!evidenceIndicator) {
+                const statsContainer = document.querySelector('.sidebar .section-title').parentElement;
+                const evidenceDiv = document.createElement('div');
+                evidenceDiv.style.cssText = 'margin-bottom: 0.75rem;';
+                evidenceDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; font-size: 0.85rem;">
+                        <span>Evidências Coletadas</span>
+                        <span style="color: #10b981; font-weight: bold;">${currentCase.collectedEvidence}/${currentCase.targetEvidence}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="evidenceProgress" style="width: ${evidenceProgress}%; background: linear-gradient(90deg, #10b981, #059669);"></div>
+                    </div>
+                `;
+                statsContainer.appendChild(evidenceDiv);
+            } else {
+                evidenceIndicator.style.width = `${evidenceProgress}%`;
+            }
+            
+            // Atualizar título do caso com progresso
+            const caseTitle = document.querySelector('.case-title');
+            if (caseTitle) {
+                caseTitle.innerHTML = `🔍 ${currentCase.title} <span style="font-size: 0.8rem; color: #10b981;">(${currentCase.collectedEvidence}/${currentCase.targetEvidence})</span>`;
+            }
         }
 
         // Adicionar event listeners para as cartas
