@@ -215,6 +215,22 @@
         .card:hover {
             transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
             box-shadow: 0 20px 40px rgba(251, 191, 36, 0.2);
+            cursor: pointer;
+        }
+
+        .card:active {
+            transform: translateY(-5px) rotateX(2deg) rotateY(2deg);
+            box-shadow: 0 15px 30px rgba(251, 191, 36, 0.3);
+        }
+
+        .card.played {
+            opacity: 0.6;
+            transform: scale(0.95);
+            filter: grayscale(50%);
+        }
+
+        .card.played:hover {
+            transform: scale(0.95) translateY(-5px);
         }
 
         .card-inner {
@@ -1398,10 +1414,110 @@
         </div>
 
         <div class="main-area">
+            <div class="section-title">
+                🃏 Cartas de Investigação Ativas
+            </div>
             <div class="cards-container" id="cardsContainer">
-                <!-- Cartas serão geradas dinamicamente baseado na dificuldade -->
-                        </div>
+                <!-- Carta 1: Interrogatório -->
+                <div class="card" data-type="interrogation">
+                    <div class="card-icon">🔍</div>
+                    <div class="card-title">Interrogatório</div>
+                    <div class="card-description">Questiona suspeitos para obter informações cruciais</div>
+                    <div class="card-stats">
+                        <span>💬 +3 Evidências</span>
+                        <span>⚡ 2 Turnos</span>
                     </div>
+                </div>
+
+                <!-- Carta 2: Análise Forense -->
+                <div class="card" data-type="forensic">
+                    <div class="card-icon">🧬</div>
+                    <div class="card-title">Análise Forense</div>
+                    <div class="card-description">Examina evidências físicas no laboratório</div>
+                    <div class="card-stats">
+                        <span>🔬 +5 Evidências</span>
+                        <span>⚡ 3 Turnos</span>
+                    </div>
+                </div>
+
+                <!-- Carta 3: Vigilância -->
+                <div class="card" data-type="surveillance">
+                    <div class="card-icon">📹</div>
+                    <div class="card-title">Vigilância</div>
+                    <div class="card-description">Monitora movimentos suspeitos</div>
+                    <div class="card-stats">
+                        <span>👁️ +2 Evidências</span>
+                        <span>⚡ 1 Turno</span>
+                    </div>
+                </div>
+
+                <!-- Carta 4: Busca Domiciliar -->
+                <div class="card" data-type="search">
+                    <div class="card-icon">🏠</div>
+                    <div class="card-title">Busca Domiciliar</div>
+                    <div class="card-description">Revista residências em busca de pistas</div>
+                    <div class="card-stats">
+                        <span>🔍 +4 Evidências</span>
+                        <span>⚡ 2 Turnos</span>
+                    </div>
+                </div>
+
+                <!-- Carta 5: Análise Psicológica -->
+                <div class="card" data-type="psychology">
+                    <div class="card-icon">🧠</div>
+                    <div class="card-title">Análise Psicológica</div>
+                    <div class="card-description">Avalia o perfil psicológico do suspeito</div>
+                    <div class="card-stats">
+                        <span>💭 +6 Evidências</span>
+                        <span>⚡ 4 Turnos</span>
+                    </div>
+                </div>
+
+                <!-- Carta 6: Coleta de DNA -->
+                <div class="card" data-type="dna">
+                    <div class="card-icon">🧪</div>
+                    <div class="card-title">Coleta de DNA</div>
+                    <div class="card-description">Coleta amostras para análise genética</div>
+                    <div class="card-stats">
+                        <span>🧬 +7 Evidências</span>
+                        <span>⚡ 3 Turnos</span>
+                    </div>
+                </div>
+
+                <!-- Carta 7: Entrevista de Testemunha -->
+                <div class="card" data-type="witness">
+                    <div class="card-icon">👤</div>
+                    <div class="card-title">Entrevista de Testemunha</div>
+                    <div class="card-description">Obtém depoimentos de testemunhas</div>
+                    <div class="card-stats">
+                        <span>🗣️ +3 Evidências</span>
+                        <span>⚡ 1 Turno</span>
+                    </div>
+                </div>
+
+                <!-- Carta 8: Análise de Câmeras -->
+                <div class="card" data-type="cameras">
+                    <div class="card-icon">📷</div>
+                    <div class="card-title">Análise de Câmeras</div>
+                    <div class="card-description">Revisa gravações de segurança</div>
+                    <div class="card-stats">
+                        <span>📹 +4 Evidências</span>
+                        <span>⚡ 2 Turnos</span>
+                    </div>
+                </div>
+
+                <!-- Carta 9: Busca em Banco de Dados -->
+                <div class="card" data-type="database">
+                    <div class="card-icon">💾</div>
+                    <div class="card-title">Busca em Banco de Dados</div>
+                    <div class="card-description">Consulta registros criminais</div>
+                    <div class="card-stats">
+                        <span>🔍 +5 Evidências</span>
+                        <span>⚡ 2 Turnos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="sidebar">
             <div class="section-title">📊 Estatísticas</div>
@@ -2974,6 +3090,145 @@
         // Inicializar
         simulateTeamActivity();
 
+        // SISTEMA DE CARTAS INTERATIVAS
+        let cardsPlayed = 0;
+        let comboStreak = 0;
+        let playerCoins = 500;
+
+        // Função para jogar uma carta
+        function playCard(cardElement) {
+            if (cardElement.classList.contains('played')) {
+                return; // Carta já foi jogada
+            }
+
+            // Marcar carta como jogada
+            cardElement.classList.add('played');
+            
+            // Incrementar contadores
+            cardsPlayed++;
+            comboStreak++;
+            
+            // Atualizar estatísticas
+            updateStats();
+            
+            // Mostrar feedback visual
+            showCardPlayedFeedback(cardElement);
+            
+            // Adicionar moedas baseado no combo
+            const baseCoins = 10;
+            const comboBonus = Math.floor(comboStreak * 2);
+            const totalCoins = baseCoins + comboBonus;
+            playerCoins += totalCoins;
+            
+            // Atualizar display de moedas
+            document.getElementById('coin-display').textContent = playerCoins;
+            
+            // Mostrar notificação de moedas ganhas
+            showCoinNotification(totalCoins, comboStreak);
+            
+            // Verificar se atingiu objetivo de cartas
+            if (cardsPlayed >= 20) {
+                showGameEndModal('victory');
+            }
+        }
+
+        // Função para mostrar feedback visual ao jogar carta
+        function showCardPlayedFeedback(cardElement) {
+            const feedback = document.createElement('div');
+            feedback.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                color: #0f0f23;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-weight: bold;
+                font-size: 0.9rem;
+                z-index: 1000;
+                animation: cardPlayedAnim 1s ease-out forwards;
+            `;
+            feedback.textContent = `+${comboStreak}x COMBO!`;
+            
+            cardElement.style.position = 'relative';
+            cardElement.appendChild(feedback);
+            
+            setTimeout(() => {
+                feedback.remove();
+            }, 1000);
+        }
+
+        // Função para mostrar notificação de moedas
+        function showCoinNotification(coins, combo) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                color: #0f0f23;
+                padding: 1rem;
+                border-radius: 10px;
+                font-weight: bold;
+                z-index: 2000;
+                animation: slideInRight 0.5s ease-out;
+            `;
+            notification.innerHTML = `
+                💰 +${coins} Moedas<br>
+                🔥 Combo ${combo}x
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.5s ease-in';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        // Função para atualizar estatísticas
+        function updateStats() {
+            document.getElementById('cardsPlayed').textContent = `${cardsPlayed}/20`;
+            document.getElementById('comboStreak').textContent = `${comboStreak}x`;
+            
+            // Atualizar barras de progresso
+            const cardsProgress = (cardsPlayed / 20) * 100;
+            const comboProgress = Math.min((comboStreak / 10) * 100, 100);
+            
+            document.getElementById('cardsProgress').style.width = `${cardsProgress}%`;
+            document.getElementById('comboProgress').style.width = `${comboProgress}%`;
+        }
+
+        // Adicionar event listeners para as cartas
+        function initializeCards() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('click', () => playCard(card));
+            });
+        }
+
+        // CSS Animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes cardPlayedAnim {
+                0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+                50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+                100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+            }
+            
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
         // Recuperar dados do usuário
         window.onload = function() {
             const detectiveName = localStorage.getItem('detectiveName');
@@ -3048,6 +3303,10 @@
                     console.error('Erro ao inicializar sistema de correção de layout:', error);
                 }
             }
+            
+            // Inicializar sistema de cartas interativas
+            initializeCards();
+            console.log('🃏 Sistema de cartas interativas inicializado');
         };
     </script>
 </body>
