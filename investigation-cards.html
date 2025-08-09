@@ -91,12 +91,13 @@
             text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
         }
 
-        /* SISTEMA DE CARTAS MODERNO */
+        /* SISTEMA DE CARTAS MODERNO - 3 COLUNAS FIXAS */
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(3, 1fr) !important;
             gap: 1.5rem;
             margin-bottom: 2rem;
+            max-width: 100%;
         }
 
         .card {
@@ -710,7 +711,7 @@
         }
 
         /* CORREÇÕES CRÍTICAS DE LAYOUT */
-        .game-container {
+            .game-container {
             display: grid !important;
             grid-template-columns: 300px 1fr 300px !important;
             grid-template-rows: 80px 1fr !important;
@@ -719,17 +720,17 @@
             padding: 1rem !important;
             max-width: 100vw !important;
             overflow: hidden !important;
-        }
-        
-        .cards-container {
+            }
+
+            .cards-container {
             display: grid !important;
             grid-template-columns: repeat(2, 1fr) !important;
             gap: 1rem !important;
             margin-bottom: 1.5rem !important;
             max-width: 100% !important;
-        }
-        
-        .card {
+            }
+
+            .card {
             width: 100% !important;
             max-width: none !important;
             height: 160px !important;
@@ -776,7 +777,7 @@
                 min-height: 100vh !important;
                 padding: 0.8rem !important;
             }
-            
+
             .sidebar {
                 padding: 1rem 0.8rem !important;
                 overflow-x: visible !important;
@@ -790,7 +791,7 @@
             .chat-input-container {
                 max-width: 100% !important;
             }
-            
+
             .cards-container {
                 grid-template-columns: repeat(3, 1fr) !important;
             }
@@ -820,7 +821,7 @@
                 justify-content: center !important;
             }
         }
-        
+
         @media (max-width: 480px) {
             .cards-container {
                 grid-template-columns: 1fr !important;
@@ -844,9 +845,9 @@
             border: 2px solid rgba(251, 191, 36, 0.5) !important;
             box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4) !important;
             max-width: 100% !important;
-        }
-        
-        .mini-card {
+            }
+
+            .mini-card {
             height: 150px !important;
             min-height: 150px !important;
             display: flex !important;
@@ -1211,6 +1212,81 @@
         .achievements-container::-webkit-scrollbar-thumb:hover {
             background: rgba(251, 191, 36, 0.5);
         }
+
+        /* ESTILOS PARA SELETOR DE DIFICULDADE */
+        .difficulty-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            padding: 0.8rem 1.2rem;
+            border: 2px solid rgba(148, 163, 184, 0.3);
+            border-radius: 12px;
+            background: rgba(15, 15, 35, 0.8);
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .difficulty-btn.active {
+            border-color: #fbbf24;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(15, 15, 35, 0.9));
+            color: #fbbf24;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+
+        .difficulty-btn[data-difficulty="beginner"]:hover,
+        .difficulty-btn[data-difficulty="beginner"].active {
+            border-color: #10b981;
+            color: #10b981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .difficulty-btn[data-difficulty="intermediate"]:hover,
+        .difficulty-btn[data-difficulty="intermediate"].active {
+            border-color: #f59e0b;
+            color: #f59e0b;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .difficulty-btn[data-difficulty="hard"]:hover,
+        .difficulty-btn[data-difficulty="hard"].active {
+            border-color: #ef4444;
+            color: #ef4444;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .difficulty-btn small {
+            display: block;
+            font-size: 0.7rem;
+            opacity: 0.8;
+            margin-top: 0.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .difficulty-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .difficulty-btn {
+                min-width: 120px;
+            }
+        }
     </style>
     <!-- Criminal Minds API v2.0 - Sistema Melhorado -->
     <script src="js/api-client-simple.js?v=20241209_1"></script>
@@ -1280,126 +1356,26 @@
         <div class="main-area">
             <div class="section-title">🃏 Cartas de Investigação Ativas</div>
             
+            <!-- Seletor de Dificuldade -->
+            <div class="difficulty-selector" style="margin-bottom: 1.5rem; text-align: center;">
+                <div style="margin-bottom: 0.8rem; color: #94a3b8; font-size: 0.9rem;">
+                    🎯 Escolha sua dificuldade:
+                        </div>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn active" data-difficulty="beginner" onclick="setDifficulty('beginner')">
+                        🟢 Iniciante<br><small>6 cartas</small>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="intermediate" onclick="setDifficulty('intermediate')">
+                        🟡 Intermediário<br><small>9 cartas</small>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="hard" onclick="setDifficulty('hard')">
+                        🔴 Difícil<br><small>12 cartas</small>
+                    </button>
+                    </div>
+                </div>
+            
             <div class="cards-container" id="cardsContainer">
-                <!-- Carta de Evidência Lendária -->
-                <div class="card legendary" onclick="playCard('dna-evidence')">
-                    <div class="card-inner">
-                        <div class="card-header">
-                            <span class="card-type">Evidência</span>
-                            <span class="card-rarity rarity-legendary">Lendária</span>
-                        </div>
-                        <div class="card-icon">🧬</div>
-                        <div class="card-title">DNA do Assassino</div>
-                        <div class="card-description">
-                            Perfil genético completo que revela a identidade do criminoso. 99.9% de precisão.
-                        </div>
-                        <div class="card-stats">
-                            <div class="stat">⚡ <span>95</span></div>
-                            <div class="stat">🎯 <span>100</span></div>
-                            <div class="stat">💎 <span>Única</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Carta de Suspeito Épica -->
-                <div class="card epic" onclick="playCard('main-suspect')">
-                    <div class="card-inner">
-                        <div class="card-header">
-                            <span class="card-type">Suspeito</span>
-                            <span class="card-rarity rarity-epic">Épica</span>
-                        </div>
-                        <div class="card-icon">👨‍💼</div>
-                        <div class="card-title">Marcus Thompson</div>
-                        <div class="card-description">
-                            Ex-marido violento com motivos claros. Histórico criminal extenso.
-                        </div>
-                        <div class="card-stats">
-                            <div class="stat">⚡ <span>78</span></div>
-                            <div class="stat">🎯 <span>85</span></div>
-                            <div class="stat">🔍 <span>Perigoso</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Carta de Ação Rara -->
-                <div class="card rare" onclick="playCard('interrogation')">
-                    <div class="card-inner">
-                        <div class="card-header">
-                            <span class="card-type">Ação</span>
-                            <span class="card-rarity rarity-rare">Rara</span>
-                        </div>
-                        <div class="card-icon">🔍</div>
-                        <div class="card-title">Interrogatório Intensivo</div>
-                        <div class="card-description">
-                            Técnica avançada que força o suspeito a revelar informações cruciais.
-                        </div>
-                        <div class="card-stats">
-                            <div class="stat">⚡ <span>65</span></div>
-                            <div class="stat">🎯 <span>70</span></div>
-                            <div class="stat">⏱️ <span>3 min</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Carta de Local Rara -->
-                <div class="card rare" onclick="playCard('crime-scene')">
-                    <div class="card-inner">
-                        <div class="card-header">
-                            <span class="card-type">Local</span>
-                            <span class="card-rarity rarity-rare">Rara</span>
-                        </div>
-                        <div class="card-icon">🏠</div>
-                        <div class="card-title">Cena do Crime</div>
-                        <div class="card-description">
-                            Apartamento da vítima. Múltiplas evidências disponíveis para coleta.
-                        </div>
-                        <div class="card-stats">
-                            <div class="stat">⚡ <span>60</span></div>
-                            <div class="stat">🎯 <span>80</span></div>
-                            <div class="stat">🔍 <span>5 pistas</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Carta de Equipamento Épica -->
-                <div class="card epic" onclick="playCard('forensic-kit')">
-                    <div class="card-inner">
-                        <div class="card-header">
-                            <span class="card-type">Equipamento</span>
-                            <span class="card-rarity rarity-epic">Épica</span>
-                        </div>
-                        <div class="card-icon">🔬</div>
-                        <div class="card-title">Kit Forense Avançado</div>
-                        <div class="card-description">
-                            Equipamento de alta tecnologia para análise instantânea de evidências.
-                        </div>
-                        <div class="card-stats">
-                            <div class="stat">⚡ <span>85</span></div>
-                            <div class="stat">🎯 <span>90</span></div>
-                            <div class="stat">⚗️ <span>+50% análise</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Carta de Aliado Comum -->
-                <div class="card common" onclick="playCard('backup-officer')">
-                    <div class="card-inner">
-                        <div class="card-header">
-                            <span class="card-type">Aliado</span>
-                            <span class="card-rarity rarity-common">Comum</span>
-                        </div>
-                        <div class="card-icon">👮‍♂️</div>
-                        <div class="card-title">Oficial de Apoio</div>
-                        <div class="card-description">
-                            Policial experiente que oferece suporte durante a investigação.
-                        </div>
-                        <div class="card-stats">
-                            <div class="stat">⚡ <span>45</span></div>
-                            <div class="stat">🎯 <span>55</span></div>
-                            <div class="stat">🛡️ <span>Proteção</span></div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Cartas serão geradas dinamicamente baseado na dificuldade -->
             </div>
 
             <!-- Deck de Mão -->
@@ -1486,7 +1462,7 @@
                 <button class="btn" onclick="buyPack('legendary')">
                     🌟 Pacote Lendário - 500💰
                 </button>
-            </div>
+                </div>
 
             <div style="text-align: center; margin-top: 1.5rem; font-size: 1.2rem; color: #fbbf24;">
                 💰 Moedas: <strong id="coin-display">500</strong>
@@ -1510,8 +1486,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+                </div>
+            </div>
 
     <!-- Modal para Carta Detalhada -->
     <div id="cardModal" class="modal">
@@ -1688,6 +1664,237 @@
 
         // Lista de conquistas recentes para exibição
         let recentAchievements = [];
+
+        // ========================================
+        // SISTEMA DE DIFICULDADE DINÂMICA
+        // ========================================
+        
+        let currentDifficulty = 'beginner'; // Padrão iniciante
+        
+        const difficultySettings = {
+            beginner: { cards: 6, name: 'Iniciante', color: '#10b981' },
+            intermediate: { cards: 9, name: 'Intermediário', color: '#f59e0b' },
+            hard: { cards: 12, name: 'Difícil', color: '#ef4444' }
+        };
+
+        // Base de cartas disponíveis
+        const cardDatabase = [
+            {
+                id: 'dna-evidence',
+                type: 'Evidência',
+                rarity: 'legendary',
+                icon: '🧬',
+                title: 'DNA do Assassino',
+                description: 'Perfil genético completo que revela a identidade do criminoso. 99.9% de precisão.',
+                stats: ['⚡ 95', '🎯 100', '💎 Única']
+            },
+            {
+                id: 'main-suspect',
+                type: 'Suspeito',
+                rarity: 'epic',
+                icon: '👨‍💼',
+                title: 'Marcus Thompson',
+                description: 'Ex-marido violento com motivos claros. Histórico criminal extenso.',
+                stats: ['⚡ 78', '🎯 85', '🔍 Perigoso']
+            },
+            {
+                id: 'interrogation',
+                type: 'Ação',
+                rarity: 'rare',
+                icon: '🔍',
+                title: 'Interrogatório Intensivo',
+                description: 'Técnica avançada que força o suspeito a revelar informações cruciais.',
+                stats: ['⚡ 65', '🎯 70', '⏱️ 3 min']
+            },
+            {
+                id: 'crime-scene',
+                type: 'Local',
+                rarity: 'rare',
+                icon: '🏠',
+                title: 'Cena do Crime',
+                description: 'Apartamento da vítima. Múltiplas evidências disponíveis para coleta.',
+                stats: ['⚡ 60', '🎯 80', '🔍 5 pistas']
+            },
+            {
+                id: 'forensic-kit',
+                type: 'Equipamento',
+                rarity: 'epic',
+                icon: '🔬',
+                title: 'Kit Forense Avançado',
+                description: 'Equipamento de alta tecnologia para análise instantânea de evidências.',
+                stats: ['⚡ 85', '🎯 90', '⚗️ +50% análise']
+            },
+            {
+                id: 'backup-officer',
+                type: 'Aliado',
+                rarity: 'common',
+                icon: '👮‍♂️',
+                title: 'Oficial de Apoio',
+                description: 'Policial experiente que oferece suporte durante a investigação.',
+                stats: ['⚡ 45', '🎯 55', '🛡️ Proteção']
+            },
+            {
+                id: 'witness-testimony',
+                type: 'Evidência',
+                rarity: 'common',
+                icon: '👁️',
+                title: 'Testemunha Ocular',
+                description: 'Relato detalhado de uma testemunha que viu o suspeito no local.',
+                stats: ['⚡ 40', '🎯 60', '👥 Confiável']
+            },
+            {
+                id: 'security-camera',
+                type: 'Equipamento',
+                rarity: 'rare',
+                icon: '📹',
+                title: 'Câmera de Segurança',
+                description: 'Gravação de alta resolução que capturou o momento do crime.',
+                stats: ['⚡ 70', '🎯 85', '📱 HD']
+            },
+            {
+                id: 'phone-records',
+                type: 'Evidência',
+                rarity: 'common',
+                icon: '📱',
+                title: 'Registros Telefônicos',
+                description: 'Histórico de chamadas que revela conexões suspeitas.',
+                stats: ['⚡ 35', '🎯 50', '📊 Dados']
+            },
+            {
+                id: 'ballistics-report',
+                type: 'Evidência',
+                rarity: 'epic',
+                icon: '🎯',
+                title: 'Relatório Balístico',
+                description: 'Análise completa da arma e trajetória dos projéteis.',
+                stats: ['⚡ 80', '🎯 95', '🔫 Preciso']
+            },
+            {
+                id: 'psychological-profile',
+                type: 'Ação',
+                rarity: 'rare',
+                icon: '🧠',
+                title: 'Perfil Psicológico',
+                description: 'Análise comportamental detalhada do suspeito.',
+                stats: ['⚡ 55', '🎯 75', '🧠 Insight']
+            },
+            {
+                id: 'search-warrant',
+                type: 'Ação',
+                rarity: 'common',
+                icon: '📜',
+                title: 'Mandado de Busca',
+                description: 'Autorização legal para busca e apreensão de evidências.',
+                stats: ['⚡ 30', '🎯 40', '⚖️ Legal']
+            }
+        ];
+
+        // ========================================
+        // FUNÇÕES DO SISTEMA DE DIFICULDADE
+        // ========================================
+
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            
+            // Atualizar botões visuais
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-difficulty="${difficulty}"]`).classList.add('active');
+            
+            // Salvar preferência
+            localStorage.setItem('criminalMinds_difficulty', difficulty);
+            
+            // Regenerar cartas
+            generateCards();
+            
+            // Feedback
+            const setting = difficultySettings[difficulty];
+            showNotification(`🎯 Dificuldade alterada para ${setting.name}!\n${setting.cards} cartas ativas`);
+            addChatMessage(`🎯 Mudei para dificuldade ${setting.name} (${setting.cards} cartas)`, 'self');
+        }
+
+        function loadDifficulty() {
+            const saved = localStorage.getItem('criminalMinds_difficulty');
+            if (saved && difficultySettings[saved]) {
+                currentDifficulty = saved;
+                
+                // Atualizar botão ativo
+                document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                const activeBtn = document.querySelector(`[data-difficulty="${saved}"]`);
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                }
+            }
+        }
+
+        function generateCards() {
+            const container = document.getElementById('cardsContainer');
+            if (!container) return;
+            
+            const numCards = difficultySettings[currentDifficulty].cards;
+            
+            // Limpar cartas existentes
+            container.innerHTML = '';
+            
+            // Embaralhar e selecionar cartas
+            const shuffledCards = [...cardDatabase].sort(() => Math.random() - 0.5);
+            const selectedCards = shuffledCards.slice(0, numCards);
+            
+            // Gerar HTML para cada carta
+            selectedCards.forEach((cardData, index) => {
+                const cardElement = createCardElement(cardData);
+                container.appendChild(cardElement);
+                
+                // Animação escalonada
+                setTimeout(() => {
+                    cardElement.style.opacity = '1';
+                    cardElement.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            console.log(`🎯 Geradas ${numCards} cartas para dificuldade ${currentDifficulty}`);
+        }
+
+        function createCardElement(cardData) {
+            const card = document.createElement('div');
+            card.className = `card ${cardData.rarity}`;
+            card.onclick = () => playCard(cardData.id);
+            
+            // Iniciar invisível para animação
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease-out';
+            
+            card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-header">
+                        <span class="card-type">${cardData.type}</span>
+                        <span class="card-rarity rarity-${cardData.rarity}">${getRarityName(cardData.rarity)}</span>
+                    </div>
+                    <div class="card-icon">${cardData.icon}</div>
+                    <div class="card-title">${cardData.title}</div>
+                    <div class="card-description">${cardData.description}</div>
+                    <div class="card-stats">
+                        ${cardData.stats.map(stat => `<div class="stat">${stat}</div>`).join('')}
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function getRarityName(rarity) {
+            const rarityNames = {
+                common: 'Comum',
+                rare: 'Rara',
+                epic: 'Épica',
+                legendary: 'Lendária'
+            };
+            return rarityNames[rarity] || 'Comum';
+        }
         
         function checkAchievements() {
             // Primeira carta
@@ -1840,6 +2047,12 @@
             // Carregar conquistas salvas
             loadAchievements();
             
+            // Carregar dificuldade salva
+            loadDifficulty();
+            
+            // Gerar cartas iniciais
+            generateCards();
+            
             // Verificar bônus diário ao iniciar
             checkDailyBonus();
             
@@ -1869,7 +2082,7 @@
                 gameTime--;
             }, 1000);
         }
-        
+
         function calculateFinalRewards() {
             let finalBonus = 0;
             let reasons = [];
@@ -2016,7 +2229,7 @@
             
             showNotification(effect);
             addChatMessage(`🃏 Da mão: ${effect}`, 'self');
-            
+
             // Atualizar estatísticas
             cardsPlayed++;
             comboStreak++;
@@ -2463,7 +2676,7 @@
                     console.log('🔍 Sistema de diagnóstico de layout inicializado');
                     
                     // Executar diagnóstico completo
-                    setTimeout(() => {
+            setTimeout(() => {
                         window.layoutDiagnostic.forceFixBasedOnDiagnostic();
                         window.layoutDiagnostic.runRealTimeDiagnostic();
                     }, 500);
