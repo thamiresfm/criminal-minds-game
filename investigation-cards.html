@@ -831,36 +831,38 @@
             }
         }
         
-        /* CORREÇÕES ESPECÍFICAS PARA MINHA MÃO */
+        /* CORREÇÕES ESPECÍFICAS PARA MINHA MÃO - LAYOUT 3 COLUNAS */
         .hand-cards {
             display: grid !important;
-            grid-template-columns: repeat(5, 1fr) !important;
-            gap: 0.75rem !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1rem !important;
             margin-top: 1rem !important;
-            margin-bottom: 1rem !important;
-            padding: 1.25rem !important;
-            background: rgba(15, 15, 35, 0.6) !important;
-            border-radius: 15px !important;
-            border: 2px solid rgba(251, 191, 36, 0.4) !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+            margin-bottom: 1.5rem !important;
+            padding: 1.5rem !important;
+            background: rgba(15, 15, 35, 0.7) !important;
+            border-radius: 20px !important;
+            border: 2px solid rgba(251, 191, 36, 0.5) !important;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4) !important;
+            max-width: 100% !important;
         }
         
         .mini-card {
-            height: 120px !important;
-            min-height: 120px !important;
+            height: 150px !important;
+            min-height: 150px !important;
             display: flex !important;
             flex-direction: column !important;
-            justify-content: center !important;
+            justify-content: space-between !important;
             align-items: center !important;
-            background: linear-gradient(135deg, #1a1a2e, #16213e) !important;
-            border: 2px solid rgba(251, 191, 36, 0.3) !important;
-            border-radius: 12px !important;
-            padding: 0.75rem !important;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #1e1e3f) !important;
+            border: 2px solid rgba(251, 191, 36, 0.4) !important;
+            border-radius: 15px !important;
+            padding: 1rem !important;
             cursor: pointer !important;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             text-align: center !important;
             position: relative !important;
             overflow: visible !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
         }
         
         .mini-card:hover {
@@ -875,21 +877,24 @@
         }
         
         .mini-card-icon {
-            font-size: 1.5rem !important;
-            margin-bottom: 0.5rem !important;
-            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.4)) !important;
+            font-size: 2rem !important;
+            margin-bottom: 0.75rem !important;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5)) !important;
+            flex-shrink: 0 !important;
         }
         
         .mini-card-title {
-            font-size: 0.75rem !important;
+            font-size: 0.9rem !important;
             color: #fbbf24 !important;
             font-weight: 700 !important;
-            line-height: 1.1 !important;
-            text-shadow: 0 0 5px rgba(251, 191, 36, 0.3) !important;
-            white-space: nowrap !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
+            line-height: 1.2 !important;
+            text-shadow: 0 0 8px rgba(251, 191, 36, 0.4) !important;
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: unset !important;
             width: 100% !important;
+            text-align: center !important;
+            margin-top: auto !important;
         }
         
         /* Botões da área de mão */
@@ -908,65 +913,76 @@
             flex: none !important;
         }
         
-        /* Responsividade para mão */
+        /* Responsividade para mão - Layout 3 colunas otimizado */
         @media (max-width: 768px) {
             .hand-cards {
-                grid-template-columns: repeat(4, 1fr) !important;
-                gap: 0.5rem !important;
-                padding: 1rem !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 0.75rem !important;
+                padding: 1.25rem !important;
             }
             
             .mini-card {
-                height: 110px !important;
-                min-height: 110px !important;
+                height: 140px !important;
+                min-height: 140px !important;
+                padding: 0.75rem !important;
             }
             
             .mini-card-icon {
-                font-size: 1.3rem !important;
+                font-size: 1.75rem !important;
+                margin-bottom: 0.5rem !important;
             }
             
             .mini-card-title {
-                font-size: 0.7rem !important;
+                font-size: 0.8rem !important;
+                line-height: 1.1 !important;
             }
         }
         
         @media (max-width: 480px) {
             .hand-cards {
-                grid-template-columns: repeat(3, 1fr) !important;
-                gap: 0.4rem !important;
-                padding: 0.8rem !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 0.75rem !important;
+                padding: 1rem !important;
             }
             
             .mini-card {
-                height: 100px !important;
-                min-height: 100px !important;
-                padding: 0.5rem !important;
+                height: 130px !important;
+                min-height: 130px !important;
+                padding: 0.75rem !important;
             }
             
             .mini-card-icon {
-                font-size: 1.2rem !important;
-                margin-bottom: 0.3rem !important;
+                font-size: 1.5rem !important;
+                margin-bottom: 0.5rem !important;
             }
             
             .mini-card-title {
-                font-size: 0.65rem !important;
-                line-height: 1 !important;
+                font-size: 0.75rem !important;
+                line-height: 1.1 !important;
             }
         }
         
         @media (max-width: 360px) {
             .hand-cards {
                 grid-template-columns: repeat(2, 1fr) !important;
-                gap: 0.3rem !important;
+                gap: 0.5rem !important;
+                padding: 0.75rem !important;
             }
             
             .mini-card {
-                height: 90px !important;
-                min-height: 90px !important;
+                height: 120px !important;
+                min-height: 120px !important;
+                padding: 0.5rem !important;
+            }
+            
+            .mini-card-icon {
+                font-size: 1.25rem !important;
+                margin-bottom: 0.25rem !important;
             }
             
             .mini-card-title {
-                font-size: 0.6rem !important;
+                font-size: 0.7rem !important;
+                line-height: 1 !important;
             }
         }
 
