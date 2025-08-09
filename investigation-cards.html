@@ -1348,10 +1348,26 @@
                 <div style="color: #fbbf24; font-size: 0.8rem; font-weight: bold; margin-bottom: 0.5rem; text-align: center;">
                     🎯 Partida Atual
                 </div>
+                
+                <!-- Indicador Principal de Dificuldade -->
+                <div id="difficultyIndicator" style="
+                    margin-bottom: 1rem; 
+                    padding: 0.75rem; 
+                    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1)); 
+                    border: 2px solid #f59e0b; 
+                    border-radius: 10px; 
+                    text-align: center;
+                    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+                ">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.3rem;" id="difficultyIcon">🟡</div>
+                    <div style="font-size: 0.9rem; font-weight: bold; color: #f59e0b; margin-bottom: 0.2rem;" id="difficultyName">INTERMEDIÁRIO</div>
+                    <div style="font-size: 0.7rem; color: #cbd5e1; line-height: 1.3;" id="difficultyDescription">Tempo padrão, cartas balanceadas, bônus de 50%</div>
+                </div>
+                
                 <div style="margin-bottom: 0.75rem;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; font-size: 0.85rem;">
-                        <span>Dificuldade</span>
-                        <span id="currentDifficulty">Intermediário</span>
+                        <span>Multiplicador</span>
+                        <span id="currentMultiplier" style="color: #fbbf24; font-weight: bold;">1.5x</span>
                     </div>
                 </div>
                 <div style="margin-bottom: 0.75rem;">
@@ -1493,8 +1509,9 @@
     </div>
 
     <script>
-        // Timer do jogo
+        // Timer do jogo (será definido pela dificuldade)
         let gameTime = 45 * 60;
+        let difficultyMultiplier = 1.0;
         let cardsPlayed = 0;
         let comboStreak = 0;
         let playerCoins = loadPlayerCoins(); // Sistema dinâmico de moedas
@@ -1533,7 +1550,11 @@
         function rewardCoins(amount, reason) {
             if (amount <= 0) return;
             
-            playerCoins += amount;
+            // Aplicar multiplicador de dificuldade
+            const finalAmount = Math.floor(amount * difficultyMultiplier);
+            const bonusText = difficultyMultiplier > 1 ? ` (${difficultyMultiplier}x bônus!)` : '';
+            
+            playerCoins += finalAmount;
             updateCoinDisplay();
             
             // Verificar conquista de riqueza
@@ -1542,11 +1563,11 @@
             }
             
             // Feedback visual e sonoro
-            showNotification(`💰 +${amount} moedas! ${reason}`);
-            addChatMessage(`💰 Ganhei ${amount} moedas: ${reason}`, 'self');
+            showNotification(`💰 +${finalAmount} moedas! ${reason}${bonusText}`);
+            addChatMessage(`💰 Ganhei ${finalAmount} moedas: ${reason}${bonusText}`, 'self');
             
             // Log para debugging
-            console.log(`💰 Recompensa: +${amount} moedas (${reason}). Total: ${playerCoins}`);
+            console.log(`💰 Recompensa: +${finalAmount} moedas (${amount} x ${difficultyMultiplier}) por "${reason}". Total: ${playerCoins}`);
         }
         
         function spendCoins(amount, reason) {
@@ -1640,9 +1661,36 @@
         let currentDifficulty = 'beginner'; // Padrão iniciante
         
         const difficultySettings = {
-            beginner: { cards: 6, name: 'Iniciante', color: '#10b981' },
-            intermediate: { cards: 9, name: 'Intermediário', color: '#f59e0b' },
-            hard: { cards: 12, name: 'Difícil', color: '#ef4444' }
+            beginner: { 
+                cards: 6, 
+                name: 'Iniciante', 
+                color: '#10b981',
+                icon: '🟢',
+                timer: 50 * 60, // 50 minutos
+                coinMultiplier: 1.0,
+                comboRequirement: 2,
+                description: 'Mais tempo, menos cartas, recompensas normais'
+            },
+            intermediate: { 
+                cards: 9, 
+                name: 'Intermediário', 
+                color: '#f59e0b',
+                icon: '🟡',
+                timer: 45 * 60, // 45 minutos
+                coinMultiplier: 1.5,
+                comboRequirement: 3,
+                description: 'Tempo padrão, cartas balanceadas, bônus de 50%'
+            },
+            hard: { 
+                cards: 12, 
+                name: 'Difícil', 
+                color: '#ef4444',
+                icon: '🔴',
+                timer: 35 * 60, // 35 minutos
+                coinMultiplier: 2.0,
+                comboRequirement: 4,
+                description: 'Menos tempo, mais cartas, recompensas dobradas'
+            }
         };
 
         // Base de cartas disponíveis
@@ -1759,6 +1807,82 @@
 
 
 
+        // Função para aplicar configurações de dificuldade
+        function applyDifficultySettings(difficultyConfig) {
+            // Atualizar timer baseado na dificuldade
+            gameTime = difficultyConfig.timer;
+            difficultyMultiplier = difficultyConfig.coinMultiplier;
+            
+            console.log(`🎯 Aplicando configurações de dificuldade: ${difficultyConfig.name}`);
+            console.log(`⏱️ Timer definido para: ${Math.floor(gameTime / 60)}:${(gameTime % 60).toString().padStart(2, '0')}`);
+            console.log(`💰 Multiplicador de moedas: ${difficultyMultiplier}x`);
+            
+            // Atualizar display do header com informações da dificuldade
+            updateDifficultyHeader(difficultyConfig);
+            
+            // Aplicar cor temática da dificuldade
+            applyDifficultyTheme(difficultyConfig);
+        }
+        
+        function updateDifficultyHeader(difficultyConfig) {
+            // Atualizar título do caso com indicador de dificuldade
+            const caseTitle = document.querySelector('.case-title');
+            if (caseTitle) {
+                caseTitle.innerHTML = `${difficultyConfig.icon} CRIMINAL MINDS: ${difficultyConfig.name.toUpperCase()}`;
+                caseTitle.style.color = difficultyConfig.color;
+            }
+            
+            // Atualizar timer com cor da dificuldade
+            const timer = document.getElementById('gameTimer');
+            if (timer) {
+                timer.style.borderColor = difficultyConfig.color;
+                timer.style.boxShadow = `0 0 15px ${difficultyConfig.color}40`;
+            }
+            
+            // Atualizar indicador de dificuldade na sidebar
+            updateDifficultyIndicator(difficultyConfig);
+        }
+        
+        function updateDifficultyIndicator(difficultyConfig) {
+            const indicator = document.getElementById('difficultyIndicator');
+            const icon = document.getElementById('difficultyIcon');
+            const name = document.getElementById('difficultyName');
+            const description = document.getElementById('difficultyDescription');
+            const multiplier = document.getElementById('currentMultiplier');
+            
+            if (indicator) {
+                indicator.style.background = `linear-gradient(135deg, ${difficultyConfig.color}20, ${difficultyConfig.color}10)`;
+                indicator.style.borderColor = difficultyConfig.color;
+                indicator.style.boxShadow = `0 4px 15px ${difficultyConfig.color}40`;
+            }
+            
+            if (icon) icon.textContent = difficultyConfig.icon;
+            if (name) {
+                name.textContent = difficultyConfig.name.toUpperCase();
+                name.style.color = difficultyConfig.color;
+            }
+            if (description) description.textContent = difficultyConfig.description;
+            if (multiplier) multiplier.textContent = `${difficultyConfig.coinMultiplier}x`;
+        }
+        
+        function applyDifficultyTheme(difficultyConfig) {
+            // Aplicar cor temática aos elementos principais
+            const root = document.documentElement;
+            root.style.setProperty('--difficulty-color', difficultyConfig.color);
+            root.style.setProperty('--difficulty-glow', `${difficultyConfig.color}40`);
+            
+            // Atualizar bordas dos containers principais
+            const mainArea = document.querySelector('.main-area');
+            if (mainArea) {
+                mainArea.style.borderColor = `${difficultyConfig.color}60`;
+            }
+            
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.style.borderColor = `${difficultyConfig.color}40`;
+            }
+        }
+
         function generateCards() {
             const container = document.getElementById('cardsContainer');
             if (!container) return;
@@ -1778,13 +1902,19 @@
             };
             
             const mappedDifficulty = difficultyMap[difficultyFromUrl] || 'intermediate';
-            const numCards = difficultySettings[mappedDifficulty].cards;
+            const difficultyConfig = difficultySettings[mappedDifficulty];
+            const numCards = difficultyConfig.cards;
             
             console.log(`🗺️ Dificuldade mapeada: ${mappedDifficulty}`);
             console.log(`🃏 Número de cartas: ${numCards}`);
+            console.log(`⏱️ Timer: ${Math.floor(difficultyConfig.timer / 60)} minutos`);
+            console.log(`💰 Multiplicador de moedas: ${difficultyConfig.coinMultiplier}x`);
             
             // Atualizar variável global de dificuldade
             currentDifficulty = mappedDifficulty;
+            
+            // Aplicar configurações de dificuldade
+            applyDifficultySettings(difficultyConfig);
             
             // Atualizar display da dificuldade atual
             updateCurrentDifficultyDisplay(difficultyFromUrl);
