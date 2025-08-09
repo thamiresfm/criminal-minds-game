@@ -1765,7 +1765,10 @@
             
             // Obter dificuldade da URL ou usar padrão
             const urlParams = new URLSearchParams(window.location.search);
-            const difficultyFromUrl = urlParams.get('difficulty') || 'intermediate';
+            const difficultyFromUrl = urlParams.get('difficulty') || 'medium';
+            
+            console.log(`🔍 URL atual: ${window.location.href}`);
+            console.log(`🎯 Dificuldade da URL: ${difficultyFromUrl}`);
             
             // Mapear dificuldades da URL para as configurações existentes
             const difficultyMap = {
@@ -1776,6 +1779,12 @@
             
             const mappedDifficulty = difficultyMap[difficultyFromUrl] || 'intermediate';
             const numCards = difficultySettings[mappedDifficulty].cards;
+            
+            console.log(`🗺️ Dificuldade mapeada: ${mappedDifficulty}`);
+            console.log(`🃏 Número de cartas: ${numCards}`);
+            
+            // Atualizar variável global de dificuldade
+            currentDifficulty = mappedDifficulty;
             
             // Atualizar display da dificuldade atual
             updateCurrentDifficultyDisplay(difficultyFromUrl);

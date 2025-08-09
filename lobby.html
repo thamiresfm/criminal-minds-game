@@ -863,6 +863,9 @@
             const difficulty = selectedDifficulty;
             const url = `investigation-cards.html?difficulty=${difficulty}&players=${connectedPlayers}`;
             
+            console.log(`🚀 Iniciando jogo com dificuldade: ${difficulty}`);
+            console.log(`🔗 URL gerada: ${url}`);
+            
             // Salvar informações do jogo
             localStorage.setItem('criminalMinds_gameStarted', 'true');
             localStorage.setItem('criminalMinds_playerCount', connectedPlayers);
