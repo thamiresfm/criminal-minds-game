@@ -97,13 +97,27 @@
             flex-shrink: 0;
         }
 
-        /* OCULTAR SEÇÃO MINHA MÃO */
+        /* OCULTAR SEÇÃO MINHA MÃO - VERSÃO EXPANDIDA */
         .deck-area,
+        .hand-cards,
+        .mini-card,
         [class*="hand"],
         [id*="hand"],
         [class*="mao"],
-        [id*="mao"] {
+        [id*="mao"],
+        [class*="deck"],
+        [id*="deck"],
+        [data-type*="hand"],
+        [data-type*="deck"],
+        .sidebar .deck-area,
+        .sidebar [class*="hand"],
+        .sidebar [class*="mini"],
+        .sidebar [class*="card"]:not(.main-area .card) {
             display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
         }
         
         /* SISTEMA DE CARTAS - GRID RESPONSIVO BASEADO NA DIFICULDADE */
@@ -2194,6 +2208,33 @@
             // Carregar estatísticas por dificuldade
             loadDifficultyStats();
 
+            // FORÇAR REMOÇÃO DA SEÇÃO MINHA MÃO
+            function removeHandSection() {
+                const selectors = [
+                    '.deck-area',
+                    '.hand-cards', 
+                    '.mini-card',
+                    '[class*="hand"]',
+                    '[id*="hand"]',
+                    '[class*="mao"]',
+                    '[id*="mao"]',
+                    '[class*="deck"]',
+                    '[id*="deck"]'
+                ];
+                
+                selectors.forEach(selector => {
+                    const elements = document.querySelectorAll(selector);
+                    elements.forEach(el => {
+                        if (!el.closest('.main-area')) { // Não remover cartas da área principal
+                            el.remove();
+                        }
+                    });
+                });
+            }
+            
+            // Remover imediatamente e depois de 1 segundo
+            removeHandSection();
+            setTimeout(removeHandSection, 1000);
             
             // Gerar cartas iniciais
             generateCards();
