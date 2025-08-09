@@ -1385,7 +1385,10 @@
             </div>
 
             <div style="text-align: center; margin-top: 1.5rem; font-size: 1.2rem; color: #fbbf24;">
-                💰 Moedas: <strong>347</strong>
+                💰 Moedas: <strong id="coin-display">500</strong>
+                <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem;">
+                    🎁 Ganhe moedas jogando cartas e fazendo combos!
+                </div>
             </div>
         </div>
     </div>
@@ -1430,9 +1433,158 @@
         let gameTime = 45 * 60;
         let cardsPlayed = 0;
         let comboStreak = 0;
-        let playerCoins = 347;
+        let playerCoins = loadPlayerCoins(); // Sistema dinâmico de moedas
+        
+        // ========================================
+        // SISTEMA COMPLETO DE MOEDAS
+        // ========================================
+        
+        function loadPlayerCoins() {
+            // Carregar moedas salvas ou começar com valor inicial
+            const savedCoins = localStorage.getItem('criminalMinds_playerCoins');
+            const initialCoins = savedCoins ? parseInt(savedCoins) : 500; // Valor inicial mais generoso
+            return Math.max(initialCoins, 50); // Garantir mínimo de 50 moedas
+        }
+        
+        function savePlayerCoins() {
+            localStorage.setItem('criminalMinds_playerCoins', playerCoins);
+            console.log(`💰 Moedas salvas: ${playerCoins}`);
+        }
+        
+        function updateCoinDisplay() {
+            const coinElement = document.getElementById('coin-display') || document.querySelector('div[style*="Moedas"] strong');
+            if (coinElement) {
+                coinElement.textContent = playerCoins;
+                coinElement.style.color = playerCoins < 100 ? '#ff6b6b' : '#fbbf24';
+                
+                // Efeito visual de mudança
+                coinElement.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    coinElement.style.transform = 'scale(1)';
+                }, 200);
+            }
+            savePlayerCoins();
+        }
+        
+        function rewardCoins(amount, reason) {
+            if (amount <= 0) return;
+            
+            playerCoins += amount;
+            updateCoinDisplay();
+            
+            // Verificar conquista de riqueza
+            if (!achievements.wealthy.completed && playerCoins >= 1000) {
+                unlockAchievement('wealthy');
+            }
+            
+            // Feedback visual e sonoro
+            showNotification(`💰 +${amount} moedas! ${reason}`);
+            addChatMessage(`💰 Ganhei ${amount} moedas: ${reason}`, 'self');
+            
+            // Log para debugging
+            console.log(`💰 Recompensa: +${amount} moedas (${reason}). Total: ${playerCoins}`);
+        }
+        
+        function spendCoins(amount, reason) {
+            if (amount <= 0 || playerCoins < amount) return false;
+            
+            playerCoins -= amount;
+            updateCoinDisplay();
+            
+            showNotification(`💸 -${amount} moedas! ${reason}`);
+            addChatMessage(`💸 Gastei ${amount} moedas: ${reason}`, 'self');
+            
+            console.log(`💸 Gasto: -${amount} moedas (${reason}). Total: ${playerCoins}`);
+            return true;
+        }
+        
+        // Sistema de bônus diário
+        function checkDailyBonus() {
+            const today = new Date().toDateString();
+            const lastBonus = localStorage.getItem('criminalMinds_lastDailyBonus');
+            
+            if (lastBonus !== today) {
+                localStorage.setItem('criminalMinds_lastDailyBonus', today);
+                rewardCoins(100, "Bônus diário!");
+                showNotification("🎁 Bônus diário coletado! +100 moedas");
+            }
+        }
+        
+        // Sistema de recompensas por ações
+        const coinRewards = {
+            cardPlayed: { amount: 8, message: "Carta jogada" },
+            combo3: { amount: 25, message: "Combo 3x!" },
+            combo5: { amount: 50, message: "Combo 5x!" },
+            combo7: { amount: 100, message: "SUPER COMBO 7x!" },
+            timeBonus: { amount: 2, message: "Bônus de tempo" },
+            perfectRound: { amount: 200, message: "Rodada perfeita!" },
+            firstWin: { amount: 150, message: "Primeira vitória!" },
+            investigation: { amount: 75, message: "Investigação completa" }
+        };
+        
+        // Sistema de conquistas
+        const achievements = {
+            firstCard: { reward: 20, message: "Primeira carta jogada!", completed: false },
+            speedPlayer: { reward: 50, message: "5 cartas em 1 minuto!", completed: false },
+            comboMaster: { reward: 100, message: "Combo de 10 cartas!", completed: false },
+            investigator: { reward: 150, message: "20 cartas jogadas!", completed: false },
+            wealthy: { reward: 200, message: "1000 moedas acumuladas!", completed: false }
+        };
+        
+        function checkAchievements() {
+            // Primeira carta
+            if (!achievements.firstCard.completed && cardsPlayed === 1) {
+                unlockAchievement('firstCard');
+            }
+            
+            // 20 cartas jogadas
+            if (!achievements.investigator.completed && cardsPlayed >= 20) {
+                unlockAchievement('investigator');
+            }
+            
+            // Combo master
+            if (!achievements.comboMaster.completed && comboStreak >= 10) {
+                unlockAchievement('comboMaster');
+            }
+            
+            // Wealthy
+            if (!achievements.wealthy.completed && playerCoins >= 1000) {
+                unlockAchievement('wealthy');
+            }
+        }
+        
+        function unlockAchievement(achievementId) {
+            const achievement = achievements[achievementId];
+            if (achievement && !achievement.completed) {
+                achievement.completed = true;
+                rewardCoins(achievement.reward, `🏆 CONQUISTA: ${achievement.message}`);
+                
+                // Salvar conquistas
+                localStorage.setItem('criminalMinds_achievements', JSON.stringify(achievements));
+                
+                // Efeito especial
+                showNotification(`🏆 CONQUISTA DESBLOQUEADA!\n${achievement.message}\n+${achievement.reward} moedas!`);
+            }
+        }
+        
+        function loadAchievements() {
+            const saved = localStorage.getItem('criminalMinds_achievements');
+            if (saved) {
+                const savedAchievements = JSON.parse(saved);
+                Object.assign(achievements, savedAchievements);
+            }
+        }
         
         function startTimer() {
+            // Carregar conquistas salvas
+            loadAchievements();
+            
+            // Verificar bônus diário ao iniciar
+            checkDailyBonus();
+            
+            // Atualizar display inicial de moedas
+            updateCoinDisplay();
+            
             const timer = setInterval(() => {
                 const minutes = Math.floor(gameTime / 60);
                 const seconds = gameTime % 60;
@@ -1441,12 +1593,45 @@
                     timerEl.textContent = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
                 }
                 
+                // Bônus por tempo (a cada minuto)
+                if (gameTime % 60 === 0 && gameTime > 0) {
+                    rewardCoins(coinRewards.timeBonus.amount, coinRewards.timeBonus.message);
+                }
+                
                 if (gameTime <= 0) {
                     clearInterval(timer);
                     alert('⏰ Tempo esgotado! Fazendo acusação automática baseada nas cartas jogadas...');
+                    
+                    // Bônus final baseado no desempenho
+                    calculateFinalRewards();
                 }
                 gameTime--;
             }, 1000);
+        }
+        
+        function calculateFinalRewards() {
+            let finalBonus = 0;
+            let reasons = [];
+            
+            // Bônus por cartas jogadas
+            if (cardsPlayed >= 10) {
+                finalBonus += 50;
+                reasons.push("10+ cartas jogadas");
+            }
+            
+            // Bônus por combo streak
+            if (comboStreak >= 5) {
+                finalBonus += coinRewards.combo5.amount;
+                reasons.push("Combo 5x mantido");
+            }
+            
+            // Bônus de conclusão
+            finalBonus += coinRewards.investigation.amount;
+            reasons.push("Investigação concluída");
+            
+            if (finalBonus > 0) {
+                rewardCoins(finalBonus, reasons.join(", "));
+            }
         }
 
         startTimer();
@@ -1507,10 +1692,40 @@
             // Mostrar efeito
             showCardEffect(effect);
             
+            // Recompensa base por jogar carta
+            rewardCoins(coinRewards.cardPlayed.amount, coinRewards.cardPlayed.message);
+            
+            // Bônus específico por tipo de carta
+            const cardBonuses = {
+                'dna-evidence': 15,
+                'main-suspect': 12,
+                'interrogation': 10,
+                'crime-scene': 8,
+                'forensic-kit': 14,
+                'backup-officer': 6
+            };
+            
+            if (cardBonuses[cardId]) {
+                rewardCoins(cardBonuses[cardId], `Bônus da carta ${effect.title}`);
+            }
+            
             // Atualizar estatísticas
             cardsPlayed++;
             comboStreak++;
+            
+            // Sistema de recompensas por combo
+            if (comboStreak === 3) {
+                rewardCoins(coinRewards.combo3.amount, coinRewards.combo3.message);
+            } else if (comboStreak === 5) {
+                rewardCoins(coinRewards.combo5.amount, coinRewards.combo5.message);
+            } else if (comboStreak >= 7) {
+                rewardCoins(coinRewards.combo7.amount, coinRewards.combo7.message);
+            }
+            
             updateStats();
+            
+            // Verificar conquistas
+            checkAchievements();
             
             // Adicionar mensagem no chat
             addChatMessage(`🎴 Jogou: ${effect.title}`, 'self');
@@ -1535,8 +1750,29 @@
                 event.currentTarget.style.pointerEvents = 'none';
             }, 500);
             
+            // Recompensa por jogar carta da mão (bônus extra)
+            rewardCoins(coinRewards.cardPlayed.amount + 3, "Carta da mão jogada");
+            
             showNotification(effect);
             addChatMessage(`🃏 Da mão: ${effect}`, 'self');
+            
+            // Atualizar estatísticas
+            cardsPlayed++;
+            comboStreak++;
+            
+            // Sistema de recompensas por combo (também para cartas da mão)
+            if (comboStreak === 3) {
+                rewardCoins(coinRewards.combo3.amount, coinRewards.combo3.message);
+            } else if (comboStreak === 5) {
+                rewardCoins(coinRewards.combo5.amount, coinRewards.combo5.message);
+            } else if (comboStreak >= 7) {
+                rewardCoins(coinRewards.combo7.amount, coinRewards.combo7.message);
+            }
+            
+            updateStats();
+            
+            // Verificar conquistas
+            checkAchievements();
         }
 
         function showCardEffect(effect) {
@@ -1631,8 +1867,28 @@
 
         function useCombo() {
             if (comboStreak >= 3) {
-                showNotification('⚡ COMBO ATIVADO! Bônus de +150 pontos!');
-                addChatMessage('⚡ Usei combo devastador! +150 pontos', 'self');
+                // Recompensa baseada no nível do combo
+                let comboReward = 0;
+                let comboMessage = '';
+                
+                if (comboStreak >= 7) {
+                    comboReward = coinRewards.combo7.amount;
+                    comboMessage = coinRewards.combo7.message;
+                } else if (comboStreak >= 5) {
+                    comboReward = coinRewards.combo5.amount;
+                    comboMessage = coinRewards.combo5.message;
+                } else {
+                    comboReward = coinRewards.combo3.amount;
+                    comboMessage = coinRewards.combo3.message;
+                }
+                
+                // Bônus extra por usar combo manualmente
+                comboReward += 25;
+                
+                rewardCoins(comboReward, `${comboMessage} (Ativação manual)`);
+                showNotification(`⚡ COMBO ATIVADO! +${comboReward} moedas!`);
+                addChatMessage(`⚡ Usei combo devastador! +${comboReward} moedas`, 'self');
+                
                 comboStreak = 0;
                 updateStats();
             } else {
@@ -1650,14 +1906,16 @@
             
             const pack = packs[packType];
             
-            if (playerCoins >= pack.cost) {
-                playerCoins -= pack.cost;
-                document.querySelector('div[style*="Moedas"] strong').textContent = playerCoins;
-                
+            if (spendCoins(pack.cost, `Pacote ${packType}`)) {
                 showNotification(`📦 Pacote ${packType} comprado! ${pack.cards} cartas obtidas!`);
                 addChatMessage(`💰 Comprei pacote ${packType}! ${pack.cards} novas cartas`, 'self');
+                
+                // Simular abertura de pacote com possível moeda bônus
+                if (packType === 'legendary' && Math.random() < 0.3) {
+                    rewardCoins(50, "Carta rara encontrada no pacote!");
+                }
             } else {
-                showNotification('❌ Moedas insuficientes!');
+                showNotification(`❌ Moedas insuficientes! Você tem ${playerCoins}, precisa de ${pack.cost}.`);
             }
         }
 
