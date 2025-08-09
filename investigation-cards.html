@@ -21,47 +21,48 @@
 
         .game-container {
             display: grid;
-            grid-template-columns: 280px 1fr 280px;
-            grid-template-rows: 80px 1fr;
+            grid-template-columns: 300px 1fr 300px;
+            grid-template-rows: 60px 1fr;
             height: 100vh;
-            gap: 1rem;
-            padding: 1rem;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f23);
         }
 
         .header {
             grid-column: 1 / -1;
             background: rgba(15, 15, 35, 0.95);
             border: 2px solid rgba(251, 191, 36, 0.4);
-            border-radius: 20px;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 2rem;
+            padding: 0 1.5rem;
             backdrop-filter: blur(15px);
             box-shadow: 0 8px 32px rgba(251, 191, 36, 0.1);
         }
 
         .case-title {
-            font-size: 1.8rem;
-            font-weight: 800;
+            font-size: 1.4rem;
+            font-weight: 700;
             background: linear-gradient(45deg, #fbbf24, #f59e0b, #f97316);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
         }
 
         .timer {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             color: #ef4444;
-            font-weight: 700;
-            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
         }
 
         .sidebar {
             background: rgba(15, 15, 35, 0.95);
             border: 2px solid rgba(251, 191, 36, 0.3);
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 1rem;
             backdrop-filter: blur(15px);
             overflow-y: auto;
@@ -74,43 +75,52 @@
         .main-area {
             background: rgba(15, 15, 35, 0.95);
             border: 2px solid rgba(251, 191, 36, 0.3);
-            border-radius: 20px;
-            padding: 1.5rem;
+            border-radius: 12px;
+            padding: 1rem;
             backdrop-filter: blur(15px);
-            overflow-y: auto;
+            overflow: hidden;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            max-height: calc(100vh - 140px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .section-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
             color: #fbbf24;
-            border-bottom: 3px solid rgba(251, 191, 36, 0.4);
-            padding-bottom: 0.8rem;
-            text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+            border-bottom: 2px solid rgba(251, 191, 36, 0.4);
+            padding-bottom: 0.5rem;
+            text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+            flex-shrink: 0;
         }
 
-        /* SISTEMA DE CARTAS MODERNO - 3 COLUNAS FIXAS */
+        /* SISTEMA DE CARTAS - GRID 2x3 COMO NA IMAGEM */
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr) !important;
+            grid-template-columns: repeat(3, 200px) !important;
+            grid-template-rows: repeat(2, 180px) !important;
             gap: 1rem;
-            margin-bottom: 1.5rem;
-            max-width: 100%;
-            justify-items: center;
+            justify-content: center;
+            align-content: center;
+            width: 100%;
+            max-width: 660px;
         }
 
         .card {
             position: relative;
-            width: 220px;
-            height: 140px;
+            width: 200px;
+            height: 180px;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
             perspective: 1000px;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
 
         .card:hover {
@@ -194,29 +204,29 @@
         }
 
         .card-icon {
-            font-size: 2rem;
+            font-size: 2.5rem;
             text-align: center;
-            margin: 0.3rem 0;
+            margin: 0.5rem 0;
             filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.3));
         }
 
         .card-title {
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 700;
             color: #fbbf24;
             text-align: center;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.4rem;
             text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
             line-height: 1.2;
         }
 
         .card-description {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: #cbd5e1;
             line-height: 1.3;
-            padding: 0 0.8rem;
+            padding: 0 1rem;
             text-align: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
         }
 
         .card-stats {
@@ -224,12 +234,13 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 0.5rem 0.8rem;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 0.6rem 1rem;
             display: flex;
             justify-content: space-between;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             border-radius: 0 0 12px 12px;
+            backdrop-filter: blur(10px);
         }
 
         .stat {
@@ -1294,49 +1305,8 @@
         </div>
 
         <div class="main-area">
-            <div class="section-title">🃏 Cartas de Investigação Ativas</div>
-            
-
-            
             <div class="cards-container" id="cardsContainer">
                 <!-- Cartas serão geradas dinamicamente baseado na dificuldade -->
-            </div>
-
-            <!-- Deck de Mão -->
-            <div class="deck-area">
-                <div class="section-title" style="font-size: 1.1rem; margin-bottom: 1rem;">🃏 Minha Mão (7/7 cartas)</div>
-                <div class="hand-cards">
-                    <div class="mini-card" onclick="playFromHand('witness')">
-                        <div class="mini-card-icon">👁️</div>
-                        <div class="mini-card-title">Testemunha</div>
-                    </div>
-                    <div class="mini-card" onclick="playFromHand('phone-data')">
-                        <div class="mini-card-icon">📱</div>
-                        <div class="mini-card-title">Dados do Celular</div>
-                    </div>
-                    <div class="mini-card" onclick="playFromHand('ballistics')">
-                        <div class="mini-card-icon">🎯</div>
-                        <div class="mini-card-title">Balística</div>
-                    </div>
-                    <div class="mini-card" onclick="playFromHand('surveillance')">
-                        <div class="mini-card-icon">📹</div>
-                        <div class="mini-card-title">Vigilância</div>
-                    </div>
-                    <div class="mini-card" onclick="playFromHand('profile')">
-                        <div class="mini-card-icon">🧠</div>
-                        <div class="mini-card-title">Perfil Psicológico</div>
-                    </div>
-                    <div class="mini-card" onclick="playFromHand('warrant')">
-                        <div class="mini-card-icon">📜</div>
-                        <div class="mini-card-title">Mandado</div>
-                    </div>
-                </div>
-                
-                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                    <button class="btn" onclick="drawCard()">🎴 Comprar Carta</button>
-                    <button class="btn" onclick="shuffleDeck()">🔀 Embaralhar</button>
-                    <button class="btn" onclick="useCombo()">⚡ Usar Combo</button>
-                </div>
             </div>
         </div>
 
