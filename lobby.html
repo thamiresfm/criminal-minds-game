@@ -269,6 +269,62 @@
             transform: translateX(3px);
         }
 
+        /* SELETOR DE DIFICULDADE */
+        .difficulty-selector {
+            margin: 1rem 0;
+        }
+
+        .difficulty-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .difficulty-btn {
+            padding: 0.8rem 1rem;
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            border-radius: 8px;
+            background: rgba(31, 41, 55, 0.5);
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .difficulty-btn:hover {
+            border-color: rgba(251, 191, 36, 0.6);
+            background: rgba(251, 191, 36, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .difficulty-btn.active {
+            border-color: #fbbf24;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2));
+            color: #fbbf24;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+        }
+
+        .difficulty-btn .difficulty-emoji {
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .difficulty-btn .difficulty-name {
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .difficulty-btn .difficulty-desc {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            line-height: 1.2;
+        }
+
         /* RESPONSIVIDADE OTIMIZADA */
         @media (max-width: 1024px) {
             .game-info {
@@ -296,6 +352,16 @@
                 margin-bottom: 1rem;
             }
             
+            .difficulty-buttons {
+                grid-template-columns: 1fr;
+                gap: 0.4rem;
+            }
+            
+            .difficulty-btn {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            
             .players-list {
                 max-height: 150px;
             }
@@ -308,6 +374,17 @@
             
             .players-list span:first-child span {
                 max-width: 100px;
+            }
+            
+            .player-level-badge {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.6rem;
+            }
+            
+            .player-level-small {
+                font-size: 0.65rem;
+                padding: 0.15rem 0.4rem;
+                min-width: 30px;
             }
             
             .start-card {
@@ -362,6 +439,17 @@
             
             .players-list span:first-child span {
                 max-width: 80px;
+            }
+            
+            .player-level-badge {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.5rem;
+            }
+            
+            .player-level-small {
+                font-size: 0.6rem;
+                padding: 0.1rem 0.3rem;
+                min-width: 25px;
             }
             
             .player-online {
@@ -457,6 +545,57 @@
             text-overflow: ellipsis;
             max-width: 120px;
         }
+
+        /* ESTILOS PARA NÍVEL DO JOGADOR */
+        .player-level-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #0f0f23;
+            font-weight: bold;
+            font-size: 0.85rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+            border: 2px solid rgba(251, 191, 36, 0.5);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .player-level-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .player-level-small {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-weight: bold;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 4px rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+            min-width: 35px;
+            justify-content: center;
+        }
+
+        .player-level-small:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+        }
     </style>
     <!-- Criminal Minds API v2.0 - Sistema Melhorado -->
     <script src="js/api-client-simple.js?v=20241205"></script>
@@ -487,7 +626,10 @@
                             <div class="player-online"></div>
                             <span id="currentPlayer">Você</span>
                         </span>
-                        <span>🕵️ Detetive</span>
+                        <span class="player-info">
+                            <span class="player-level-small" id="currentPlayerLevelSmall">Nv.1</span>
+                            <span>🕵️ Detetive</span>
+                        </span>
                     </li>
                 </ul>
             </div>
@@ -496,8 +638,29 @@
                 <h3>🎮 Informações do Jogo</h3>
                 <p><strong>Modo:</strong> Investigação Colaborativa</p>
                 <p><strong>Duração:</strong> 15-30 minutos</p>
-                <p><strong>Dificuldade:</strong> Intermediário</p>
+                <p><strong>Seu Nível:</strong> <span id="playerLevel" class="player-level-badge">Nível 1</span></p>
                 <p><strong>Código da Sala:</strong> <span id="roomCode">LOBBY-001</span></p>
+                
+                <div class="difficulty-selector">
+                    <p><strong>🎯 Escolha sua dificuldade:</strong></p>
+                    <div class="difficulty-buttons">
+                        <div class="difficulty-btn active" data-difficulty="easy" onclick="setDifficulty('easy')">
+                            <span class="difficulty-emoji">🟢</span>
+                            <div class="difficulty-name">Iniciante</div>
+                            <div class="difficulty-desc">6 cartas<br>Ideal para começar</div>
+                        </div>
+                        <div class="difficulty-btn" data-difficulty="medium" onclick="setDifficulty('medium')">
+                            <span class="difficulty-emoji">🟡</span>
+                            <div class="difficulty-name">Intermediário</div>
+                            <div class="difficulty-desc">9 cartas<br>Equilibrado</div>
+                        </div>
+                        <div class="difficulty-btn" data-difficulty="hard" onclick="setDifficulty('hard')">
+                            <span class="difficulty-emoji">🔴</span>
+                            <div class="difficulty-name">Difícil</div>
+                            <div class="difficulty-desc">12 cartas<br>Para experts</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="info-card">
@@ -533,13 +696,13 @@
                     </div>
                 </div>
                 
-                <a href="investigation-cards.html" class="ultimate-start-button">
+                <button onclick="startGameWithDifficulty()" class="ultimate-start-button">
                     <span class="button-shine"></span>
                     <span class="button-content">
                         <span class="button-icon">🚀</span>
                         <span class="button-text">INICIAR INVESTIGAÇÃO</span>
                     </span>
-                </a>
+                </button>
             </div>
         </div>
 
@@ -554,10 +717,45 @@
         const isGuest = localStorage.getItem('criminalMinds_isGuest') === 'true';
         const gameCode = localStorage.getItem('criminalMinds_gameCode') || 'LOBBY-001';
 
+        // Função para calcular nível do jogador baseado nas estatísticas
+        function calculatePlayerLevel() {
+            // Simular dados do jogador (em produção viria da API)
+            const playerStats = {
+                gamesPlayed: parseInt(localStorage.getItem('criminalMinds_gamesPlayed') || '0'),
+                gamesWon: parseInt(localStorage.getItem('criminalMinds_gamesWon') || '0'),
+                totalScore: parseInt(localStorage.getItem('criminalMinds_totalScore') || '0'),
+                rankPoints: parseInt(localStorage.getItem('criminalMinds_rankPoints') || '0')
+            };
+
+            // Calcular nível baseado em pontos de ranking
+            let level = Math.floor(playerStats.rankPoints / 1000) + 1;
+            
+            // Bônus por jogos jogados
+            level += Math.floor(playerStats.gamesPlayed / 10);
+            
+            // Bônus por taxa de vitória alta
+            if (playerStats.gamesPlayed > 0) {
+                const winRate = (playerStats.gamesWon / playerStats.gamesPlayed) * 100;
+                if (winRate >= 70) level += 2;
+                else if (winRate >= 50) level += 1;
+            }
+
+            // Garantir que o nível seja pelo menos 1
+            return Math.max(1, Math.min(level, 100)); // Máximo nível 100
+        }
+
+        // Calcular e exibir nível do jogador
+        const playerLevel = calculatePlayerLevel();
+        
         // Atualizar interface com dados do usuário
         document.getElementById('welcomeText').textContent = `Bem-vindo, ${username}!`;
         document.getElementById('currentPlayer').textContent = username;
         document.getElementById('roomCode').textContent = gameCode;
+        document.getElementById('playerLevel').textContent = `Nível ${playerLevel}`;
+        document.getElementById('currentPlayerLevelSmall').textContent = `Nv.${playerLevel}`;
+
+        // Salvar nível no localStorage para uso futuro
+        localStorage.setItem('criminalMinds_playerLevel', playerLevel);
 
         // Simular outros jogadores (para demonstração)
         const mockPlayers = [
@@ -575,6 +773,9 @@
             if (connectedPlayers < maxPlayers && mockPlayers.length > 0) {
                 const randomPlayer = mockPlayers.splice(Math.floor(Math.random() * mockPlayers.length), 1)[0];
                 
+                // Gerar nível aleatório para jogadores simulados (1-15)
+                const randomLevel = Math.floor(Math.random() * 15) + 1;
+                
                 const playersList = document.getElementById('playersList');
                 const li = document.createElement('li');
                 li.innerHTML = `
@@ -582,7 +783,10 @@
                         <div class="player-online"></div>
                         <span>${randomPlayer}</span>
                     </span>
-                    <span>🕵️ Detetive</span>
+                    <span class="player-info">
+                        <span class="player-level-small">Nv.${randomLevel}</span>
+                        <span>🕵️ Detetive</span>
+                    </span>
                 `;
                 
                 // Animação de entrada
@@ -626,8 +830,54 @@
             }
         });
 
+        // ========================================
+        // SISTEMA DE DIFICULDADE
+        // ========================================
+        let selectedDifficulty = 'easy';
+
+        function setDifficulty(difficulty) {
+            selectedDifficulty = difficulty;
+            
+            // Remover classe active de todos os botões
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Adicionar classe active ao botão selecionado
+            document.querySelector(`[data-difficulty="${difficulty}"]`).classList.add('active');
+            
+            // Salvar no localStorage
+            localStorage.setItem('criminalMinds_selectedDifficulty', difficulty);
+            
+            console.log(`Dificuldade selecionada: ${difficulty}`);
+        }
+
+        function loadDifficulty() {
+            // Carregar dificuldade salva ou usar padrão
+            const savedDifficulty = localStorage.getItem('criminalMinds_selectedDifficulty') || 'easy';
+            setDifficulty(savedDifficulty);
+        }
+
+        // Atualizar botão de iniciar para incluir dificuldade na URL
+        function startGameWithDifficulty() {
+            const difficulty = selectedDifficulty;
+            const url = `investigation-cards.html?difficulty=${difficulty}&players=${connectedPlayers}`;
+            
+            // Salvar informações do jogo
+            localStorage.setItem('criminalMinds_gameStarted', 'true');
+            localStorage.setItem('criminalMinds_playerCount', connectedPlayers);
+            localStorage.setItem('criminalMinds_gameMode', 'cards');
+            localStorage.setItem('criminalMinds_gameDifficulty', difficulty);
+            
+            // Redirecionar para o jogo
+            window.location.href = url;
+        }
+
         // Efeitos visuais
         document.addEventListener('DOMContentLoaded', function() {
+            // Carregar dificuldade salva
+            loadDifficulty();
+            
             const cards = document.querySelectorAll('.info-card');
             cards.forEach((card, index) => {
                 card.style.opacity = '0';

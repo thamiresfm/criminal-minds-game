@@ -75,10 +75,11 @@
             background: rgba(15, 15, 35, 0.95);
             border: 2px solid rgba(251, 191, 36, 0.3);
             border-radius: 20px;
-            padding: 2rem;
+            padding: 1.5rem;
             backdrop-filter: blur(15px);
             overflow-y: auto;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-height: calc(100vh - 140px);
         }
 
         .section-title {
@@ -95,16 +96,17 @@
         .cards-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr) !important;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
             max-width: 100%;
+            justify-items: center;
         }
 
         .card {
             position: relative;
-            width: 280px;
-            height: 180px;
-            border-radius: 15px;
+            width: 220px;
+            height: 140px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
@@ -192,27 +194,29 @@
         }
 
         .card-icon {
-            font-size: 2.5rem;
+            font-size: 2rem;
             text-align: center;
-            margin: 0.5rem 0;
+            margin: 0.3rem 0;
             filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.3));
         }
 
         .card-title {
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: #fbbf24;
             text-align: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
             text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+            line-height: 1.2;
         }
 
         .card-description {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: #cbd5e1;
-            line-height: 1.4;
-            padding: 0 1.2rem;
+            line-height: 1.3;
+            padding: 0 0.8rem;
             text-align: center;
+            margin-bottom: 0.5rem;
         }
 
         .card-stats {
@@ -221,16 +225,17 @@
             left: 0;
             right: 0;
             background: rgba(0, 0, 0, 0.7);
-            padding: 0.8rem 1.2rem;
+            padding: 0.5rem 0.8rem;
             display: flex;
             justify-content: space-between;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            border-radius: 0 0 12px 12px;
         }
 
         .stat {
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.2rem;
         }
 
         /* EFEITO DE FLIP DAS CARTAS */
@@ -733,7 +738,7 @@
             .card {
             width: 100% !important;
             max-width: none !important;
-            height: 160px !important;
+            height: 130px !important;
             margin: 0 !important;
         }
         
@@ -815,6 +820,7 @@
             
             .cards-container {
                 grid-template-columns: repeat(2, 1fr) !important;
+                gap: 0.8rem !important;
             }
             
             .hand-cards {
@@ -825,6 +831,11 @@
         @media (max-width: 480px) {
             .cards-container {
                 grid-template-columns: 1fr !important;
+                gap: 0.5rem !important;
+            }
+            
+            .card {
+                height: 120px !important;
             }
             
             .game-container {
@@ -1213,80 +1224,9 @@
             background: rgba(251, 191, 36, 0.5);
         }
 
-        /* ESTILOS PARA SELETOR DE DIFICULDADE */
-        .difficulty-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
 
-        .difficulty-btn {
-            padding: 0.8rem 1.2rem;
-            border: 2px solid rgba(148, 163, 184, 0.3);
-            border-radius: 12px;
-            background: rgba(15, 15, 35, 0.8);
-            color: #94a3b8;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            min-width: 100px;
-            text-align: center;
-        }
 
-        .difficulty-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
 
-        .difficulty-btn.active {
-            border-color: #fbbf24;
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(15, 15, 35, 0.9));
-            color: #fbbf24;
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
-            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
-        }
-
-        .difficulty-btn[data-difficulty="beginner"]:hover,
-        .difficulty-btn[data-difficulty="beginner"].active {
-            border-color: #10b981;
-            color: #10b981;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
-        }
-
-        .difficulty-btn[data-difficulty="intermediate"]:hover,
-        .difficulty-btn[data-difficulty="intermediate"].active {
-            border-color: #f59e0b;
-            color: #f59e0b;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
-        }
-
-        .difficulty-btn[data-difficulty="hard"]:hover,
-        .difficulty-btn[data-difficulty="hard"].active {
-            border-color: #ef4444;
-            color: #ef4444;
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
-        }
-
-        .difficulty-btn small {
-            display: block;
-            font-size: 0.7rem;
-            opacity: 0.8;
-            margin-top: 0.2rem;
-        }
-
-        @media (max-width: 768px) {
-            .difficulty-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .difficulty-btn {
-                min-width: 120px;
-            }
-        }
     </style>
     <!-- Criminal Minds API v2.0 - Sistema Melhorado -->
     <script src="js/api-client-simple.js?v=20241209_1"></script>
@@ -1356,23 +1296,7 @@
         <div class="main-area">
             <div class="section-title">🃏 Cartas de Investigação Ativas</div>
             
-            <!-- Seletor de Dificuldade -->
-            <div class="difficulty-selector" style="margin-bottom: 1.5rem; text-align: center;">
-                <div style="margin-bottom: 0.8rem; color: #94a3b8; font-size: 0.9rem;">
-                    🎯 Escolha sua dificuldade:
-                        </div>
-                <div class="difficulty-buttons">
-                    <button class="difficulty-btn active" data-difficulty="beginner" onclick="setDifficulty('beginner')">
-                        🟢 Iniciante<br><small>6 cartas</small>
-                    </button>
-                    <button class="difficulty-btn" data-difficulty="intermediate" onclick="setDifficulty('intermediate')">
-                        🟡 Intermediário<br><small>9 cartas</small>
-                    </button>
-                    <button class="difficulty-btn" data-difficulty="hard" onclick="setDifficulty('hard')">
-                        🔴 Difícil<br><small>12 cartas</small>
-                    </button>
-                    </div>
-                </div>
+
             
             <div class="cards-container" id="cardsContainer">
                 <!-- Cartas serão geradas dinamicamente baseado na dificuldade -->
@@ -1380,7 +1304,7 @@
 
             <!-- Deck de Mão -->
             <div class="deck-area">
-                <div class="section-title">🃏 Minha Mão (7/7 cartas)</div>
+                <div class="section-title" style="font-size: 1.1rem; margin-bottom: 1rem;">🃏 Minha Mão (7/7 cartas)</div>
                 <div class="hand-cards">
                     <div class="mini-card" onclick="playFromHand('witness')">
                         <div class="mini-card-icon">👁️</div>
@@ -1419,33 +1343,77 @@
         <div class="sidebar">
             <div class="section-title">📊 Estatísticas</div>
             
-            <div style="margin-bottom: 1.5rem;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                    <span>Cartas Jogadas</span>
-                    <span>12/20</span>
+            <!-- Estatísticas da Partida Atual -->
+            <div style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(15, 15, 35, 0.6); border-radius: 8px; border: 1px solid rgba(251, 191, 36, 0.3);">
+                <div style="color: #fbbf24; font-size: 0.8rem; font-weight: bold; margin-bottom: 0.5rem; text-align: center;">
+                    🎯 Partida Atual
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 60%"></div>
+                <div style="margin-bottom: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; font-size: 0.85rem;">
+                        <span>Dificuldade</span>
+                        <span id="currentDifficulty">Intermediário</span>
+                    </div>
+                </div>
+                <div style="margin-bottom: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; font-size: 0.85rem;">
+                        <span>Cartas Jogadas</span>
+                        <span id="cardsPlayed">12/20</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="cardsProgress" style="width: 60%"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; font-size: 0.85rem;">
+                        <span>Combo Streak</span>
+                        <span id="comboStreak">3x</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="comboProgress" style="width: 30%"></div>
+                    </div>
                 </div>
             </div>
             
-            <div style="margin-bottom: 1.5rem;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                    <span>Combo Streak</span>
-                    <span>3x</span>
+            <!-- Estatísticas Por Dificuldade -->
+            <div style="margin-bottom: 1rem;">
+                <div style="color: #fbbf24; font-size: 0.8rem; font-weight: bold; margin-bottom: 0.75rem; text-align: center;">
+                    📈 Histórico por Dificuldade
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 30%"></div>
+                
+                <!-- Iniciante -->
+                <div style="margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                        <span style="font-size: 0.75rem; color: #10b981; font-weight: bold;">🟢 Iniciante</span>
+                        <span style="font-size: 0.7rem; color: #10b981;" id="easyWinRate">---%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
+                        <span id="easyStats">0 jogos</span>
+                        <span id="easyBestTime">--:--</span>
+                    </div>
                 </div>
-            </div>
-
-            <div style="margin-bottom: 1.5rem;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                    <span>Precisão</span>
-                    <span>87%</span>
+                
+                <!-- Intermediário -->
+                <div style="margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.1); border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                        <span style="font-size: 0.75rem; color: #f59e0b; font-weight: bold;">🟡 Intermediário</span>
+                        <span style="font-size: 0.7rem; color: #f59e0b;" id="mediumWinRate">---%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
+                        <span id="mediumStats">0 jogos</span>
+                        <span id="mediumBestTime">--:--</span>
+                    </div>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 87%"></div>
+                
+                <!-- Difícil -->
+                <div style="margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(239, 68, 68, 0.1); border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                        <span style="font-size: 0.75rem; color: #ef4444; font-weight: bold;">🔴 Difícil</span>
+                        <span style="font-size: 0.7rem; color: #ef4444;" id="hardWinRate">---%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
+                        <span id="hardStats">0 jogos</span>
+                        <span id="hardBestTime">--:--</span>
+                    </div>
                 </div>
             </div>
 
@@ -1789,52 +1757,28 @@
             }
         ];
 
-        // ========================================
-        // FUNÇÕES DO SISTEMA DE DIFICULDADE
-        // ========================================
 
-        function setDifficulty(difficulty) {
-            currentDifficulty = difficulty;
-            
-            // Atualizar botões visuais
-            document.querySelectorAll('.difficulty-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[data-difficulty="${difficulty}"]`).classList.add('active');
-            
-            // Salvar preferência
-            localStorage.setItem('criminalMinds_difficulty', difficulty);
-            
-            // Regenerar cartas
-            generateCards();
-            
-            // Feedback
-            const setting = difficultySettings[difficulty];
-            showNotification(`🎯 Dificuldade alterada para ${setting.name}!\n${setting.cards} cartas ativas`);
-            addChatMessage(`🎯 Mudei para dificuldade ${setting.name} (${setting.cards} cartas)`, 'self');
-        }
-
-        function loadDifficulty() {
-            const saved = localStorage.getItem('criminalMinds_difficulty');
-            if (saved && difficultySettings[saved]) {
-                currentDifficulty = saved;
-                
-                // Atualizar botão ativo
-                document.querySelectorAll('.difficulty-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                const activeBtn = document.querySelector(`[data-difficulty="${saved}"]`);
-                if (activeBtn) {
-                    activeBtn.classList.add('active');
-                }
-            }
-        }
 
         function generateCards() {
             const container = document.getElementById('cardsContainer');
             if (!container) return;
             
-            const numCards = difficultySettings[currentDifficulty].cards;
+            // Obter dificuldade da URL ou usar padrão
+            const urlParams = new URLSearchParams(window.location.search);
+            const difficultyFromUrl = urlParams.get('difficulty') || 'intermediate';
+            
+            // Mapear dificuldades da URL para as configurações existentes
+            const difficultyMap = {
+                'easy': 'beginner',
+                'medium': 'intermediate', 
+                'hard': 'hard'
+            };
+            
+            const mappedDifficulty = difficultyMap[difficultyFromUrl] || 'intermediate';
+            const numCards = difficultySettings[mappedDifficulty].cards;
+            
+            // Atualizar display da dificuldade atual
+            updateCurrentDifficultyDisplay(difficultyFromUrl);
             
             // Limpar cartas existentes
             container.innerHTML = '';
@@ -2043,12 +1987,73 @@
             return element;
         }
         
+        // ========================================
+        // FUNÇÕES DE ESTATÍSTICAS POR DIFICULDADE
+        // ========================================
+        
+        function updateCurrentDifficultyDisplay(difficulty) {
+            const difficultyNames = {
+                'easy': 'Iniciante',
+                'medium': 'Intermediário',
+                'hard': 'Difícil'
+            };
+            
+            const currentDifficultyElement = document.getElementById('currentDifficulty');
+            if (currentDifficultyElement) {
+                currentDifficultyElement.textContent = difficultyNames[difficulty] || 'Intermediário';
+            }
+        }
+        
+        function loadDifficultyStats() {
+            // Simular carregamento de estatísticas (em produção viria da API)
+            const mockStats = {
+                easy: {
+                    gamesPlayed: 5,
+                    gamesWon: 4,
+                    winRate: '80.0',
+                    bestTimeFormatted: '3:45'
+                },
+                medium: {
+                    gamesPlayed: 12,
+                    gamesWon: 8,
+                    winRate: '66.7',
+                    bestTimeFormatted: '5:22'
+                },
+                hard: {
+                    gamesPlayed: 3,
+                    gamesWon: 1,
+                    winRate: '33.3',
+                    bestTimeFormatted: '8:15'
+                }
+            };
+            
+            updateDifficultyStatsDisplay(mockStats);
+        }
+        
+        function updateDifficultyStatsDisplay(stats) {
+            // Atualizar Iniciante
+            document.getElementById('easyWinRate').textContent = stats.easy.winRate + '%';
+            document.getElementById('easyStats').textContent = `${stats.easy.gamesWon}/${stats.easy.gamesPlayed} jogos`;
+            document.getElementById('easyBestTime').textContent = stats.easy.bestTimeFormatted;
+            
+            // Atualizar Intermediário
+            document.getElementById('mediumWinRate').textContent = stats.medium.winRate + '%';
+            document.getElementById('mediumStats').textContent = `${stats.medium.gamesWon}/${stats.medium.gamesPlayed} jogos`;
+            document.getElementById('mediumBestTime').textContent = stats.medium.bestTimeFormatted;
+            
+            // Atualizar Difícil
+            document.getElementById('hardWinRate').textContent = stats.hard.winRate + '%';
+            document.getElementById('hardStats').textContent = `${stats.hard.gamesWon}/${stats.hard.gamesPlayed} jogos`;
+            document.getElementById('hardBestTime').textContent = stats.hard.bestTimeFormatted;
+        }
+
         function startTimer() {
             // Carregar conquistas salvas
             loadAchievements();
             
-            // Carregar dificuldade salva
-            loadDifficulty();
+            // Carregar estatísticas por dificuldade
+            loadDifficultyStats();
+
             
             // Gerar cartas iniciais
             generateCards();
