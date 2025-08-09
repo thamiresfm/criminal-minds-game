@@ -1031,17 +1031,79 @@
         .card:nth-child(4) { animation-delay: 0.4s; }
         .card:nth-child(5) { animation-delay: 0.5s; }
         .card:nth-child(6) { animation-delay: 0.6s; }
+
+        /* FORÇAR LAYOUT 3 COLUNAS - MÁXIMA ESPECIFICIDADE */
+        html body .sidebar .deck-area .hand-cards {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1rem !important;
+            margin-top: 1rem !important;
+            margin-bottom: 1.5rem !important;
+            padding: 1.5rem !important;
+            background: rgba(15, 15, 35, 0.7) !important;
+            border-radius: 20px !important;
+            border: 2px solid rgba(251, 191, 36, 0.5) !important;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4) !important;
+            max-width: 100% !important;
+        }
+
+        html body .sidebar .deck-area .hand-cards .mini-card {
+            height: 150px !important;
+            min-height: 150px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #1e1e3f) !important;
+            border: 2px solid rgba(251, 191, 36, 0.4) !important;
+            border-radius: 15px !important;
+            padding: 1rem !important;
+            cursor: pointer !important;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            text-align: center !important;
+            position: relative !important;
+            overflow: visible !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        html body .sidebar .deck-area .hand-cards .mini-card:hover {
+            transform: translateY(-4px) scale(1.05) !important;
+            border-color: rgba(251, 191, 36, 0.8) !important;
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.3) !important;
+            background: linear-gradient(135deg, #1e1e3f, #1a2040) !important;
+        }
+
+        html body .sidebar .deck-area .hand-cards .mini-card-icon {
+            font-size: 2rem !important;
+            margin-bottom: 0.75rem !important;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5)) !important;
+            flex-shrink: 0 !important;
+        }
+
+        html body .sidebar .deck-area .hand-cards .mini-card-title {
+            font-size: 0.9rem !important;
+            color: #fbbf24 !important;
+            font-weight: 700 !important;
+            line-height: 1.2 !important;
+            text-shadow: 0 0 8px rgba(251, 191, 36, 0.4) !important;
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: unset !important;
+            width: 100% !important;
+            text-align: center !important;
+            margin-top: auto !important;
+        }
     </style>
     <!-- Criminal Minds API v2.0 - Sistema Melhorado -->
-    <script src="js/api-client-simple.js?v=20241205"></script>
-    <script src="js/game-functions.js"></script>
-    <script defer src="js/comprehensive-test-system.js"></script>
-    <script defer src="js/enhanced-game-system.js"></script>
-    <script defer src="js/complete-hand-system.js"></script>
+    <script src="js/api-client-simple.js?v=20241209_1"></script>
+    <script src="js/game-functions.js?v=20241209_1"></script>
+    <script defer src="js/comprehensive-test-system.js?v=20241209_1"></script>
+    <script defer src="js/enhanced-game-system.js?v=20241209_1"></script>
+    <script defer src="js/complete-hand-system.js?v=20241209_1"></script>
     <!-- AggressiveFix desativado nesta tela -->
-    <script defer src="js/layout-fix-system.js"></script>
-    <script defer src="js/layout-diagnostic-system.js"></script>
-    <script defer src="js/layout-repair-system.js"></script>
+    <script defer src="js/layout-fix-system.js?v=20241209_1"></script>
+    <script defer src="js/layout-diagnostic-system.js?v=20241209_1"></script>
+    <script defer src="js/layout-repair-system.js?v=20241209_1"></script>
 </head>
 <body>
     <div class="game-container">
