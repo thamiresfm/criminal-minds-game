@@ -631,16 +631,42 @@
 
         .chat-message {
             margin-bottom: 0.8rem;
-            font-size: 0.9rem;
-            padding: 0.5rem;
-            border-radius: 8px;
-            background: rgba(22, 33, 62, 0.3);
+            padding: 0.8rem;
+            background: linear-gradient(135deg, rgba(15, 15, 35, 0.8), rgba(26, 26, 46, 0.8));
+            border-radius: 10px;
+            border-left: 3px solid #fbbf24;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .chat-message:hover {
+            transform: translateX(2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .chat-message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
         }
 
         .chat-user {
+            font-weight: bold;
             color: #fbbf24;
-            font-weight: 700;
-            text-shadow: 0 0 5px rgba(251, 191, 36, 0.3);
+            font-size: 0.9rem;
+        }
+
+        .chat-time {
+            font-size: 0.7rem;
+            color: #6b7280;
+            opacity: 0.8;
+        }
+
+        .chat-content {
+            color: #e2e8f0;
+            font-size: 0.85rem;
+            line-height: 1.4;
         }
 
         .chat-input-container {
@@ -3141,31 +3167,141 @@
             });
         }
 
+        // SISTEMA DE CHAT DA EQUIPE
+        let chatMessages = [];
+        let teamMembers = [
+            { name: 'Detetive Reid', status: 'Online', cards: 127, avatar: '🧠' },
+            { name: 'Agente Morgan', status: 'Online', cards: 98, avatar: '💪' },
+            { name: 'Dra. Brennan', status: 'Online', cards: 156, avatar: '🔬' },
+            { name: 'Garcia', status: 'Online', cards: 203, avatar: '💻' },
+            { name: 'Hotchner', status: 'Online', cards: 89, avatar: '👔' }
+        ];
+
         // Simulação de atividade da equipe
         function simulateTeamActivity() {
             const activities = [
-                "🎴 Reid jogou carta LENDÁRIA: Perfil Completo!",
-                "⚡ Morgan ativou combo de 5 cartas!",
-                "💎 Brennan encontrou carta ÉPICA rara!",
-                "🔥 Garcia comprou pacote premium!",
-                "✨ Hotchner desbloqueou conquista especial!"
+                { message: "🎴 Joguei carta LENDÁRIA: Perfil Completo!", author: "Reid" },
+                { message: "⚡ Ativei combo de 5 cartas! +50 pontos", author: "Morgan" },
+                { message: "💎 Encontrei carta ÉPICA rara!", author: "Brennan" },
+                { message: "🔥 Comprei pacote premium!", author: "Garcia" },
+                { message: "✨ Desbloqueei conquista especial!", author: "Hotchner" },
+                { message: "🔍 Nova evidência coletada!", author: "Reid" },
+                { message: "📊 Progresso: 75% das evidências", author: "Morgan" },
+                { message: "🎯 Suspeito identificado!", author: "Brennan" },
+                { message: "💡 Ideia brilhante para o caso!", author: "Garcia" },
+                { message: "🚨 Alerta: Tempo acabando!", author: "Hotchner" }
             ];
             
             setInterval(() => {
-                if (Math.random() < 0.4) {
+                if (Math.random() < 0.3) {
                     const activity = activities[Math.floor(Math.random() * activities.length)];
-                    addChatMessage(activity, '🤖 Sistema');
+                    addChatMessage(activity.message, activity.author);
                 }
-            }, 8000);
+            }, 10000);
+        }
+
+        // Função para adicionar mensagem ao chat
+        function addChatMessage(message, author) {
+            const chatContainer = document.getElementById('chatMessages');
+            if (!chatContainer) return;
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message';
+            
+            const timestamp = new Date().toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            const member = teamMembers.find(m => m.name.includes(author)) || { avatar: '👤' };
+            
+            messageDiv.innerHTML = `
+                <div class="chat-message-header">
+                    <span class="chat-user">${member.avatar} ${author}:</span>
+                    <span class="chat-time">${timestamp}</span>
+                </div>
+                <div class="chat-content">${message}</div>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Limitar mensagens (manter apenas as últimas 20)
+            const messages = chatContainer.querySelectorAll('.chat-message');
+            if (messages.length > 20) {
+                messages[0].remove();
+            }
+        }
+
+        // Função para enviar mensagem do usuário
+        function sendUserMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                const detectiveName = localStorage.getItem('detectiveName') || 'Detetive';
+                addChatMessage(message, detectiveName);
+                input.value = '';
+                
+                // Simular resposta da equipe após 2-5 segundos
+                setTimeout(() => {
+                    const responses = [
+                        "Entendi! Boa observação! 👍",
+                        "Vou investigar isso! 🔍",
+                        "Excelente ponto! 👏",
+                        "Concordo totalmente! 💯",
+                        "Vamos focar nessa pista! 🎯",
+                        "Boa estratégia! 🚀",
+                        "Perfeito! Continue assim! ✨",
+                        "Vou verificar isso! 🔎"
+                    ];
+                    
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    const randomMember = teamMembers[Math.floor(Math.random() * teamMembers.length)];
+                    addChatMessage(randomResponse, randomMember.name.split(' ')[1]); // Usar apenas o sobrenome
+                }, 2000 + Math.random() * 3000);
+            }
+        }
+
+        // Função para inicializar o chat
+        function initializeChat() {
+            const chatInput = document.getElementById('chatInput');
+            const sendButton = document.getElementById('sendButton');
+            
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendUserMessage();
+                    }
+                });
+            }
+            
+            if (sendButton) {
+                sendButton.addEventListener('click', sendUserMessage);
+            }
+            
+            // Adicionar mensagens iniciais
+            setTimeout(() => {
+                addChatMessage("🔍 Iniciando investigação...", "Reid");
+            }, 1000);
+            
+            setTimeout(() => {
+                addChatMessage("💪 Pronto para ação!", "Morgan");
+            }, 2000);
+            
+            setTimeout(() => {
+                addChatMessage("🔬 Laboratório preparado!", "Brennan");
+            }, 3000);
         }
 
         // Inicializar
         simulateTeamActivity();
 
         // SISTEMA DE CARTAS INTERATIVAS COMPLETO
-        let cardsPlayed = 0;
-        let comboStreak = 0;
-        let playerCoins = 500;
+        // Variáveis já declaradas anteriormente, apenas inicializando valores
+        cardsPlayed = 0;
+        comboStreak = 0;
+        playerCoins = 500;
         let totalEvidence = 0;
         let currentCase = {
             id: 'case-001',
@@ -3278,6 +3414,20 @@
             
             // Mostrar notificação de evidências e moedas
             showEvidenceNotification(totalEvidenceGained, cardEffect.description, totalCoins, comboStreak);
+            
+            // Adicionar mensagem ao chat sobre a evidência coletada
+            setTimeout(() => {
+                const chatMessages = [
+                    `🔍 Coletou ${totalEvidenceGained} evidências com ${cardEffect.description.toLowerCase()}`,
+                    `📊 Progresso: ${currentCase.collectedEvidence}/${currentCase.targetEvidence} evidências`,
+                    `🎯 Combo ${comboStreak}x ativo! Continue assim!`,
+                    `💡 Boa estratégia! Essa evidência é crucial!`
+                ];
+                
+                const randomMessage = chatMessages[Math.floor(Math.random() * chatMessages.length)];
+                const randomMember = teamMembers[Math.floor(Math.random() * teamMembers.length)];
+                addChatMessage(randomMessage, randomMember.name.split(' ')[1]);
+            }, 1000);
             
             // Verificar se atingiu objetivo de evidências
             if (currentCase.collectedEvidence >= currentCase.targetEvidence) {
@@ -3525,6 +3675,10 @@
             updateStats();
             updateTimeDisplay();
             console.log('📊 Estatísticas inicializadas');
+            
+            // Inicializar chat da equipe
+            initializeChat();
+            console.log('💬 Chat da equipe inicializado');
         };
     </script>
 </body>
