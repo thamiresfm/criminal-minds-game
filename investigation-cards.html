@@ -1356,24 +1356,24 @@
                 </div>
                 <div style="margin-bottom: 0.75rem;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; font-size: 0.85rem;">
-                        <span>Cartas Jogadas</span>
+                    <span>Cartas Jogadas</span>
                         <span id="cardsPlayed">12/20</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="cardsProgress" style="width: 60%"></div>
-                    </div>
                 </div>
+                <div class="progress-bar">
+                        <div class="progress-fill" id="cardsProgress" style="width: 60%"></div>
+                </div>
+            </div>
                 <div style="margin-bottom: 0.75rem;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; font-size: 0.85rem;">
-                        <span>Combo Streak</span>
+                    <span>Combo Streak</span>
                         <span id="comboStreak">3x</span>
-                    </div>
-                    <div class="progress-bar">
+                </div>
+                <div class="progress-bar">
                         <div class="progress-fill" id="comboProgress" style="width: 30%"></div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Estatísticas Por Dificuldade -->
             <div style="margin-bottom: 1rem;">
                 <div style="color: #fbbf24; font-size: 0.8rem; font-weight: bold; margin-bottom: 0.75rem; text-align: center;">
@@ -1389,9 +1389,9 @@
                     <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
                         <span id="easyStats">0 jogos</span>
                         <span id="easyBestTime">--:--</span>
-                    </div>
                 </div>
-                
+            </div>
+
                 <!-- Intermediário -->
                 <div style="margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.1); border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
@@ -2055,7 +2055,7 @@
             document.getElementById('hardStats').textContent = `${stats.hard.gamesWon}/${stats.hard.gamesPlayed} jogos`;
             document.getElementById('hardBestTime').textContent = stats.hard.bestTimeFormatted;
         }
-
+        
         function startTimer() {
             // Carregar conquistas salvas
             loadAchievements();
@@ -2088,10 +2088,12 @@
                 
                 if (gameTime <= 0) {
                     clearInterval(timer);
-                    alert('⏰ Tempo esgotado! Fazendo acusação automática baseada nas cartas jogadas...');
                     
                     // Bônus final baseado no desempenho
                     calculateFinalRewards();
+                    
+                    // Mostrar resultado final
+                    showGameEndModal('timeout');
                 }
                 gameTime--;
             }, 1000);
@@ -2554,7 +2556,151 @@
         }
 
         function makeAccusation() {
-            alert('⚖️ Sistema de acusação baseado em cartas em desenvolvimento! Suas cartas jogadas determinarão o resultado.');
+            const confirmAccusation = confirm('⚖️ Tem certeza que deseja fazer sua acusação final?\n\n🃏 Suas cartas jogadas determinarão o resultado.\n\n✅ Clique OK para fazer a acusação\n❌ Clique Cancelar para continuar investigando');
+            
+            if (confirmAccusation) {
+                // Calcular resultado baseado nas cartas jogadas
+                const success = Math.random() > 0.5; // Simulação simples (50% chance)
+                
+                // Bônus final baseado no desempenho
+                calculateFinalRewards();
+                
+                // Mostrar resultado final
+                showGameEndModal(success ? 'win' : 'lose');
+            }
+        }
+
+        // Função para mostrar modal de fim de jogo
+        function showGameEndModal(result) {
+            let title, message, icon, color;
+            
+            switch(result) {
+                case 'win':
+                    title = '🎉 CASO RESOLVIDO!';
+                    message = 'Parabéns! Você desvendou o mistério e capturou o criminoso!';
+                    icon = '🏆';
+                    color = '#10b981';
+                    break;
+                case 'lose':
+                    title = '❌ CASO ARQUIVADO';
+                    message = 'Sua acusação estava incorreta. O criminoso escapou desta vez...';
+                    icon = '💔';
+                    color = '#ef4444';
+                    break;
+                case 'timeout':
+                    title = '⏰ TEMPO ESGOTADO';
+                    message = 'O tempo acabou! O caso foi encerrado sem solução definitiva.';
+                    icon = '⌛';
+                    color = '#f59e0b';
+                    break;
+                default:
+                    title = '🏁 FIM DE JOGO';
+                    message = 'A investigação chegou ao fim.';
+                    icon = '🎮';
+                    color = '#6b7280';
+            }
+            
+            // Salvar progresso e estatísticas
+            const gameData = {
+                result: result,
+                cardsPlayed: cardsPlayed,
+                comboStreak: comboStreak,
+                playerCoins: playerCoins,
+                timeRemaining: gameTime,
+                endTime: new Date().toISOString()
+            };
+            
+            localStorage.setItem('criminalMinds_lastGameResult', JSON.stringify(gameData));
+            
+            // Criar modal de resultado
+            const resultModal = document.createElement('div');
+            resultModal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 5000;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: linear-gradient(135deg, #1a1a2e, #16213e);
+                border: 3px solid ${color};
+                border-radius: 25px;
+                padding: 3rem;
+                text-align: center;
+                max-width: 500px;
+                width: 90%;
+                box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+                animation: modalSlideIn 0.5s ease-out;
+            `;
+            
+            modalContent.innerHTML = `
+                <div style="font-size: 4rem; margin-bottom: 1rem;">${icon}</div>
+                <h2 style="color: ${color}; font-size: 2rem; margin-bottom: 1rem;">${title}</h2>
+                <p style="color: #cbd5e1; font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.6;">${message}</p>
+                
+                <div style="background: rgba(0, 0, 0, 0.3); border-radius: 15px; padding: 1.5rem; margin-bottom: 2rem;">
+                    <h3 style="color: #fbbf24; margin-bottom: 1rem;">📊 Resumo da Investigação</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; font-size: 0.9rem;">
+                        <div style="color: #94a3b8;">🃏 Cartas Jogadas: <span style="color: #fbbf24; font-weight: bold;">${cardsPlayed}</span></div>
+                        <div style="color: #94a3b8;">⚡ Combo Máximo: <span style="color: #fbbf24; font-weight: bold;">${comboStreak}x</span></div>
+                        <div style="color: #94a3b8;">💰 Moedas Ganhas: <span style="color: #fbbf24; font-weight: bold;">${playerCoins}</span></div>
+                        <div style="color: #94a3b8;">⏱️ Tempo Restante: <span style="color: #fbbf24; font-weight: bold;">${Math.floor(gameTime / 60)}:${(gameTime % 60).toString().padStart(2, '0')}</span></div>
+                    </div>
+                </div>
+                
+                <div style="color: #6b7280; font-style: italic; margin-bottom: 1.5rem;">Retornando ao lobby em <span id="countdown">5</span> segundos...</div>
+                <button onclick="returnToLobby()" style="
+                    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                    color: #0f0f23;
+                    border: none;
+                    padding: 1rem 2rem;
+                    border-radius: 10px;
+                    font-weight: bold;
+                    font-size: 1rem;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    🏠 Voltar ao Lobby Agora
+                </button>
+            `;
+            
+            // Adicionar animação CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes modalSlideIn {
+                    from { opacity: 0; transform: translateY(-50px) scale(0.9); }
+                    to { opacity: 1; transform: translateY(0) scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            resultModal.appendChild(modalContent);
+            document.body.appendChild(resultModal);
+            
+            // Countdown automático
+            let countdown = 5;
+            const countdownElement = document.getElementById('countdown');
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdownElement) {
+                    countdownElement.textContent = countdown;
+                }
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    returnToLobby();
+                }
+            }, 1000);
+        }
+        
+        function returnToLobby() {
+            window.location.href = 'lobby.html';
         }
 
         // Função para sair da investigação
