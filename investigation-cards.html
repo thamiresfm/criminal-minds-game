@@ -63,6 +63,35 @@
             padding: 0.5rem 1rem;
             border-radius: 8px;
             border: 1px solid rgba(239, 68, 68, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 0.2rem;
+        }
+
+        .timer-btn {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ef4444;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .timer-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(239, 68, 68, 0.6);
+            transform: scale(1.1);
+        }
+
+        .timer-btn:active {
+            transform: scale(0.95);
         }
 
         .sidebar {
@@ -1440,7 +1469,14 @@
                 </button>
                 <div class="case-title">🎯 CRIMINAL MINDS: DIGITAL CARDS</div>
             </div>
-            <div class="timer" id="gameTimer">⏱️ 45:00</div>
+            <div class="timer" id="gameTimer">
+                <span>⏱️ 45:00</span>
+                <div class="timer-controls">
+                    <button onclick="pauseTimer()" class="timer-btn" title="Pausar Timer">⏸️</button>
+                    <button onclick="resumeTimer()" class="timer-btn" title="Retomar Timer">▶️</button>
+                    <button onclick="resetTimer()" class="timer-btn" title="Reiniciar Timer">🔄</button>
+                </div>
+            </div>
                         <div style="display: flex; gap: 1rem;">
                 <button class="btn" onclick="openDeck()">🃏 Meu Deck</button>
                 <button class="btn" onclick="showCollection()">📚 Coleção</button>
@@ -2470,33 +2506,13 @@
             // Atualizar display inicial de moedas
             updateCoinDisplay();
             
-            const timer = setInterval(() => {
-                const minutes = Math.floor(gameTime / 60);
-                const seconds = gameTime % 60;
-                const timerEl = document.getElementById('gameTimer');
-                if (timerEl) {
-                    timerEl.textContent = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
-                }
-                
-                // Atualizar display de tempo na seção de estatísticas
-                updateTimeDisplay();
-                
-                // Bônus por tempo (a cada minuto)
-                if (gameTime % 60 === 0 && gameTime > 0) {
-                    rewardCoins(coinRewards.timeBonus.amount, coinRewards.timeBonus.message);
-                }
-                
-                if (gameTime <= 0) {
-                    clearInterval(timer);
-                    
-                    // Bônus final baseado no desempenho
-                    calculateFinalRewards();
-                    
-                    // Mostrar resultado final
-                    showGameEndModal('timeout');
-                }
-                gameTime--;
-            }, 1000);
+            // Inicializar o timer com o novo sistema
+            startTimerInterval();
+            
+            // Adicionar mensagem inicial sobre o tempo
+            setTimeout(() => {
+                addChatMessage("⏱️ 45 minutos para resolver o caso. Boa sorte!", "Hotchner");
+            }, 4000);
         }
 
         function calculateFinalRewards() {
@@ -3544,31 +3560,153 @@
             });
         }
 
+        // SISTEMA DE TEMPO RESTANTE COMPLETO
+        let gameTime = 45 * 60; // 45 minutos em segundos
+        let timerInterval;
+        let isTimerRunning = false;
+
         // Função para atualizar o tempo em tempo real
         function updateTimeDisplay() {
             const timeRemainingElement = document.getElementById('timeRemaining');
             const timeProgressElement = document.getElementById('timeProgress');
+            const headerTimerElement = document.getElementById('gameTimer');
             
             if (timeRemainingElement && timeProgressElement) {
                 const minutes = Math.floor(gameTime / 60);
                 const seconds = gameTime % 60;
                 const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 
+                // Atualizar display na seção de estatísticas
                 timeRemainingElement.textContent = timeString;
+                
+                // Atualizar timer no header
+                if (headerTimerElement) {
+                    headerTimerElement.textContent = `⏱️ ${timeString}`;
+                }
                 
                 // Atualizar barra de progresso do tempo
                 const timeProgress = (gameTime / (45 * 60)) * 100; // 45 minutos = 2700 segundos
                 timeProgressElement.style.width = `${timeProgress}%`;
                 
                 // Mudar cor baseado no tempo restante
-                if (gameTime <= 300) { // 5 minutos restantes
+                if (gameTime <= 300) { // 5 minutos restantes - VERMELHO
                     timeProgressElement.style.background = 'linear-gradient(90deg, #dc2626, #991b1b)';
                     timeRemainingElement.style.color = '#dc2626';
-                } else if (gameTime <= 900) { // 15 minutos restantes
+                    timeRemainingElement.style.animation = 'pulse 1s infinite';
+                    showTimeWarning('CRÍTICO: Menos de 5 minutos!');
+                } else if (gameTime <= 900) { // 15 minutos restantes - LARANJA
                     timeProgressElement.style.background = 'linear-gradient(90deg, #f59e0b, #d97706)';
                     timeRemainingElement.style.color = '#f59e0b';
+                    timeRemainingElement.style.animation = 'none';
+                    if (gameTime === 900) showTimeWarning('ATENÇÃO: 15 minutos restantes!');
+                } else if (gameTime <= 1800) { // 30 minutos restantes - AMARELO
+                    timeProgressElement.style.background = 'linear-gradient(90deg, #eab308, #ca8a04)';
+                    timeRemainingElement.style.color = '#eab308';
+                    timeRemainingElement.style.animation = 'none';
+                } else { // Tempo normal - VERDE
+                    timeProgressElement.style.background = 'linear-gradient(90deg, #22c55e, #16a34a)';
+                    timeRemainingElement.style.color = '#22c55e';
+                    timeRemainingElement.style.animation = 'none';
+                }
+                
+                // Adicionar mensagem ao chat sobre tempo crítico
+                if (gameTime === 300) { // Exatamente 5 minutos
+                    addChatMessage("🚨 TEMPO CRÍTICO! Menos de 5 minutos restantes!", "Hotchner");
+                } else if (gameTime === 900) { // Exatamente 15 minutos
+                    addChatMessage("⚠️ ATENÇÃO: 15 minutos restantes!", "Morgan");
+                } else if (gameTime === 1800) { // Exatamente 30 minutos
+                    addChatMessage("⏰ 30 minutos restantes. Mantenha o foco!", "Reid");
                 }
             }
+        }
+
+        // Função para mostrar aviso de tempo
+        function showTimeWarning(message) {
+            const warning = document.createElement('div');
+            warning.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #dc2626, #991b1b);
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 15px;
+                font-weight: bold;
+                font-size: 1.2rem;
+                z-index: 3000;
+                animation: timeWarningAnim 2s ease-out forwards;
+                box-shadow: 0 10px 30px rgba(220, 38, 38, 0.5);
+                text-align: center;
+            `;
+            warning.textContent = message;
+            
+            document.body.appendChild(warning);
+            
+            setTimeout(() => {
+                warning.remove();
+            }, 3000);
+        }
+
+        // Função para pausar o timer
+        function pauseTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                console.log('⏸️ Timer pausado');
+            }
+        }
+
+        // Função para retomar o timer
+        function resumeTimer() {
+            if (!isTimerRunning && gameTime > 0) {
+                startTimerInterval();
+                console.log('▶️ Timer retomado');
+            }
+        }
+
+        // Função para reiniciar o timer
+        function resetTimer() {
+            gameTime = 45 * 60; // 45 minutos
+            updateTimeDisplay();
+            console.log('🔄 Timer reiniciado');
+        }
+
+        // Função para iniciar o intervalo do timer
+        function startTimerInterval() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            isTimerRunning = true;
+            timerInterval = setInterval(() => {
+                if (gameTime > 0) {
+                    gameTime--;
+                    updateTimeDisplay();
+                    
+                    // Bônus por tempo (a cada minuto)
+                    if (gameTime % 60 === 0 && gameTime > 0) {
+                        const timeBonus = Math.floor(gameTime / 60) * 2; // 2 moedas por minuto restante
+                        playerCoins += timeBonus;
+                        document.getElementById('coin-display').textContent = playerCoins;
+                        
+                        // Adicionar mensagem ao chat sobre bônus de tempo
+                        if (timeBonus > 0) {
+                            addChatMessage(`💰 Bônus de tempo: +${timeBonus} moedas!`, "Garcia");
+                        }
+                    }
+                } else {
+                    // Tempo esgotado
+                    clearInterval(timerInterval);
+                    isTimerRunning = false;
+                    
+                    // Mostrar resultado final
+                    showGameEndModal('timeout');
+                    
+                    // Adicionar mensagem ao chat
+                    addChatMessage("⏰ TEMPO ESGOTADO! Investigação encerrada.", "Hotchner");
+                }
+            }, 1000);
         }
 
         // CSS Animations
@@ -3588,6 +3726,29 @@
             @keyframes slideOutRight {
                 from { transform: translateX(0); opacity: 1; }
                 to { transform: translateX(100%); opacity: 0; }
+            }
+            
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.7; }
+            }
+            
+            @keyframes timeWarningAnim {
+                0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+                20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+                80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+            }
+            
+            @keyframes timeCritical {
+                0%, 100% { 
+                    background: linear-gradient(90deg, #dc2626, #991b1b);
+                    box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+                }
+                50% { 
+                    background: linear-gradient(90deg, #991b1b, #dc2626);
+                    box-shadow: 0 0 30px rgba(220, 38, 38, 0.8);
+                }
             }
         `;
         document.head.appendChild(style);
