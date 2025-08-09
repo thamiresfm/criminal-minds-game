@@ -52,11 +52,6 @@ class CompleteHandSystem {
             { id: 7, name: "Confissão", description: "Admissão de culpa", rarity: "Legendary", power: 7 }
         ];
         
-        // Bind methods para evitar perda de contexto
-        this.init = this.init.bind(this);
-        this.setupCompleteHand = this.setupCompleteHand.bind(this);
-        this.fixCardCounter = this.fixCardCounter.bind(this);
-        
         // Aguardar o evento do sistema aprimorado para evitar correr antes do DOM
         document.addEventListener('enhanced:ready', () => this.init(), { once: true });
     }
@@ -64,7 +59,7 @@ class CompleteHandSystem {
     /**
      * Inicialização do sistema
      */
-    async init() {
+    init() {
         if (this._initialized) {
             console.debug('CompleteHandSystem: init ignorado (já inicializado).');
             return;
@@ -73,10 +68,10 @@ class CompleteHandSystem {
         console.log('🃏 CompleteHandSystem: Inicializando sistema de mão completa...');
         
         try {
-            await this.setupCompleteHand();
-            await this.fixCardCounter();
-            await this.ensureAllCardsVisible();
-            await this.setupCardInteractions();
+            this.setupCompleteHand();
+            this.fixCardCounter();
+            this.ensureAllCardsVisible();
+            this.setupCardInteractions();
             
             console.log('✅ CompleteHandSystem: Sistema inicializado com sucesso');
         } catch (error) {
@@ -85,46 +80,10 @@ class CompleteHandSystem {
     }
 
     /**
-     * Utilitário para aguardar elemento aparecer no DOM
-     */
-    waitForElement(selector, { timeout = 5000 } = {}) {
-        return new Promise((resolve, reject) => {
-            const found = document.querySelector(selector);
-            if (found) return resolve(found);
-
-            const obs = new MutationObserver(() => {
-                const el = document.querySelector(selector);
-                if (el) { 
-                    obs.disconnect(); 
-                    resolve(el); 
-                }
-            });
-
-            obs.observe(document.documentElement, { childList: true, subtree: true });
-
-            setTimeout(() => {
-                obs.disconnect();
-                reject(new Error(`Elemento não encontrado: ${selector}`));
-            }, timeout);
-        });
-    }
-
-    /**
      * Configurar mão completa
      */
-    async setupCompleteHand() {
+    setupCompleteHand() {
         console.log('🃏 Configurando mão completa...');
-        
-        // Aguardar gameContainer aparecer com seletor flexível
-        let gameContainer;
-        try {
-            gameContainer = await this.waitForElement('#game-container, .game-container, .main-area, [data-role="game-container"]');
-            console.log('✅ gameContainer encontrado:', gameContainer.className || gameContainer.id || 'elemento');
-        } catch (error) {
-            console.warn('⚠️ gameContainer não encontrado, usando fallback:', error.message);
-            // Fallback: criar container se não existir
-            gameContainer = document.querySelector('.main-area') || document.body;
-        }
         
         const handStyle = document.createElement('style');
         handStyle.textContent = `
@@ -264,50 +223,30 @@ class CompleteHandSystem {
     /**
      * Corrigir contador de cartas
      */
-    async fixCardCounter() {
+    fixCardCounter() {
         console.log('📊 Corrigindo contador de cartas...');
         
-        // Buscar elemento do contador com seletores flexíveis
-        const selectors = [
-            '.section-title',
-            'h2',
-            'h3',
-            '[data-role="hand-counter"]',
-            '.hand-title'
-        ];
-        
-        let counterElement = null;
-        for (const selector of selectors) {
-            const elements = document.querySelectorAll(selector);
-            counterElement = Array.from(elements).find(el => 
-                el.textContent && (el.textContent.includes('6/7') || el.textContent.includes('Minha Mão'))
-            );
-            if (counterElement) break;
-        }
-        
-        if (counterElement) {
-            if (counterElement.textContent.includes('6/7')) {
-                counterElement.textContent = counterElement.textContent.replace('6/7', '7/7');
+        // Encontrar e corrigir contador de cartas
+        const cardCounters = document.querySelectorAll('*');
+        cardCounters.forEach(element => {
+            if (element.textContent && element.textContent.includes('6/7')) {
+                element.textContent = element.textContent.replace('6/7', '7/7');
                 console.log('✅ Contador corrigido: 6/7 -> 7/7');
             }
-            if (counterElement.textContent.includes('Minha Mão')) {
-                counterElement.textContent = counterElement.textContent.replace(
-                    /Minha Mão \(\d+\/\d+ cartas\)/,
-                    'Minha Mão (7/7 cartas)'
-                );
-                console.log('✅ Contador ajustado para 7/7 cartas');
+            
+            if (element.textContent && element.textContent.includes('Minha Mão')) {
+                element.textContent = element.textContent.replace('(6/7 cartas)', '(7/7 cartas)');
+                console.log('✅ Texto "Minha Mão" corrigido');
             }
-        } else {
-            console.warn('⚠️ Contador de cartas não encontrado para correção');
-        }
+        });
         
-        console.log('✅ Contador de cartas processado');
+        console.log('✅ Contador de cartas corrigido');
     }
 
     /**
      * Garantir que todas as cartas sejam visíveis
      */
-    async ensureAllCardsVisible() {
+    ensureAllCardsVisible() {
         console.log('👁️ Garantindo que todas as cartas sejam visíveis...');
         
         // Criar container de cartas se não existir
@@ -317,18 +256,14 @@ class CompleteHandSystem {
             handContainer.className = 'hand-container';
             handContainer.innerHTML = '<h3 style="grid-column: 1 / -1; text-align: center; margin-bottom: 1rem; color: #ffc107;">🃏 Minha Mão (7/7 cartas)</h3>';
             
-            // Aguardar gameContainer aparecer
-            let gameContainer;
-            try {
-                gameContainer = await this.waitForElement('#game-container, .game-container, .main-area, [data-role="game-container"]');
-            } catch (error) {
-                console.warn('⚠️ gameContainer não encontrado, usando fallback');
-                gameContainer = document.querySelector('.content') || document.body;
-            }
-            
-            if (gameContainer) {
+            // Inserir no local apropriado com seletores flexíveis
+            const gameContainer = document.querySelector('#game-container, .game-container, [data-role="game-container"], .content') || document.body;
+            if (gameContainer && gameContainer !== document.body) {
                 gameContainer.appendChild(handContainer);
                 console.log('✅ hand-container adicionado ao', gameContainer.className || gameContainer.id || 'container');
+            } else if (gameContainer === document.body) {
+                console.warn('⚠️ gameContainer específico não encontrado, usando body como fallback');
+                gameContainer.appendChild(handContainer);
             } else {
                 console.warn('⚠️ Nenhum container encontrado ao criar hand-container. Abortando.');
                 return;
@@ -365,68 +300,37 @@ class CompleteHandSystem {
     /**
      * Configurar interações das cartas
      */
-    async setupCardInteractions() {
+    setupCardInteractions() {
         console.log('🎮 Configurando interações das cartas...');
         
-        // Aguardar cartas aparecerem
-        try {
-            await this.waitForElement('.card, .hand-card, [data-role="card"]');
-        } catch (error) {
-            console.warn('⚠️ Nenhuma carta encontrada para configurar interações');
-            return;
-        }
-        
-        const cards = document.querySelectorAll('.card, .hand-card, [data-role="card"]');
-        cards.forEach((card, index) => {
-            // Garantir que a carta seja clicável
-            card.style.cursor = 'pointer';
-            card.style.pointerEvents = 'auto';
+        // Sistema de jogo de cartas
+        window.playCard = function(card, element) {
+            console.log(`🃏 Jogando carta: ${card.name} (Poder: ${card.power})`);
             
-            // Adicionar evento de hover (evitar duplicatas)
-            if (!card.dataset.hasHoverHandler) {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px) scale(1.05)';
-                    this.style.transition = 'all 0.3s ease';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                });
-                
-                card.dataset.hasHoverHandler = 'true';
-            }
-        });
+            // Efeito visual
+            element.style.transform = 'scale(0.95)';
+            element.style.opacity = '0.7';
+            
+            // Adicionar à área de jogo
+            const playedCardsContainer = document.querySelector('.played-cards') || this.createPlayedCardsContainer();
+            
+            const playedCard = document.createElement('div');
+            playedCard.className = 'played-card';
+            playedCard.innerHTML = `
+                <div class="card-title">${card.name}</div>
+                <div class="card-power">${card.power}</div>
+            `;
+            
+            playedCardsContainer.appendChild(playedCard);
+            
+            // Remover da mão após 1 segundo
+            setTimeout(() => {
+                element.remove();
+                this.updateCardCounter();
+            }, 1000);
+        }.bind(this);
         
-        // Sistema de jogo de cartas (melhorado)
-        if (!window.playCard) {
-            window.playCard = function(card, element) {
-                console.log(`🃏 Jogando carta: ${card.name || 'Carta'} (Poder: ${card.power || 'N/A'})`);
-                
-                // Efeito visual
-                element.style.transform = 'scale(0.95)';
-                element.style.opacity = '0.7';
-                
-                // Adicionar à área de jogo
-                const playedCardsContainer = document.querySelector('.played-cards') || this.createPlayedCardsContainer();
-                
-                const playedCard = document.createElement('div');
-                playedCard.className = 'played-card';
-                playedCard.innerHTML = `
-                    <div class="card-title">${card.name || 'Carta Jogada'}</div>
-                    <div class="card-power">${card.power || '?'}</div>
-                `;
-                
-                playedCardsContainer.appendChild(playedCard);
-                
-                // Remover da mão após 1 segundo
-                setTimeout(() => {
-                    element.remove();
-                    this.updateCardCounter();
-                }, 1000);
-            }.bind(this);
-        }
-        
-        console.log(`✅ ${cards.length} cartas configuradas com interações`);
+        console.log('✅ Interações das cartas configuradas');
     }
 
     /**

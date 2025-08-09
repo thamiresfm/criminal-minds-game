@@ -13,7 +13,6 @@
 
 class ComprehensiveTestSystem {
     constructor() {
-        this._initialized = false;
         this.config = {
             testModules: {
                 buttonFunctionality: true,
@@ -30,13 +29,6 @@ class ComprehensiveTestSystem {
         
         this.testResults = [];
         this.improvements = [];
-        
-        // Bind methods para evitar perda de contexto do this
-        this.init = this.init.bind(this);
-        this.initializeTestModules = this.initializeTestModules.bind(this);
-        this.initLevelSystem = this.initLevelSystem.bind(this);
-        this.handleExitRequest = this.handleExitRequest.bind(this);
-        
         this.init();
     }
 
@@ -49,40 +41,9 @@ class ComprehensiveTestSystem {
     }
 
     /**
-     * Utilitário para aguardar elemento aparecer no DOM
-     */
-    waitForElement(selector, { timeout = 5000 } = {}) {
-        return new Promise((resolve, reject) => {
-            const found = document.querySelector(selector);
-            if (found) return resolve(found);
-
-            const obs = new MutationObserver(() => {
-                const el = document.querySelector(selector);
-                if (el) { 
-                    obs.disconnect(); 
-                    resolve(el); 
-                }
-            });
-
-            obs.observe(document.documentElement, { childList: true, subtree: true });
-
-            setTimeout(() => {
-                obs.disconnect();
-                reject(new Error(`Elemento não encontrado: ${selector}`));
-            }, timeout);
-        });
-    }
-
-    /**
      * Inicialização do sistema
      */
     init() {
-        if (this._initialized) {
-            console.debug('ComprehensiveTestSystem: init ignorado (já inicializado).');
-            return;
-        }
-        this._initialized = true;
-        
         console.log('🧪 ComprehensiveTestSystem: Inicializando sistema completo...');
         
         try {
@@ -121,11 +82,13 @@ class ComprehensiveTestSystem {
         
         // Módulo de sistema de níveis
         if (this.config.testModules.levelSystem) {
-            // Corrigido: usar initLevelSystem ao invés de initLevelSystemModule
-            if (typeof this.initLevelSystem === 'function') {
+            // chamar método existente com fallback seguro
+            if (typeof this.initLevelSystemModule === 'function') {
+                this.initLevelSystemModule();
+            } else if (typeof this.initLevelSystem === 'function') {
                 this.initLevelSystem();
             } else {
-                console.warn('initLevelSystem não encontrado, pulando...');
+                console.warn('initLevelSystemModule: módulo não implementado (no-op)');
             }
         }
         

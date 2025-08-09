@@ -1,5 +1,5 @@
 /**
- * LAYOUT DIAGNOSTIC SYSTEM - Sistema de Diagnóstico de Layout
+ * LAYOUT DIAGNOSTIC SYSTEM - Sistema de Diagnóstico de Layout (CORRIGIDO)
  * Implementação seguindo padrões ISTQB CTAL-TAE
  * 
  * Analisa profundamente problemas de layout
@@ -9,6 +9,7 @@
 
 class LayoutDiagnosticSystem {
     constructor() {
+        this._initialized = false;
         this.config = {
             enableDeepAnalysis: true,
             trackAllElements: true,
@@ -25,6 +26,10 @@ class LayoutDiagnosticSystem {
             warnings: []
         };
         
+        // Bind methods para evitar perda de contexto
+        this.init = this.init.bind(this);
+        this.analyzeElements = this.analyzeElements.bind(this);
+        
         this.init();
     }
 
@@ -32,6 +37,12 @@ class LayoutDiagnosticSystem {
      * Inicialização do sistema
      */
     init() {
+        if (this._initialized) {
+            console.debug('LayoutDiagnosticSystem: init ignorado (já inicializado).');
+            return;
+        }
+        this._initialized = true;
+        
         console.log('🔍 LayoutDiagnosticSystem: Iniciando diagnóstico profundo...');
         
         try {
@@ -98,72 +109,96 @@ class LayoutDiagnosticSystem {
     analyzeStyles() {
         console.log('🎨 Analisando estilos aplicados...');
         
-        const styleSheets = document.styleSheets || [];
-        const inlineStyles = document.querySelectorAll('style, link[rel="stylesheet"]');
-        
-        console.log(`🎨 Total de folhas de estilo: ${styleSheets.length}`);
-        console.log(`🎨 Total de estilos inline: ${inlineStyles.length}`);
-        
-        // Analisar estilos inline
-        inlineStyles.forEach((style, index) => {
-            const content = style.textContent;
-            const hasGameContainer = content.includes('.game-container');
-            const hasCardsContainer = content.includes('.cards-container');
-            const hasResponsive = content.includes('@media');
-            
-            this.diagnosticData.appliedStyles.push({
-                type: 'inline',
-                index: index,
-                hasGameContainer: hasGameContainer,
-                hasCardsContainer: hasCardsContainer,
-                hasResponsive: hasResponsive,
-                length: content.length
+        const styleSheets = document.querySelectorAll('style, link[rel="stylesheet"]');
+        console.log(`🎨 ${styleSheets.length} folhas de estilo encontradas`);
+
+        // Verificar estilos inline críticos
+        const criticalStyles = [
+            '.game-container',
+            '.cards-container', 
+            '.sidebar',
+            '.header',
+            '.hand-container'
+        ];
+
+        criticalStyles.forEach(selector => {
+            let found = false;
+            styleSheets.forEach(sheet => {
+                if (sheet.tagName === 'STYLE' && sheet.textContent.includes(selector)) {
+                    found = true;
+                }
             });
             
-            console.log(`🎨 Estilo inline ${index}: ${hasGameContainer ? '✅' : '❌'} game-container, ${hasCardsContainer ? '✅' : '❌'} cards-container, ${hasResponsive ? '✅' : '❌'} responsivo`);
+            console.log(`🎨 Estilo ${selector}: ${found ? '✅ Encontrado' : '❌ Não encontrado'}`);
+            
+            if (!found) {
+                this.diagnosticData.warnings.push(`Estilo ${selector} não encontrado`);
+            }
         });
     }
 
     /**
-     * Analisar elementos do DOM
+     * Analisar elementos do DOM (CORRIGIDO com seletores flexíveis)
      */
     analyzeElements() {
         console.log('🏗️ Analisando elementos do DOM...');
         
-        const criticalElements = {
-            'game-container': '#game-container, .game-container, [data-role="game-container"]',
-            'header': '.header, header, #header',
-            'sidebar': '.sidebar, .sidebar-left, .sidebar-right, #sidebar',
-            'main-area': '.main-area, .content, main, #main-area',
-            'cards-container': '.cards-container, .cards-area, #cards-container',
-            'cards': '.card, [data-card-id]',
-            'hand-cards': '.hand-cards, .hand-container, #hand-container'
-        };
-
-        Object.entries(criticalElements).forEach(([name, selector]) => {
-            const elements = document.querySelectorAll(selector);
-            const computedStyle = elements.length > 0 ? window.getComputedStyle(elements[0]) : null;
+        const criticalElements = [
+            { name: 'game-container', selectors: ['#game-container', '.game-container', '[data-role="game-container"]'] },
+            { name: 'cards-container', selectors: ['#cards-container', '.cards-container', '[data-role="cards-container"]'] },
+            { name: 'sidebar', selectors: ['#sidebar', '.sidebar', '[data-role="sidebar"]'] },
+            { name: 'header', selectors: ['#header', '.header', '[data-role="header"]'] },
+            { name: 'hand-cards', selectors: ['#hand-cards', '.hand-cards', '.hand-container', '[data-role="hand-cards"]'] },
+            { name: 'timer', selectors: ['#timer', '.timer', '#gameTimer', '[data-role="timer"]'] },
+            { name: 'chat-container', selectors: ['#chat-container', '.chat-container', '[data-role="chat-container"]'] },
+            { name: 'main-area', selectors: ['.main-area', '.content', 'main', '#main-area'] },
+            { name: 'cards', selectors: ['.card', '[data-card-id]', '.hand-card'] }
+        ];
+        
+        criticalElements.forEach(({ name, selectors }) => {
+            let element = null;
+            let totalCount = 0;
+            let foundSelector = '';
             
-            this.diagnosticData.elementStates[name] = {
-                count: elements.length,
-                exists: elements.length > 0,
-                visible: computedStyle ? computedStyle.display !== 'none' : false,
-                positioned: computedStyle ? computedStyle.position !== 'static' : false,
-                styles: computedStyle ? {
+            // Tentar todos os seletores
+            for (const selector of selectors) {
+                const elements = document.querySelectorAll(selector);
+                totalCount += elements.length;
+                if (elements.length > 0 && !element) {
+                    element = elements[0]; // Pegar o primeiro encontrado
+                    foundSelector = selector;
+                }
+            }
+            
+            console.log(`🏗️ ${name}: ${totalCount > 0 ? '✅' : '❌'} ${totalCount} elemento(s)`);
+            
+            if (element) {
+                const computedStyle = window.getComputedStyle(element);
+                const isVisible = computedStyle.display !== 'none' && 
+                                 computedStyle.visibility !== 'hidden' &&
+                                 computedStyle.opacity !== '0';
+                
+                this.diagnosticData.elementStates[name] = {
+                    exists: true,
+                    visible: isVisible,
                     display: computedStyle.display,
                     position: computedStyle.position,
-                    width: computedStyle.width,
-                    height: computedStyle.height,
-                    gridTemplateColumns: computedStyle.gridTemplateColumns,
-                    gridTemplateRows: computedStyle.gridTemplateRows
-                } : null
-            };
-            
-            const status = elements.length > 0 ? '✅' : '❌';
-            console.log(`🏗️ ${name}: ${status} ${elements.length} elemento(s)`);
-            
-            if (elements.length === 0) {
-                this.diagnosticData.errors.push(`Elemento ${name} não encontrado`);
+                    zIndex: computedStyle.zIndex,
+                    width: element.offsetWidth,
+                    height: element.offsetHeight,
+                    selector: foundSelector,
+                    count: totalCount
+                };
+                
+                console.log(`   ↳ Visível: ${isVisible ? '✅' : '❌'}, Display: ${computedStyle.display}, Seletor: ${foundSelector}`);
+            } else {
+                this.diagnosticData.elementStates[name] = {
+                    exists: false,
+                    visible: false,
+                    count: 0
+                };
+                
+                this.diagnosticData.warnings.push(`Elemento ${name} não encontrado com nenhum dos seletores: ${selectors.join(', ')}`);
             }
         });
     }
@@ -209,266 +244,79 @@ class LayoutDiagnosticSystem {
         const isDesktop = viewport > 1200;
         const isTablet = viewport > 768 && viewport <= 1200;
         const isMobile = viewport <= 768;
-        
+
         console.log(`📱 Viewport: ${viewport}px (${isDesktop ? 'Desktop' : isTablet ? 'Tablet' : 'Mobile'})`);
-        
-        const gameContainer = document.querySelector('.game-container');
-        if (gameContainer) {
-            const containerStyle = window.getComputedStyle(gameContainer);
-            const gridColumns = containerStyle.gridTemplateColumns;
-            
-            console.log(`🏗️ Grid atual: ${gridColumns}`);
-            
-            if (isMobile && gridColumns.includes('280px')) {
-                this.diagnosticData.conflicts.push('Layout desktop sendo usado em mobile');
-                console.log('⚠️ Conflito: Layout desktop em dispositivo mobile');
+
+        // Verificar se elementos críticos estão visíveis
+        const criticalForGameplay = ['game-container', 'cards-container', 'hand-cards'];
+        criticalForGameplay.forEach(elementName => {
+            const state = this.diagnosticData.elementStates[elementName];
+            if (!state || !state.exists) {
+                this.diagnosticData.errors.push(`Elemento crítico ${elementName} não encontrado`);
+                console.log(`❌ Crítico: ${elementName} não encontrado`);
+            } else if (!state.visible) {
+                this.diagnosticData.warnings.push(`Elemento crítico ${elementName} não visível`);
+                console.log(`⚠️ Crítico: ${elementName} não visível`);
             }
-        } else {
-            console.warn('🛠️ game-container ausente. (Somente diagnóstico, sem recuperação automática)');
-        }
+        });
     }
 
     /**
-     * Gerar relatório completo
+     * Gerar relatório
      */
     generateReport() {
-        console.log('📊 Gerando relatório de diagnóstico...');
+        console.log('\n📋 RELATÓRIO DE DIAGNÓSTICO DE LAYOUT');
+        console.log('=====================================');
         
+        console.log(`📜 Scripts carregados: ${this.diagnosticData.loadedScripts.length}`);
+        console.log(`🏗️ Elementos analisados: ${Object.keys(this.diagnosticData.elementStates).length}`);
+        console.log(`⚠️ Conflitos detectados: ${this.diagnosticData.conflicts.length}`);
+        console.log(`❌ Erros: ${this.diagnosticData.errors.length}`);
+        console.log(`⚠️ Avisos: ${this.diagnosticData.warnings.length}`);
+
+        if (this.diagnosticData.errors.length > 0) {
+            console.log('\n❌ ERROS ENCONTRADOS:');
+            this.diagnosticData.errors.forEach(error => console.log(`  - ${error}`));
+        }
+
+        if (this.diagnosticData.warnings.length > 0) {
+            console.log('\n⚠️ AVISOS:');
+            this.diagnosticData.warnings.forEach(warning => console.log(`  - ${warning}`));
+        }
+
+        if (this.diagnosticData.conflicts.length > 0) {
+            console.log('\n🔥 CONFLITOS:');
+            this.diagnosticData.conflicts.forEach(conflict => console.log(`  - ${conflict}`));
+        }
+
+        console.log('\n🏗️ ESTADO DOS ELEMENTOS:');
+        Object.entries(this.diagnosticData.elementStates).forEach(([name, state]) => {
+            const status = state.exists ? (state.visible ? '✅ OK' : '⚠️ Oculto') : '❌ Não encontrado';
+            console.log(`  - ${name}: ${status} (${state.count || 0} elementos)`);
+        });
+
+        // Salvar relatório
         const report = {
             timestamp: new Date().toISOString(),
+            diagnosticType: 'layout_analysis',
             viewport: {
                 width: window.innerWidth,
-                height: window.innerHeight,
-                deviceType: this.getDeviceType()
+                height: window.innerHeight
             },
-            scripts: this.diagnosticData.loadedScripts,
-            styles: this.diagnosticData.appliedStyles,
-            elements: this.diagnosticData.elementStates,
-            conflicts: this.diagnosticData.conflicts,
-            errors: this.diagnosticData.errors,
-            warnings: this.diagnosticData.warnings,
-            recommendations: this.generateRecommendations()
+            summary: {
+                scriptsLoaded: this.diagnosticData.loadedScripts.length,
+                elementsAnalyzed: Object.keys(this.diagnosticData.elementStates).length,
+                conflicts: this.diagnosticData.conflicts.length,
+                errors: this.diagnosticData.errors.length,
+                warnings: this.diagnosticData.warnings.length
+            },
+            details: this.diagnosticData
         };
 
-        // Salvar no localStorage para análise
-        localStorage.setItem('layout-diagnostic-report', JSON.stringify(report, null, 2));
-        
-        // Exibir resumo no console
-        this.displayReportSummary(report);
-        
+        localStorage.setItem('layout_diagnostic_report', JSON.stringify(report));
+        console.log('\n💾 Relatório salvo no localStorage como "layout_diagnostic_report"');
+
         return report;
-    }
-
-    /**
-     * Obter tipo de dispositivo
-     */
-    getDeviceType() {
-        const width = window.innerWidth;
-        if (width <= 480) return 'Mobile Small';
-        if (width <= 768) return 'Mobile';
-        if (width <= 1200) return 'Tablet';
-        return 'Desktop';
-    }
-
-    /**
-     * Gerar recomendações
-     */
-    generateRecommendations() {
-        const recommendations = [];
-        
-        if (this.diagnosticData.conflicts.length > 0) {
-            recommendations.push('Remover definições duplicadas de CSS');
-            recommendations.push('Consolidar sistemas de layout em um único sistema');
-        }
-        
-        if (this.diagnosticData.errors.length > 0) {
-            recommendations.push('Verificar carregamento de scripts');
-            recommendations.push('Garantir que elementos essenciais existam');
-        }
-        
-        const viewport = window.innerWidth;
-        if (viewport <= 768) {
-            recommendations.push('Aplicar layout responsivo para mobile');
-            recommendations.push('Reorganizar grid para single-column');
-        }
-        
-        if (this.diagnosticData.appliedStyles.length > 3) {
-            recommendations.push('Consolidar estilos inline em um único bloco');
-        }
-        
-        return recommendations;
-    }
-
-    /**
-     * Exibir resumo do relatório
-     */
-    displayReportSummary(report) {
-        console.log('\n📊 === RELATÓRIO DE DIAGNÓSTICO DE LAYOUT ===');
-        console.log(`🕒 Timestamp: ${report.timestamp}`);
-        console.log(`📱 Dispositivo: ${report.viewport.deviceType} (${report.viewport.width}x${report.viewport.height})`);
-        console.log(`📜 Scripts carregados: ${report.scripts.length}`);
-        console.log(`🎨 Estilos aplicados: ${report.styles.length}`);
-        console.log(`🏗️ Elementos analisados: ${Object.keys(report.elements).length}`);
-        console.log(`⚠️ Conflitos encontrados: ${report.conflicts.length}`);
-        console.log(`❌ Erros encontrados: ${report.errors.length}`);
-        console.log(`⚠️ Avisos: ${report.warnings.length}`);
-        
-        if (report.conflicts.length > 0) {
-            console.log('\n⚠️ CONFLITOS DETECTADOS:');
-            report.conflicts.forEach((conflict, index) => {
-                console.log(`${index + 1}. ${conflict}`);
-            });
-        }
-        
-        if (report.errors.length > 0) {
-            console.log('\n❌ ERROS ENCONTRADOS:');
-            report.errors.forEach((error, index) => {
-                console.log(`${index + 1}. ${error}`);
-            });
-        }
-        
-        if (report.recommendations.length > 0) {
-            console.log('\n💡 RECOMENDAÇÕES:');
-            report.recommendations.forEach((rec, index) => {
-                console.log(`${index + 1}. ${rec}`);
-            });
-        }
-        
-        console.log('\n📋 Relatório completo salvo em localStorage como "layout-diagnostic-report"');
-        console.log('=== FIM DO RELATÓRIO ===\n');
-    }
-
-    /**
-     * Executar diagnóstico em tempo real
-     */
-    runRealTimeDiagnostic() {
-        console.log('🔄 Iniciando diagnóstico em tempo real...');
-        
-        setInterval(() => {
-            this.analyzeElements();
-            
-            const gameContainer = document.querySelector('.game-container');
-            if (gameContainer) {
-                const style = window.getComputedStyle(gameContainer);
-                console.log(`🔄 Grid atual: ${style.gridTemplateColumns}`);
-            }
-        }, 5000);
-    }
-
-    /**
-     * Forçar correção baseada no diagnóstico
-     */
-    forceFixBasedOnDiagnostic() {
-        console.log('🔧 Aplicando correções baseadas no diagnóstico...');
-        
-        const report = this.generateReport();
-        
-        // Remover estilos conflitantes
-        if (report.conflicts.length > 0) {
-            const styles = document.querySelectorAll('style');
-            styles.forEach((style, index) => {
-                if (index > 0 && style.textContent.includes('.game-container')) {
-                    console.log(`🗑️ Removendo estilo conflitante ${index}`);
-                    style.remove();
-                }
-            });
-        }
-        
-        // Aplicar layout responsivo se necessário
-        if (report.viewport.width <= 768) {
-            this.applyMobileLayout();
-        }
-
-        // Se ainda não existir o layout principal, recuperar
-        // Não forçar recuperação automática aqui para evitar sobrescrever a página
-        
-        console.log('✅ Correções aplicadas baseadas no diagnóstico');
-    }
-
-    /**
-     * Recuperar layout mínimo funcional para permitir análise/uso
-     */
-    recoverMinimalLayout() {
-        const placeholder = document.createElement('div');
-        placeholder.innerHTML = `
-            <div class="game-container" style="display:grid;grid-template-columns:1fr;grid-template-rows:auto 1fr;gap:1rem;padding:1rem;min-height:100vh;">
-                <div class="header" style="background:rgba(15,15,35,0.9);border:1px solid rgba(251,191,36,0.3);border-radius:12px;padding:1rem;display:flex;justify-content:space-between;align-items:center;">
-                    <div class="case-title" style="color:#fbbf24;font-weight:800;">CRIMINAL MINDS</div>
-                    <div class="timer" id="gameTimer" style="color:#ef4444;font-weight:700;">⏱️ 45:00</div>
-                </div>
-                <div class="main-area" style="background:rgba(15,15,35,0.9);border:1px solid rgba(251,191,36,0.3);border-radius:12px;padding:1rem;">
-                    <div class="cards-container" id="cardsContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;"></div>
-                    <div class="deck-area" style="margin-top:1rem;">
-                        <div class="hand-cards" style="display:flex;gap:0.5rem;overflow-x:auto;"></div>
-                    </div>
-                </div>
-            </div>
-        `;
-        const root = document.body || document.getElementsByTagName('body')[0];
-        if (!root) {
-            console.error('❌ Body ausente, não é possível recuperar layout.');
-            return;
-        }
-        root.innerHTML = '';
-        root.appendChild(placeholder.firstElementChild);
-        console.log('✅ Layout mínimo recuperado');
-    }
-
-    /**
-     * Aplicar layout mobile
-     */
-    applyMobileLayout() {
-        console.log('📱 Aplicando layout mobile...');
-        
-        const mobileStyle = document.createElement('style');
-        mobileStyle.textContent = `
-            .game-container {
-                display: grid !important;
-                grid-template-columns: 1fr !important;
-                grid-template-rows: auto auto 1fr auto !important;
-                height: auto !important;
-                min-height: 100vh !important;
-                gap: 0.5rem !important;
-                padding: 0.5rem !important;
-            }
-            
-            .header {
-                grid-column: 1 !important;
-                grid-row: 1 !important;
-                flex-direction: column !important;
-                gap: 0.5rem !important;
-                padding: 1rem !important;
-            }
-            
-            .sidebar-left {
-                grid-column: 1 !important;
-                grid-row: 2 !important;
-            }
-            
-            .main-area {
-                grid-column: 1 !important;
-                grid-row: 3 !important;
-                padding: 1rem !important;
-            }
-            
-            .sidebar-right {
-                grid-column: 1 !important;
-                grid-row: 4 !important;
-            }
-            
-            .cards-container {
-                grid-template-columns: 1fr !important;
-                gap: 1rem !important;
-            }
-            
-            .card {
-                max-width: 100% !important;
-                height: 140px !important;
-            }
-        `;
-        
-        document.head.appendChild(mobileStyle);
-        console.log('✅ Layout mobile aplicado');
     }
 }
 
