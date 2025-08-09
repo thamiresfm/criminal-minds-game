@@ -719,17 +719,17 @@
             padding: 1rem !important;
             max-width: 100vw !important;
             overflow: hidden !important;
-            }
-
-            .cards-container {
+        }
+        
+        .cards-container {
             display: grid !important;
             grid-template-columns: repeat(2, 1fr) !important;
             gap: 1rem !important;
             margin-bottom: 1.5rem !important;
             max-width: 100% !important;
-            }
-
-            .card {
+        }
+        
+        .card {
             width: 100% !important;
             max-width: none !important;
             height: 160px !important;
@@ -744,8 +744,6 @@
             display: flex !important;
             flex-direction: column !important;
         }
-        
-
         
         .main-area {
             padding: 1.5rem !important;
@@ -821,6 +819,88 @@
             
             .game-container {
                 padding: 0.5rem !important;
+            }
+        }
+        
+        /* CORREÇÕES ESPECÍFICAS PARA MINHA MÃO */
+        .hand-cards {
+            display: grid !important;
+            grid-template-columns: repeat(5, 1fr) !important;
+            gap: 0.5rem !important;
+            margin-top: 1rem !important;
+            padding: 1rem !important;
+            background: rgba(15, 15, 35, 0.5) !important;
+            border-radius: 15px !important;
+            border: 1px solid rgba(251, 191, 36, 0.3) !important;
+        }
+        
+        .mini-card {
+            height: 100px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            background: linear-gradient(135deg, #1a1a2e, #16213e) !important;
+            border: 1px solid rgba(251, 191, 36, 0.3) !important;
+            border-radius: 8px !important;
+            padding: 0.5rem !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            text-align: center !important;
+        }
+        
+        .mini-card:hover {
+            transform: translateY(-2px) scale(1.02) !important;
+            border-color: rgba(251, 191, 36, 0.6) !important;
+            box-shadow: 0 5px 15px rgba(251, 191, 36, 0.2) !important;
+        }
+        
+        .mini-card-icon {
+            font-size: 1.2rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+        
+        .mini-card-title {
+            font-size: 0.7rem !important;
+            color: #fbbf24 !important;
+            font-weight: 600 !important;
+            line-height: 1.2 !important;
+        }
+        
+        /* Botões da área de mão */
+        .hand-buttons {
+            display: flex !important;
+            gap: 0.5rem !important;
+            margin-top: 1rem !important;
+            justify-content: center !important;
+            flex-wrap: wrap !important;
+        }
+        
+        .hand-buttons button {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.85rem !important;
+            min-width: auto !important;
+            flex: none !important;
+        }
+        
+        /* Responsividade para mão */
+        @media (max-width: 768px) {
+            .hand-cards {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hand-cards {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+            
+            .mini-card {
+                height: 80px !important;
+            }
+            
+            .mini-card-title {
+                font-size: 0.6rem !important;
             }
         }
 
@@ -1056,11 +1136,46 @@
                             <div class="stat">🎯 <span>55</span></div>
                             <div class="stat">🛡️ <span>Proteção</span></div>
                         </div>
-                        </div>
                     </div>
                 </div>
+            </div>
 
-
+            <!-- Deck de Mão -->
+            <div class="deck-area">
+                <div class="section-title">🃏 Minha Mão (7/7 cartas)</div>
+                <div class="hand-cards">
+                    <div class="mini-card" onclick="playFromHand('witness')">
+                        <div class="mini-card-icon">👁️</div>
+                        <div class="mini-card-title">Testemunha</div>
+                    </div>
+                    <div class="mini-card" onclick="playFromHand('phone-data')">
+                        <div class="mini-card-icon">📱</div>
+                        <div class="mini-card-title">Dados do Celular</div>
+                    </div>
+                    <div class="mini-card" onclick="playFromHand('ballistics')">
+                        <div class="mini-card-icon">🎯</div>
+                        <div class="mini-card-title">Balística</div>
+                    </div>
+                    <div class="mini-card" onclick="playFromHand('surveillance')">
+                        <div class="mini-card-icon">📹</div>
+                        <div class="mini-card-title">Vigilância</div>
+                    </div>
+                    <div class="mini-card" onclick="playFromHand('profile')">
+                        <div class="mini-card-icon">🧠</div>
+                        <div class="mini-card-title">Perfil Psicológico</div>
+                    </div>
+                    <div class="mini-card" onclick="playFromHand('warrant')">
+                        <div class="mini-card-icon">📜</div>
+                        <div class="mini-card-title">Mandado</div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button class="btn" onclick="drawCard()">🎴 Comprar Carta</button>
+                    <button class="btn" onclick="shuffleDeck()">🔀 Embaralhar</button>
+                    <button class="btn" onclick="useCombo()">⚡ Usar Combo</button>
+                </div>
+            </div>
         </div>
 
         <div class="sidebar">
@@ -1685,7 +1800,7 @@
                     console.log('🔍 Sistema de diagnóstico de layout inicializado');
                     
                     // Executar diagnóstico completo
-            setTimeout(() => {
+                    setTimeout(() => {
                         window.layoutDiagnostic.forceFixBasedOnDiagnostic();
                         window.layoutDiagnostic.runRealTimeDiagnostic();
                     }, 500);
