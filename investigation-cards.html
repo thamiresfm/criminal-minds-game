@@ -1317,6 +1317,47 @@
                     <div class="send-button-ripple"></div>
                 </button>
             </div>
+            
+            <!-- Seção Minha Mão -->
+            <div class="deck-area">
+                <div class="section-title" style="font-size: 1rem; margin-bottom: 0.8rem;">🃏 Minha Mão (7/7 cartas)</div>
+                <div class="hand-cards">
+                    <div class="mini-card" onclick="playFromHand('witness')">
+                        <div class="mini-card-icon">👁️</div>
+                        <div class="mini-card-title">Testemunha</div>
+                    </div>
+                    <div class="mini-card" onclick="playFromHand('phone-data')">
+                        <div class="mini-card-icon">📱</div>
+                        <div class="mini-card-title">Dados do Celular</div>
+                    </div>
+                    <div class="mini-card" onclick="playFromHand('ballistics')">
+                        <div class="mini-card-icon">🎯</div>
+                        <div class="mini-card-title">Balística</div>
+                    </div>
+                    <div class="mini-card" onclick="playFromHand('surveillance')">
+                        <div class="mini-card-icon">📹</div>
+                        <div class="mini-card-title">Vigilância</div>
+                    </div>
+                    <div class="mini-card" onclick="playFromHand('profile')">
+                        <div class="mini-card-icon">🧠</div>
+                        <div class="mini-card-title">Perfil Psicológico</div>
+                    </div>
+                    <div class="mini-card" onclick="playFromHand('warrant')">
+                        <div class="mini-card-icon">📜</div>
+                        <div class="mini-card-title">Mandado</div>
+                    </div>
+                    <div class="mini-card" onclick="playFromHand('forensics')">
+                        <div class="mini-card-icon">🔬</div>
+                        <div class="mini-card-title">Forense</div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 0.8rem; margin-top: 1rem; flex-wrap: wrap;">
+                    <button class="btn" onclick="drawCard()" style="font-size: 0.8rem; padding: 0.5rem;">🎴 Comprar</button>
+                    <button class="btn" onclick="shuffleDeck()" style="font-size: 0.8rem; padding: 0.5rem;">🔀 Embaralhar</button>
+                    <button class="btn" onclick="useCombo()" style="font-size: 0.8rem; padding: 0.5rem;">⚡ Combo</button>
+                </div>
+            </div>
         </div>
 
         <div class="main-area">
