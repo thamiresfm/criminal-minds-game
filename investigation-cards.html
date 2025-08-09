@@ -1317,54 +1317,13 @@
                     <div class="send-button-ripple"></div>
                 </button>
             </div>
-            
-            <!-- Seção Minha Mão -->
-            <div class="deck-area">
-                <div class="section-title" style="font-size: 1rem; margin-bottom: 0.8rem;">🃏 Minha Mão (7/7 cartas)</div>
-                <div class="hand-cards">
-                    <div class="mini-card" onclick="playFromHand('witness')">
-                        <div class="mini-card-icon">👁️</div>
-                        <div class="mini-card-title">Testemunha</div>
-                    </div>
-                    <div class="mini-card" onclick="playFromHand('phone-data')">
-                        <div class="mini-card-icon">📱</div>
-                        <div class="mini-card-title">Dados do Celular</div>
-                    </div>
-                    <div class="mini-card" onclick="playFromHand('ballistics')">
-                        <div class="mini-card-icon">🎯</div>
-                        <div class="mini-card-title">Balística</div>
-                    </div>
-                    <div class="mini-card" onclick="playFromHand('surveillance')">
-                        <div class="mini-card-icon">📹</div>
-                        <div class="mini-card-title">Vigilância</div>
-                    </div>
-                    <div class="mini-card" onclick="playFromHand('profile')">
-                        <div class="mini-card-icon">🧠</div>
-                        <div class="mini-card-title">Perfil Psicológico</div>
-                    </div>
-                    <div class="mini-card" onclick="playFromHand('warrant')">
-                        <div class="mini-card-icon">📜</div>
-                        <div class="mini-card-title">Mandado</div>
-                    </div>
-                    <div class="mini-card" onclick="playFromHand('forensics')">
-                        <div class="mini-card-icon">🔬</div>
-                        <div class="mini-card-title">Forense</div>
-                    </div>
-                </div>
-                
-                <div style="display: flex; gap: 0.8rem; margin-top: 1rem; flex-wrap: wrap;">
-                    <button class="btn" onclick="drawCard()" style="font-size: 0.8rem; padding: 0.5rem;">🎴 Comprar</button>
-                    <button class="btn" onclick="shuffleDeck()" style="font-size: 0.8rem; padding: 0.5rem;">🔀 Embaralhar</button>
-                    <button class="btn" onclick="useCombo()" style="font-size: 0.8rem; padding: 0.5rem;">⚡ Combo</button>
-                </div>
-            </div>
         </div>
 
         <div class="main-area">
             <div class="cards-container" id="cardsContainer">
                 <!-- Cartas serão geradas dinamicamente baseado na dificuldade -->
-            </div>
-        </div>
+                        </div>
+                    </div>
 
         <div class="sidebar">
             <div class="section-title">📊 Estatísticas</div>
@@ -1374,7 +1333,7 @@
                 <div style="color: #fbbf24; font-size: 0.8rem; font-weight: bold; margin-bottom: 0.5rem; text-align: center;">
                     🎯 Partida Atual
                 </div>
-                
+            
                 <!-- Indicador Principal de Dificuldade -->
                 <div id="difficultyIndicator" style="
                     margin-bottom: 1rem; 
@@ -1388,31 +1347,31 @@
                     <div style="font-size: 1.5rem; margin-bottom: 0.3rem;" id="difficultyIcon">🟡</div>
                     <div style="font-size: 0.9rem; font-weight: bold; color: #f59e0b; margin-bottom: 0.2rem;" id="difficultyName">INTERMEDIÁRIO</div>
                     <div style="font-size: 0.7rem; color: #cbd5e1; line-height: 1.3;" id="difficultyDescription">Tempo padrão, cartas balanceadas, bônus de 50%</div>
-                </div>
-                
+            </div>
+
                 <div style="margin-bottom: 0.75rem;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; font-size: 0.85rem;">
                         <span>Multiplicador</span>
                         <span id="currentMultiplier" style="color: #fbbf24; font-weight: bold;">1.5x</span>
                     </div>
-                </div>
+                    </div>
                 <div style="margin-bottom: 0.75rem;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; font-size: 0.85rem;">
                     <span>Cartas Jogadas</span>
                         <span id="cardsPlayed">12/20</span>
-                </div>
+                    </div>
                 <div class="progress-bar">
                         <div class="progress-fill" id="cardsProgress" style="width: 60%"></div>
-                </div>
-            </div>
+                    </div>
+                    </div>
                 <div style="margin-bottom: 0.75rem;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; font-size: 0.85rem;">
                     <span>Combo Streak</span>
                         <span id="comboStreak">3x</span>
-                </div>
+                    </div>
                 <div class="progress-bar">
                         <div class="progress-fill" id="comboProgress" style="width: 30%"></div>
-                    </div>
+                </div>
                 </div>
             </div>
 
@@ -1420,38 +1379,38 @@
             <div style="margin-bottom: 1rem;">
                 <div style="color: #fbbf24; font-size: 0.8rem; font-weight: bold; margin-bottom: 0.75rem; text-align: center;">
                     📈 Histórico por Dificuldade
-                </div>
-                
+        </div>
+
                 <!-- Iniciante -->
                 <div style="margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.3);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
                         <span style="font-size: 0.75rem; color: #10b981; font-weight: bold;">🟢 Iniciante</span>
                         <span style="font-size: 0.7rem; color: #10b981;" id="easyWinRate">---%</span>
-                    </div>
+                </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
                         <span id="easyStats">0 jogos</span>
                         <span id="easyBestTime">--:--</span>
                 </div>
             </div>
-
+            
                 <!-- Intermediário -->
                 <div style="margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.1); border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
                         <span style="font-size: 0.75rem; color: #f59e0b; font-weight: bold;">🟡 Intermediário</span>
                         <span style="font-size: 0.7rem; color: #f59e0b;" id="mediumWinRate">---%</span>
-                    </div>
+                </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
                         <span id="mediumStats">0 jogos</span>
                         <span id="mediumBestTime">--:--</span>
-                    </div>
                 </div>
-                
+            </div>
+
                 <!-- Difícil -->
                 <div style="margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(239, 68, 68, 0.1); border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.3);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
                         <span style="font-size: 0.75rem; color: #ef4444; font-weight: bold;">🔴 Difícil</span>
                         <span style="font-size: 0.7rem; color: #ef4444;" id="hardWinRate">---%</span>
-                    </div>
+                </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
                         <span id="hardStats">0 jogos</span>
                         <span id="hardBestTime">--:--</span>
