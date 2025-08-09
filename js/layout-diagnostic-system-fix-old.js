@@ -131,13 +131,13 @@ class LayoutDiagnosticSystem {
         console.log('🏗️ Analisando elementos do DOM...');
         
         const criticalElements = {
-            'game-container': '#game-container, .game-container, [data-role="game-container"]',
-            'header': '.header, header, #header',
-            'sidebar': '.sidebar, .sidebar-left, .sidebar-right, #sidebar',
-            'main-area': '.main-area, .content, main, #main-area',
-            'cards-container': '.cards-container, .cards-area, #cards-container',
-            'cards': '.card, [data-card-id]',
-            'hand-cards': '.hand-cards, .hand-container, #hand-container'
+            'game-container': '.game-container',
+            'header': '.header',
+            'sidebar': '.sidebar',
+            'main-area': '.main-area',
+            'cards-container': '.cards-container',
+            'cards': '.card',
+            'hand-cards': '.hand-cards, .hand-container'
         };
 
         Object.entries(criticalElements).forEach(([name, selector]) => {

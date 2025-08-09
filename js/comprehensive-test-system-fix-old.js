@@ -82,7 +82,14 @@ class ComprehensiveTestSystem {
         
         // Módulo de sistema de níveis
         if (this.config.testModules.levelSystem) {
-            this.initLevelSystemModule();
+            // chamar método existente com fallback seguro
+            if (typeof this.initLevelSystemModule === 'function') {
+                this.initLevelSystemModule();
+            } else if (typeof this.initLevelSystem === 'function') {
+                this.initLevelSystem();
+            } else {
+                console.warn('initLevelSystemModule: módulo não implementado (no-op)');
+            }
         }
         
         // Módulo de coleção dinâmica

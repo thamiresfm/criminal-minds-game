@@ -7,31 +7,6 @@
  * Implementa sistema de cartas completo
  */
 
-/**
- * Utilitário para aguardar elemento aparecer no DOM
- */
-function waitForElement(selector, { timeout = 5000 } = {}) {
-    return new Promise((resolve, reject) => {
-        const found = document.querySelector(selector);
-        if (found) return resolve(found);
-
-        const obs = new MutationObserver(() => {
-            const el = document.querySelector(selector);
-            if (el) { 
-                obs.disconnect(); 
-                resolve(el); 
-            }
-        });
-
-        obs.observe(document.documentElement, { childList: true, subtree: true });
-
-        setTimeout(() => {
-            obs.disconnect();
-            reject(new Error(`Elemento não encontrado: ${selector}`));
-        }, timeout);
-    });
-}
-
 class CompleteHandSystem {
     constructor() {
         this._initialized = false;
@@ -256,16 +231,12 @@ class CompleteHandSystem {
             handContainer.className = 'hand-container';
             handContainer.innerHTML = '<h3 style="grid-column: 1 / -1; text-align: center; margin-bottom: 1rem; color: #ffc107;">🃏 Minha Mão (7/7 cartas)</h3>';
             
-            // Inserir no local apropriado com seletores flexíveis
-            const gameContainer = document.querySelector('#game-container, .game-container, [data-role="game-container"], .content') || document.body;
-            if (gameContainer && gameContainer !== document.body) {
-                gameContainer.appendChild(handContainer);
-                console.log('✅ hand-container adicionado ao', gameContainer.className || gameContainer.id || 'container');
-            } else if (gameContainer === document.body) {
-                console.warn('⚠️ gameContainer específico não encontrado, usando body como fallback');
+            // Inserir no local apropriado
+            const gameContainer = document.querySelector('.game-container') || document.querySelector('.content') || document.body;
+            if (gameContainer) {
                 gameContainer.appendChild(handContainer);
             } else {
-                console.warn('⚠️ Nenhum container encontrado ao criar hand-container. Abortando.');
+                console.warn('⚠️ gameContainer não encontrado ao criar hand-container. Abortando.');
                 return;
             }
         }
@@ -349,7 +320,7 @@ class CompleteHandSystem {
             border: 1px solid rgba(255, 193, 7, 0.3);
         `;
         
-        const gameContainer = document.querySelector('#game-container, .game-container, [data-role="game-container"], .content') || document.body;
+        const gameContainer = document.querySelector('.game-container') || document.querySelector('.content') || document.body;
         gameContainer.appendChild(container);
         
         return container;
