@@ -709,198 +709,52 @@
             }
         }
 
-        /* CORREÇÕES CRÍTICAS DE LAYOUT */
-        .game-container {
-            display: grid !important;
-            grid-template-columns: 300px 1fr 300px !important;
-            grid-template-rows: 80px 1fr !important;
-            height: 100vh !important;
-            gap: 1rem !important;
-            padding: 1rem !important;
-            max-width: 100vw !important;
-            overflow: hidden !important;
-        }
-        
-        .cards-container {
-            display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 1rem !important;
-            margin-bottom: 1.5rem !important;
-            max-width: 100% !important;
-        }
-        
-        .card {
-            width: 100% !important;
-            max-width: none !important;
-            height: 160px !important;
-            margin: 0 !important;
-        }
-        
-        .sidebar {
-            padding: 1rem !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            max-height: calc(100vh - 120px) !important;
-            display: flex !important;
-            flex-direction: column !important;
-        }
-        
-        .main-area {
-            padding: 1.5rem !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            max-height: calc(100vh - 120px) !important;
-        }
-
         /* RESPONSIVIDADE OTIMIZADA PARA LAYOUT VERTICAL */
-        @media (max-width: 1400px) {
-            .game-container {
-                grid-template-columns: 280px 1fr 280px !important;
-            }
-        }
-        
         @media (max-width: 1200px) {
             .game-container {
-                grid-template-columns: 1fr !important;
-                grid-template-rows: auto auto 1fr auto !important;
-                height: auto !important;
-                min-height: 100vh !important;
-                padding: 0.8rem !important;
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto;
+                height: auto;
+                min-height: 100vh;
+                padding: 0.8rem;
             }
             
             .sidebar {
-                padding: 1rem 0.8rem !important;
-                overflow-x: visible !important;
-                max-height: none !important;
-            }
-            
-            .main-area {
-                max-height: none !important;
+                padding: 1rem 0.8rem;
+                overflow-x: visible;
             }
             
             .chat-input-container {
-                max-width: 100% !important;
+                max-width: 100%;
             }
             
             .cards-container {
-                grid-template-columns: repeat(3, 1fr) !important;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
 
             .card {
-                width: 100% !important;
-                max-width: none !important;
-                margin: 0 auto !important;
+                width: 100%;
+                max-width: 280px;
+                margin: 0 auto;
             }
         }
 
         @media (max-width: 768px) {
             .sidebar {
-                padding: 0.8rem 0.6rem !important;
-                overflow-x: visible !important;
+                padding: 0.8rem 0.6rem;
+                overflow-x: visible;
             }
             
             .chat-input-container {
-                max-width: 100% !important;
+                max-width: 100%;
             }
             
             .cards-container {
-                grid-template-columns: repeat(2, 1fr) !important;
+                grid-template-columns: 1fr;
             }
             
             .hand-cards {
-                justify-content: center !important;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .cards-container {
-                grid-template-columns: 1fr !important;
-            }
-            
-            .game-container {
-                padding: 0.5rem !important;
-            }
-        }
-        
-        /* CORREÇÕES ESPECÍFICAS PARA MINHA MÃO */
-        .hand-cards {
-            display: grid !important;
-            grid-template-columns: repeat(5, 1fr) !important;
-            gap: 0.5rem !important;
-            margin-top: 1rem !important;
-            padding: 1rem !important;
-            background: rgba(15, 15, 35, 0.5) !important;
-            border-radius: 15px !important;
-            border: 1px solid rgba(251, 191, 36, 0.3) !important;
-        }
-        
-        .mini-card {
-            height: 100px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            background: linear-gradient(135deg, #1a1a2e, #16213e) !important;
-            border: 1px solid rgba(251, 191, 36, 0.3) !important;
-            border-radius: 8px !important;
-            padding: 0.5rem !important;
-            cursor: pointer !important;
-            transition: all 0.3s ease !important;
-            text-align: center !important;
-        }
-        
-        .mini-card:hover {
-            transform: translateY(-2px) scale(1.02) !important;
-            border-color: rgba(251, 191, 36, 0.6) !important;
-            box-shadow: 0 5px 15px rgba(251, 191, 36, 0.2) !important;
-        }
-        
-        .mini-card-icon {
-            font-size: 1.2rem !important;
-            margin-bottom: 0.25rem !important;
-        }
-        
-        .mini-card-title {
-            font-size: 0.7rem !important;
-            color: #fbbf24 !important;
-            font-weight: 600 !important;
-            line-height: 1.2 !important;
-        }
-        
-        /* Botões da área de mão */
-        .hand-buttons {
-            display: flex !important;
-            gap: 0.5rem !important;
-            margin-top: 1rem !important;
-            justify-content: center !important;
-            flex-wrap: wrap !important;
-        }
-        
-        .hand-buttons button {
-            padding: 0.5rem 1rem !important;
-            font-size: 0.85rem !important;
-            min-width: auto !important;
-            flex: none !important;
-        }
-        
-        /* Responsividade para mão */
-        @media (max-width: 768px) {
-            .hand-cards {
-                grid-template-columns: repeat(4, 1fr) !important;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .hand-cards {
-                grid-template-columns: repeat(3, 1fr) !important;
-            }
-            
-            .mini-card {
-                height: 80px !important;
-            }
-            
-            .mini-card-title {
-                font-size: 0.6rem !important;
+                justify-content: center;
             }
         }
 
@@ -959,7 +813,6 @@
     <!-- AggressiveFix desativado nesta tela -->
     <script defer src="js/layout-fix-system.js"></script>
     <script defer src="js/layout-diagnostic-system.js"></script>
-    <script defer src="js/layout-repair-system.js"></script>
 </head>
 <body>
     <div class="game-container">
@@ -1142,7 +995,7 @@
 
             <!-- Deck de Mão -->
             <div class="deck-area">
-                <div class="section-title">🃏 Minha Mão (7/7 cartas)</div>
+                <div class="section-title">🃏 Minha Mão (6/7 cartas)</div>
                 <div class="hand-cards">
                     <div class="mini-card" onclick="playFromHand('witness')">
                         <div class="mini-card-icon">👁️</div>
