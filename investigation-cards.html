@@ -1436,7 +1436,7 @@
             </div>
             <div class="chat-input-container">
                 <input type="text" id="chatInput" placeholder="Digite sua mensagem..." maxlength="200" class="chat-input-field">
-                <button class="send-button" onclick="sendMessage()" title="Enviar mensagem (Enter)" aria-label="Enviar mensagem">
+                <button id="sendButton" class="send-button" onclick="sendUserMessage()" title="Enviar mensagem (Enter)" aria-label="Enviar mensagem">
                     <span class="send-button-text">Enviar</span>
                     <span class="send-button-icon">📤</span>
                     <div class="send-button-ripple"></div>
@@ -2749,68 +2749,7 @@
             }
         }
 
-        // Chat com feedback visual
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const sendButton = document.querySelector('.send-button');
-            const message = input.value.trim();
-            
-            if (message) {
-                // Feedback visual no botão
-                sendButton.style.transform = 'scale(0.95)';
-                sendButton.innerHTML = '<span class="send-button-text">Enviando...</span><span class="send-button-icon">⏳</span><div class="send-button-ripple"></div>';
-                sendButton.disabled = true;
-                sendButton.classList.add('highlight');
-                
-                // Feedback visual no input
-                input.style.borderColor = '#10b981';
-                input.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
-                
-                setTimeout(() => {
-                    // Restaurar botão
-                    sendButton.innerHTML = '<span class="send-button-text">Enviar</span><span class="send-button-icon">📤</span><div class="send-button-ripple"></div>';
-                    sendButton.disabled = false;
-                    sendButton.style.transform = '';
-                    sendButton.classList.remove('highlight');
-                    
-                    // Restaurar input
-                    input.style.borderColor = '';
-                    input.style.boxShadow = '';
-                    
-                    // Adicionar mensagem
-                    addChatMessage(message, 'self');
-                    input.value = '';
-                    
-                    // Efeito de sucesso
-                    showMessageSuccess();
-                    
-                }, 300);
-                
-                // Simular resposta da equipe
-                setTimeout(() => {
-                    const responses = [
-                        "Excelente estratégia de cartas! 🎴",
-                        "Que combo incrível! 🔥",
-                        "Suas cartas estão muito fortes hoje! 💪",
-                        "Boa jogada! Continue assim! ⚡",
-                        "Impressionante coleção de cartas! 🌟"
-                    ];
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                    addChatMessage(randomResponse, '🔍 Morgan');
-                }, 2300);
-            } else {
-                // Feedback para mensagem vazia
-                input.style.borderColor = '#ef4444';
-                input.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.4)';
-                input.placeholder = 'Digite algo antes de enviar...';
-                
-                setTimeout(() => {
-                    input.style.borderColor = '';
-                    input.style.boxShadow = '';
-                    input.placeholder = 'Digite sua mensagem...';
-                }, 2000);
-            }
-        }
+
         
         function showMessageSuccess() {
             const success = document.createElement('div');
@@ -2837,54 +2776,7 @@
             }, 2000);
         }
 
-        function addChatMessage(message, sender) {
-            const chatContainer = document.getElementById('chatContainer');
-            if (!chatContainer) {
-                console.warn('⚠️ chatContainer não encontrado. Mensagem ignorada:', message);
-                return;
-            }
-            const userName = sender === 'self' ? (localStorage.getItem('detectiveName') || 'Detetive') : sender;
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'chat-message';
-            messageDiv.innerHTML = `<span class="chat-user">${sender === 'self' ? '🕵️' : ''} ${userName}:</span> ${message}`;
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
 
-        // Enter para enviar mensagem e destacar botão
-        document.getElementById('chatInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        // Destacar botão quando usuário está digitando
-        document.getElementById('chatInput').addEventListener('input', function(e) {
-            const sendButton = document.querySelector('.send-button');
-            const value = e.target.value.trim();
-            
-            if (value.length > 0) {
-                sendButton.classList.add('highlight');
-            } else {
-                sendButton.classList.remove('highlight');
-            }
-        });
-
-        // Adicionar contador de caracteres visual
-        document.getElementById('chatInput').addEventListener('input', function(e) {
-            const maxLength = parseInt(e.target.getAttribute('maxlength'));
-            const currentLength = e.target.value.length;
-            const remaining = maxLength - currentLength;
-            
-            // Mudar cor do placeholder baseado no limite
-            if (remaining < 20) {
-                e.target.style.color = '#ef4444';
-            } else if (remaining < 50) {
-                e.target.style.color = '#f59e0b';
-            } else {
-                e.target.style.color = 'white';
-            }
-        });
 
         // Modais
         function openDeck() {
@@ -3173,15 +3065,43 @@
             }
         }
 
-        // Função para enviar mensagem do usuário
+        // Função para enviar mensagem do usuário com feedback visual
         function sendUserMessage() {
             const input = document.getElementById('chatInput');
+            const sendButton = document.getElementById('sendButton');
             const message = input.value.trim();
             
             if (message) {
-                const detectiveName = localStorage.getItem('detectiveName') || 'Detetive';
-                addChatMessage(message, detectiveName);
-                input.value = '';
+                // Feedback visual no botão
+                sendButton.style.transform = 'scale(0.95)';
+                sendButton.innerHTML = '<span class="send-button-text">Enviando...</span><span class="send-button-icon">⏳</span><div class="send-button-ripple"></div>';
+                sendButton.disabled = true;
+                sendButton.classList.add('highlight');
+                
+                // Feedback visual no input
+                input.style.borderColor = '#10b981';
+                input.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
+                
+                setTimeout(() => {
+                    // Restaurar botão
+                    sendButton.innerHTML = '<span class="send-button-text">Enviar</span><span class="send-button-icon">📤</span><div class="send-button-ripple"></div>';
+                    sendButton.disabled = false;
+                    sendButton.style.transform = '';
+                    sendButton.classList.remove('highlight');
+                    
+                    // Restaurar input
+                    input.style.borderColor = '';
+                    input.style.boxShadow = '';
+                    
+                    // Adicionar mensagem
+                    const detectiveName = localStorage.getItem('detectiveName') || 'Detetive';
+                    addChatMessage(message, detectiveName);
+                    input.value = '';
+                    
+                    // Efeito de sucesso
+                    showMessageSuccess();
+                    
+                }, 300);
                 
                 // Simular resposta da equipe após 2-5 segundos
                 setTimeout(() => {
@@ -3199,7 +3119,18 @@
                     const randomResponse = responses[Math.floor(Math.random() * responses.length)];
                     const randomMember = teamMembers[Math.floor(Math.random() * teamMembers.length)];
                     addChatMessage(randomResponse, randomMember.name.split(' ')[1]); // Usar apenas o sobrenome
-                }, 2000 + Math.random() * 3000);
+                }, 2300 + Math.random() * 3000);
+            } else {
+                // Feedback para mensagem vazia
+                input.style.borderColor = '#ef4444';
+                input.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.4)';
+                input.placeholder = 'Digite algo antes de enviar...';
+                
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                    input.style.boxShadow = '';
+                    input.placeholder = 'Digite sua mensagem...';
+                }, 2000);
             }
         }
 
