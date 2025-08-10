@@ -67,6 +67,17 @@ model GameStats {
   favoriteMode            GameMode @default(cards) @map("favorite_mode")
   comboStreakRecord       Int      @default(0) @map("combo_streak_record")
   
+  // Estatísticas por dificuldade
+  easyGamesPlayed         Int      @default(0) @map("easy_games_played")
+  easyGamesWon            Int      @default(0) @map("easy_games_won")
+  easyBestTimeSeconds     Int      @default(0) @map("easy_best_time_seconds")
+  mediumGamesPlayed       Int      @default(0) @map("medium_games_played")
+  mediumGamesWon          Int      @default(0) @map("medium_games_won")
+  mediumBestTimeSeconds   Int      @default(0) @map("medium_best_time_seconds")
+  hardGamesPlayed         Int      @default(0) @map("hard_games_played")
+  hardGamesWon            Int      @default(0) @map("hard_games_won")
+  hardBestTimeSeconds     Int      @default(0) @map("hard_best_time_seconds")
+  
   // Estatísticas detalhadas
   evidencesFound          Int      @default(0) @map("evidences_found")
   suspectsInterrogated    Int      @default(0) @map("suspects_interrogated")

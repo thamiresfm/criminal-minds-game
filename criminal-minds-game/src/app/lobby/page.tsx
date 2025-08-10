@@ -52,6 +52,15 @@ export default function LobbyPage() {
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [gameIdInput, setGameIdInput] = useState('');
   const [isSearchingMatch, setIsSearchingMatch] = useState(false);
+  
+  // Estados para criação de partida
+  const [gameName, setGameName] = useState('');
+  const [maxPlayers, setMaxPlayers] = useState('4');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
+  
+  // Estados para modal de estatísticas
+  const [showStatsModal, setShowStatsModal] = useState(false);
+  const [difficultyStats, setDifficultyStats] = useState<any>(null);
 
   // Mock data
   const [activeGames] = useState<GameRoom[]>([
@@ -221,18 +230,63 @@ export default function LobbyPage() {
   };
 
   const handleCreateGameSubmit = () => {
+    if (!gameName.trim()) {
+      notify.error('Erro', 'Digite um nome para a partida');
+      return;
+    }
+    
     const gameId = `created-${Date.now()}`;
     setShowCreateModal(false);
     
+    // Resetar campos do formulário
+    setGameName('');
+    setMaxPlayers('4');
+    setSelectedDifficulty('medium');
+    
     notify.success(
       '🎮 Partida Criada!',
-      'Sua partida foi criada com sucesso!',
+      `Partida "${gameName}" criada com dificuldade ${selectedDifficulty === 'easy' ? 'Iniciante' : selectedDifficulty === 'medium' ? 'Intermediário' : 'Difícil'}!`,
       { duration: 4000 }
     );
     
     setTimeout(() => {
-      router.push(`/game/investigation?gameId=${gameId}`);
+      router.push(`/game/investigation?gameId=${gameId}&difficulty=${selectedDifficulty}&maxPlayers=${maxPlayers}`);
     }, 1000);
+  };
+
+  const handleShowStats = () => {
+    // Simular carregamento de estatísticas (em produção viria da API)
+    const mockStats = {
+      easy: {
+        gamesPlayed: 5,
+        gamesWon: 4,
+        winRate: '80.0',
+        bestTimeFormatted: '3:45'
+      },
+      medium: {
+        gamesPlayed: 12,
+        gamesWon: 8,
+        winRate: '66.7',
+        bestTimeFormatted: '5:22'
+      },
+      hard: {
+        gamesPlayed: 3,
+        gamesWon: 1,
+        winRate: '33.3',
+        bestTimeFormatted: '8:15'
+      },
+      overall: {
+        gamesPlayed: 20,
+        gamesWon: 13,
+        gamesLost: 7,
+        totalScore: 15420,
+        rankLevel: 3,
+        rankPoints: 2840
+      }
+    };
+    
+    setDifficultyStats(mockStats);
+    setShowStatsModal(true);
   };
 
   // ========================================
@@ -316,6 +370,13 @@ export default function LobbyPage() {
 
             {/* Actions - Layout Melhorado */}
             <div className="flex items-center space-x-3">
+              <button 
+                onClick={handleShowStats}
+                className="p-3 rounded-xl bg-accent-blue/10 hover:bg-accent-blue/20 border border-accent-blue/30 hover:border-accent-blue/50 transition-all duration-200 group"
+                title="Ver Estatísticas"
+              >
+                <Star className="w-5 h-5 text-accent-blue group-hover:text-accent-blue group-hover:scale-110 transition-all duration-200" />
+              </button>
               <Link href="/settings">
                 <button className="p-3 rounded-xl bg-primary-50 hover:bg-primary-100 border border-primary-200 hover:border-primary-300 transition-all duration-200 group">
                   <Settings className="w-5 h-5 text-primary-600 group-hover:text-primary-700 group-hover:rotate-90 transition-all duration-200" />
@@ -771,18 +832,105 @@ export default function LobbyPage() {
               <p className="text-primary-600">Configure sua investigação</p>
             </div>
             
-            <div className="space-y-4 mb-6">
+            <div className="space-y-6 mb-6">
               <div>
                 <label className="block text-sm font-semibold text-primary-700 mb-2">Nome da Partida</label>
                 <input 
                   type="text" 
+                  value={gameName}
+                  onChange={(e) => setGameName(e.target.value)}
                   placeholder="Ex: Mistério da Biblioteca"
                   className="w-full px-4 py-3 border-2 border-primary-200 rounded-xl focus:ring-4 focus:ring-accent-gold/20 focus:border-accent-gold transition-all"
                 />
               </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-primary-700 mb-3">🎯 Escolha sua dificuldade:</label>
+                <div className="grid grid-cols-1 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDifficulty('easy')}
+                    className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${
+                      selectedDifficulty === 'easy'
+                        ? 'border-green-500 bg-green-50 text-green-800'
+                        : 'border-primary-200 hover:border-green-300 hover:bg-green-50/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl">🟢</span>
+                        <div>
+                          <div className="font-bold">Iniciante</div>
+                          <div className="text-sm opacity-75">6 cartas - Ideal para começar</div>
+                        </div>
+                      </div>
+                      {selectedDifficulty === 'easy' && (
+                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDifficulty('medium')}
+                    className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${
+                      selectedDifficulty === 'medium'
+                        ? 'border-yellow-500 bg-yellow-50 text-yellow-800'
+                        : 'border-primary-200 hover:border-yellow-300 hover:bg-yellow-50/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl">🟡</span>
+                        <div>
+                          <div className="font-bold">Intermediário</div>
+                          <div className="text-sm opacity-75">9 cartas - Desafio equilibrado</div>
+                        </div>
+                      </div>
+                      {selectedDifficulty === 'medium' && (
+                        <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDifficulty('hard')}
+                    className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${
+                      selectedDifficulty === 'hard'
+                        ? 'border-red-500 bg-red-50 text-red-800'
+                        : 'border-primary-200 hover:border-red-300 hover:bg-red-50/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl">🔴</span>
+                        <div>
+                          <div className="font-bold">Difícil</div>
+                          <div className="text-sm opacity-75">12 cartas - Para especialistas</div>
+                        </div>
+                      </div>
+                      {selectedDifficulty === 'hard' && (
+                        <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-semibold text-primary-700 mb-2">Máximo de Jogadores</label>
-                <select className="w-full px-4 py-3 border-2 border-primary-200 rounded-xl focus:ring-4 focus:ring-accent-gold/20 focus:border-accent-gold transition-all">
+                <select 
+                  value={maxPlayers}
+                  onChange={(e) => setMaxPlayers(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-primary-200 rounded-xl focus:ring-4 focus:ring-accent-gold/20 focus:border-accent-gold transition-all"
+                >
                   <option value="2">2 jogadores</option>
                   <option value="3">3 jogadores</option>
                   <option value="4">4 jogadores</option>
@@ -846,6 +994,166 @@ export default function LobbyPage() {
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all font-semibold shadow-lg"
               >
                 Entrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Estatísticas por Dificuldade */}
+      {showStatsModal && difficultyStats && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-8 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-accent-blue to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-3xl font-bold text-primary-900 mb-2">📊 Suas Estatísticas</h3>
+              <p className="text-primary-600">Desempenho detalhado por nível de dificuldade</p>
+            </div>
+            
+            {/* Estatísticas Gerais */}
+            <div className="mb-8 p-6 bg-gradient-to-r from-primary-50 to-accent-blue/10 rounded-2xl border border-primary-200">
+              <h4 className="text-xl font-bold text-primary-900 mb-4 flex items-center">
+                <Shield className="w-5 h-5 mr-2 text-accent-blue" />
+                Resumo Geral
+              </h4>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary-900">{difficultyStats.overall.gamesPlayed}</div>
+                  <div className="text-sm text-primary-600">Jogos</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">{difficultyStats.overall.gamesWon}</div>
+                  <div className="text-sm text-primary-600">Vitórias</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-red-600">{difficultyStats.overall.gamesLost}</div>
+                  <div className="text-sm text-primary-600">Derrotas</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-accent-gold">{difficultyStats.overall.totalScore.toLocaleString()}</div>
+                  <div className="text-sm text-primary-600">Pontos</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-accent-blue">Nv.{difficultyStats.overall.rankLevel}</div>
+                  <div className="text-sm text-primary-600">Ranking</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Estatísticas por Dificuldade */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              
+              {/* Iniciante */}
+              <div className="p-6 bg-green-50 rounded-2xl border-2 border-green-200">
+                <div className="text-center mb-4">
+                  <div className="text-3xl mb-2">🟢</div>
+                  <h5 className="text-lg font-bold text-green-800">Iniciante</h5>
+                  <p className="text-sm text-green-600">6 cartas por jogo</p>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-green-700 font-medium">Taxa de Vitória</span>
+                    <span className="text-2xl font-bold text-green-800">{difficultyStats.easy.winRate}%</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="text-green-700 font-medium">Jogos</span>
+                    <span className="text-green-800 font-bold">{difficultyStats.easy.gamesWon}/{difficultyStats.easy.gamesPlayed}</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="text-green-700 font-medium">Melhor Tempo</span>
+                    <span className="text-green-800 font-bold font-mono">{difficultyStats.easy.bestTimeFormatted}</span>
+                  </div>
+                  
+                  {/* Barra de progresso */}
+                  <div className="w-full bg-green-200 rounded-full h-2 mt-3">
+                    <div 
+                      className="bg-green-600 h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${difficultyStats.easy.winRate}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Intermediário */}
+              <div className="p-6 bg-yellow-50 rounded-2xl border-2 border-yellow-200">
+                <div className="text-center mb-4">
+                  <div className="text-3xl mb-2">🟡</div>
+                  <h5 className="text-lg font-bold text-yellow-800">Intermediário</h5>
+                  <p className="text-sm text-yellow-600">9 cartas por jogo</p>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-yellow-700 font-medium">Taxa de Vitória</span>
+                    <span className="text-2xl font-bold text-yellow-800">{difficultyStats.medium.winRate}%</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="text-yellow-700 font-medium">Jogos</span>
+                    <span className="text-yellow-800 font-bold">{difficultyStats.medium.gamesWon}/{difficultyStats.medium.gamesPlayed}</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="text-yellow-700 font-medium">Melhor Tempo</span>
+                    <span className="text-yellow-800 font-bold font-mono">{difficultyStats.medium.bestTimeFormatted}</span>
+                  </div>
+                  
+                  {/* Barra de progresso */}
+                  <div className="w-full bg-yellow-200 rounded-full h-2 mt-3">
+                    <div 
+                      className="bg-yellow-600 h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${difficultyStats.medium.winRate}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Difícil */}
+              <div className="p-6 bg-red-50 rounded-2xl border-2 border-red-200">
+                <div className="text-center mb-4">
+                  <div className="text-3xl mb-2">🔴</div>
+                  <h5 className="text-lg font-bold text-red-800">Difícil</h5>
+                  <p className="text-sm text-red-600">12 cartas por jogo</p>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-red-700 font-medium">Taxa de Vitória</span>
+                    <span className="text-2xl font-bold text-red-800">{difficultyStats.hard.winRate}%</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="text-red-700 font-medium">Jogos</span>
+                    <span className="text-red-800 font-bold">{difficultyStats.hard.gamesWon}/{difficultyStats.hard.gamesPlayed}</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="text-red-700 font-medium">Melhor Tempo</span>
+                    <span className="text-red-800 font-bold font-mono">{difficultyStats.hard.bestTimeFormatted}</span>
+                  </div>
+                  
+                  {/* Barra de progresso */}
+                  <div className="w-full bg-red-200 rounded-full h-2 mt-3">
+                    <div 
+                      className="bg-red-600 h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${difficultyStats.hard.winRate}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-center">
+              <button 
+                onClick={() => setShowStatsModal(false)}
+                className="px-8 py-3 bg-gradient-to-r from-accent-blue to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-accent-blue transition-all font-semibold shadow-lg hover:shadow-xl"
+              >
+                Fechar
               </button>
             </div>
           </div>

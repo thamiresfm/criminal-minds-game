@@ -454,7 +454,7 @@ class GameService {
     try {
       const { won, score, cardsPlayed, comboStreak, evidencesFound, 
               suspectsInterrogated, locationsInvestigated, playtimeMinutes,
-              achievements } = gameResult;
+              achievements, difficulty, timeUsedSeconds } = gameResult;
       
       const currentStats = await prisma.gameStats.findUnique({
         where: { userId }
@@ -464,26 +464,58 @@ class GameService {
         throw new Error('Estatísticas do usuário não encontradas');
       }
       
+      // Preparar dados de atualização baseados na dificuldade
+      const updateData = {
+        gamesPlayed: currentStats.gamesPlayed + 1,
+        gamesWon: won ? currentStats.gamesWon + 1 : currentStats.gamesWon,
+        gamesLost: won ? currentStats.gamesLost : currentStats.gamesLost + 1,
+        totalScore: currentStats.totalScore + (score || 0),
+        cardsCollected: currentStats.cardsCollected + (cardsPlayed || 0),
+        comboStreakRecord: Math.max(currentStats.comboStreakRecord, comboStreak || 0),
+        evidencesFound: currentStats.evidencesFound + (evidencesFound || 0),
+        suspectsInterrogated: currentStats.suspectsInterrogated + (suspectsInterrogated || 0),
+        locationsInvestigated: currentStats.locationsInvestigated + (locationsInvestigated || 0),
+        totalPlaytimeMinutes: currentStats.totalPlaytimeMinutes + (playtimeMinutes || 0),
+        achievementsUnlocked: currentStats.achievementsUnlocked + (achievements || 0),
+        lastGameDate: new Date(),
+        // Sistema de ranking com bônus por dificuldade
+        rankPoints: currentStats.rankPoints + GameService.calculateRankPoints(won, score, difficulty),
+        rankLevel: Math.floor((currentStats.rankPoints + GameService.calculateRankPoints(won, score, difficulty)) / 1000) + 1
+      };
+
+      // Atualizar estatísticas específicas por dificuldade
+      const difficultyMap = {
+        'easy': 'easy',
+        'medium': 'medium', 
+        'hard': 'hard'
+      };
+
+      const mappedDifficulty = difficultyMap[difficulty] || 'medium';
+      
+      if (mappedDifficulty === 'easy') {
+        updateData.easyGamesPlayed = currentStats.easyGamesPlayed + 1;
+        updateData.easyGamesWon = won ? currentStats.easyGamesWon + 1 : currentStats.easyGamesWon;
+        if (won && timeUsedSeconds && (currentStats.easyBestTimeSeconds === 0 || timeUsedSeconds < currentStats.easyBestTimeSeconds)) {
+          updateData.easyBestTimeSeconds = timeUsedSeconds;
+        }
+      } else if (mappedDifficulty === 'medium') {
+        updateData.mediumGamesPlayed = currentStats.mediumGamesPlayed + 1;
+        updateData.mediumGamesWon = won ? currentStats.mediumGamesWon + 1 : currentStats.mediumGamesWon;
+        if (won && timeUsedSeconds && (currentStats.mediumBestTimeSeconds === 0 || timeUsedSeconds < currentStats.mediumBestTimeSeconds)) {
+          updateData.mediumBestTimeSeconds = timeUsedSeconds;
+        }
+      } else if (mappedDifficulty === 'hard') {
+        updateData.hardGamesPlayed = currentStats.hardGamesPlayed + 1;
+        updateData.hardGamesWon = won ? currentStats.hardGamesWon + 1 : currentStats.hardGamesWon;
+        if (won && timeUsedSeconds && (currentStats.hardBestTimeSeconds === 0 || timeUsedSeconds < currentStats.hardBestTimeSeconds)) {
+          updateData.hardBestTimeSeconds = timeUsedSeconds;
+        }
+      }
+
       // Atualizar estatísticas
       await prisma.gameStats.update({
         where: { userId },
-        data: {
-          gamesPlayed: currentStats.gamesPlayed + 1,
-          gamesWon: won ? currentStats.gamesWon + 1 : currentStats.gamesWon,
-          gamesLost: won ? currentStats.gamesLost : currentStats.gamesLost + 1,
-          totalScore: currentStats.totalScore + (score || 0),
-          cardsCollected: currentStats.cardsCollected + (cardsPlayed || 0),
-          comboStreakRecord: Math.max(currentStats.comboStreakRecord, comboStreak || 0),
-          evidencesFound: currentStats.evidencesFound + (evidencesFound || 0),
-          suspectsInterrogated: currentStats.suspectsInterrogated + (suspectsInterrogated || 0),
-          locationsInvestigated: currentStats.locationsInvestigated + (locationsInvestigated || 0),
-          totalPlaytimeMinutes: currentStats.totalPlaytimeMinutes + (playtimeMinutes || 0),
-          achievementsUnlocked: currentStats.achievementsUnlocked + (achievements || 0),
-          lastGameDate: new Date(),
-          // Sistema de ranking simples
-          rankPoints: currentStats.rankPoints + (won ? 100 : 25) + Math.floor((score || 0) / 10),
-          rankLevel: Math.floor((currentStats.rankPoints + (won ? 100 : 25)) / 1000) + 1
-        }
+        data: updateData
       });
       
       return { success: true };
@@ -497,9 +529,88 @@ class GameService {
     }
   }
   
+  static async getUserStatsByDifficulty(userId) {
+    try {
+      const stats = await prisma.gameStats.findUnique({
+        where: { userId }
+      });
+      
+      if (!stats) {
+        throw new Error('Estatísticas do usuário não encontradas');
+      }
+      
+      return {
+        success: true,
+        data: {
+          easy: {
+            gamesPlayed: stats.easyGamesPlayed,
+            gamesWon: stats.easyGamesWon,
+            winRate: stats.easyGamesPlayed > 0 ? ((stats.easyGamesWon / stats.easyGamesPlayed) * 100).toFixed(1) : '0.0',
+            bestTimeSeconds: stats.easyBestTimeSeconds,
+            bestTimeFormatted: GameService.formatTime(stats.easyBestTimeSeconds)
+          },
+          medium: {
+            gamesPlayed: stats.mediumGamesPlayed,
+            gamesWon: stats.mediumGamesWon,
+            winRate: stats.mediumGamesPlayed > 0 ? ((stats.mediumGamesWon / stats.mediumGamesPlayed) * 100).toFixed(1) : '0.0',
+            bestTimeSeconds: stats.mediumBestTimeSeconds,
+            bestTimeFormatted: GameService.formatTime(stats.mediumBestTimeSeconds)
+          },
+          hard: {
+            gamesPlayed: stats.hardGamesPlayed,
+            gamesWon: stats.hardGamesWon,
+            winRate: stats.hardGamesPlayed > 0 ? ((stats.hardGamesWon / stats.hardGamesPlayed) * 100).toFixed(1) : '0.0',
+            bestTimeSeconds: stats.hardBestTimeSeconds,
+            bestTimeFormatted: GameService.formatTime(stats.hardBestTimeSeconds)
+          },
+          overall: {
+            gamesPlayed: stats.gamesPlayed,
+            gamesWon: stats.gamesWon,
+            gamesLost: stats.gamesLost,
+            totalScore: stats.totalScore,
+            rankLevel: stats.rankLevel,
+            rankPoints: stats.rankPoints
+          }
+        }
+      };
+      
+    } catch (error) {
+      console.error('❌ Erro ao obter estatísticas por dificuldade:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+  
   // ========================================
   // UTILITIES
   // ========================================
+  
+  static calculateRankPoints(won, score, difficulty) {
+    let basePoints = won ? 100 : 25;
+    let scoreBonus = Math.floor((score || 0) / 10);
+    
+    // Bônus por dificuldade
+    const difficultyMultiplier = {
+      'easy': 1.0,
+      'medium': 1.5, 
+      'hard': 2.0
+    };
+    
+    const multiplier = difficultyMultiplier[difficulty] || 1.0;
+    
+    return Math.floor((basePoints + scoreBonus) * multiplier);
+  }
+  
+  static formatTime(seconds) {
+    if (!seconds || seconds === 0) return '--:--';
+    
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
   
   static async generateUniqueGameCode() {
     let attempts = 0;
