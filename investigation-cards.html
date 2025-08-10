@@ -3181,7 +3181,15 @@
 
         // Função para jogar uma carta
         function playCard(cardElement) {
+            console.log('🃏 Função playCard chamada');
+            
+            if (!cardElement) {
+                console.error('🃏 Erro: cardElement é null ou undefined');
+                return;
+            }
+            
             if (cardElement.classList.contains('played')) {
+                console.log('🃏 Carta já foi jogada, mostrando feedback visual');
                 // Feedback visual para carta já jogada
                 cardElement.style.animation = 'cardShake 0.3s ease-in-out';
                 setTimeout(() => {
@@ -3191,12 +3199,16 @@
             }
 
             const cardType = cardElement.getAttribute('data-type');
+            console.log(`🃏 Tipo da carta: ${cardType}`);
+            
             const cardEffect = cardEffects[cardType];
             
             if (!cardEffect) {
-                console.error('Tipo de carta não encontrado:', cardType);
+                console.error('🃏 Tipo de carta não encontrado:', cardType);
                 return;
             }
+            
+            console.log(`🃏 Efeito da carta encontrado: ${cardEffect.evidence} evidências`);
 
             // Animação de ativação da carta
             cardElement.style.animation = 'cardPulse 0.3s ease-in-out';
@@ -3214,15 +3226,18 @@
             // Incrementar contadores
             cardsPlayed++;
             comboStreak++;
+            console.log(`🃏 Contadores atualizados: cardsPlayed=${cardsPlayed}, comboStreak=${comboStreak}`);
             
             // Calcular evidências com combo
             const baseEvidence = cardEffect.evidence;
             const comboMultiplier = 1 + (comboStreak * 0.1); // 10% por combo
             const totalEvidenceGained = Math.floor(baseEvidence * comboMultiplier);
+            console.log(`🃏 Evidências calculadas: base=${baseEvidence}, combo=${comboMultiplier.toFixed(2)}, total=${totalEvidenceGained}`);
             
             // Adicionar evidências ao caso
             totalEvidence += totalEvidenceGained;
             currentCase.collectedEvidence += totalEvidenceGained;
+            console.log(`🃏 Evidências adicionadas: totalEvidence=${totalEvidence}, caseEvidence=${currentCase.collectedEvidence}`);
             
             // Adicionar pista ao caso
             if (!currentCase.clues.includes(cardEffect.clue)) {
@@ -3421,12 +3436,33 @@
 
         // Função para atualizar estatísticas
         function updateStats() {
+            console.log('📊 Atualizando estatísticas...');
+            
             // Atualizar cartas jogadas
-            document.getElementById('cardsPlayed').textContent = `${cardsPlayed}/20`;
-            document.getElementById('comboStreak').textContent = `${comboStreak}x`;
+            const cardsPlayedElement = document.getElementById('cardsPlayed');
+            if (cardsPlayedElement) {
+                cardsPlayedElement.textContent = `${cardsPlayed}/20`;
+                console.log(`📊 Cartas jogadas atualizadas: ${cardsPlayed}/20`);
+            } else {
+                console.error('📊 Elemento cardsPlayed não encontrado');
+            }
+            
+            const comboStreakElement = document.getElementById('comboStreak');
+            if (comboStreakElement) {
+                comboStreakElement.textContent = `${comboStreak}x`;
+                console.log(`📊 Combo atualizado: ${comboStreak}x`);
+            } else {
+                console.error('📊 Elemento comboStreak não encontrado');
+            }
             
             // Atualizar evidências
-            document.getElementById('evidenceDisplay').textContent = `${currentCase.collectedEvidence}/${currentCase.targetEvidence}`;
+            const evidenceDisplayElement = document.getElementById('evidenceDisplay');
+            if (evidenceDisplayElement) {
+                evidenceDisplayElement.textContent = `${currentCase.collectedEvidence}/${currentCase.targetEvidence}`;
+                console.log(`📊 Evidências atualizadas: ${currentCase.collectedEvidence}/${currentCase.targetEvidence}`);
+            } else {
+                console.error('📊 Elemento evidenceDisplay não encontrado');
+            }
             
             // Calcular multiplicador baseado na dificuldade
             const difficultyMultiplier = 1.0 + (comboStreak * 0.1);
@@ -3450,14 +3486,33 @@
 
         // Adicionar event listeners para as cartas
         function initializeCards() {
+            console.log('🃏 Inicializando sistema de cartas...');
             const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.addEventListener('click', () => playCard(card));
+            console.log(`🃏 Encontradas ${cards.length} cartas para inicializar`);
+            
+            cards.forEach((card, index) => {
+                console.log(`🃏 Inicializando carta ${index + 1}: ${card.getAttribute('data-type')}`);
+                
+                // Remover event listeners anteriores para evitar duplicação
+                card.removeEventListener('click', () => playCard(card));
+                card.removeEventListener('mouseenter', (e) => showCardTooltip(e, card));
+                card.removeEventListener('mouseleave', hideCardTooltip);
+                
+                // Adicionar novos event listeners
+                card.addEventListener('click', () => {
+                    console.log(`🃏 Carta clicada: ${card.getAttribute('data-type')}`);
+                    playCard(card);
+                });
                 
                 // Adicionar tooltip ao passar o mouse
                 card.addEventListener('mouseenter', (e) => showCardTooltip(e, card));
                 card.addEventListener('mouseleave', hideCardTooltip);
+                
+                // Adicionar classe para indicar que está inicializada
+                card.classList.add('initialized');
             });
+            
+            console.log('🃏 Sistema de cartas inicializado com sucesso!');
         }
 
         // Função para mostrar tooltip da carta
