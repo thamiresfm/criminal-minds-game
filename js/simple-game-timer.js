@@ -241,11 +241,10 @@ class SimpleGameTimer {
     }
 }
 
-// Criar instância global
-window.simpleGameTimer = new SimpleGameTimer();
-
-// Auto-inicialização
+// Criar instância global após DOM estar pronto
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('📄 DOM carregado, criando timer simples...');
+    window.simpleGameTimer = new SimpleGameTimer();
     console.log('📄 DOM carregado, timer simples pronto!');
     
     // Configurar callbacks padrão
@@ -277,14 +276,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2000);
 });
 
-// Adicionar CSS para animação
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
-    }
-`;
-document.head.appendChild(style);
+// Adicionar CSS para animação (apenas se não existir)
+if (!document.getElementById('timer-pulse-animation')) {
+    const style = document.createElement('style');
+    style.id = 'timer-pulse-animation';
+    style.textContent = `
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    `;
+    document.head.appendChild(style);
+}
 
 console.log('✅ Timer simples carregado!');
