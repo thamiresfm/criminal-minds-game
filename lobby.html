@@ -872,6 +872,11 @@
             localStorage.setItem('criminalMinds_gameMode', 'cards');
             localStorage.setItem('criminalMinds_gameDifficulty', difficulty);
             
+            // Inicializar timer do jogo
+            console.log('⏱️ Preparando timer do jogo...');
+            localStorage.setItem('criminalMinds_timerStarted', 'true');
+            localStorage.setItem('criminalMinds_timerStartTime', Date.now().toString());
+            
             // Redirecionar para o jogo
             window.location.href = url;
         }

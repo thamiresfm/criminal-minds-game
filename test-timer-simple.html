@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Timer Simples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #d4af37;
+        }
+        .test-button {
+            background: #d4af37;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background: #f4d03f;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste do Timer - Criminal Minds Game</h1>
+        
+        <div class="status" id="status">
+            Aguardando carregamento do timer...
+        </div>
+        
+        <div>
+            <button class="test-button" onclick="testStart()">▶️ Iniciar</button>
+            <button class="test-button" onclick="testPause()">⏸️ Pausar</button>
+            <button class="test-button" onclick="testReset()">🔄 Reset</button>
+            <button class="test-button" onclick="testForceReset()">🔄 Forçar 45:00</button>
+        </div>
+        
+        <div class="status" id="timer-display">
+            Timer: 45:00
+        </div>
+        
+        <div class="status" id="debug-info">
+            Debug: Aguardando...
+        </div>
+    </div>
+
+    <!-- Carregar o timer -->
+    <script src="js/game-timer-45min.js"></script>
+    
+    <script>
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+            console.log('Status:', message);
+        }
+        
+        function updateDebug(info) {
+            document.getElementById('debug-info').textContent = 'Debug: ' + info;
+            console.log('Debug:', info);
+        }
+        
+        function testStart() {
+            if (window.gameTimer) {
+                window.gameTimer.start();
+                updateStatus('Timer iniciado');
+                updateDebug('Função start() executada');
+            } else {
+                updateStatus('❌ Timer não encontrado!');
+                updateDebug('window.gameTimer é undefined');
+            }
+        }
+        
+        function testPause() {
+            if (window.gameTimer) {
+                window.gameTimer.togglePause();
+                updateStatus('Timer pausado/retomado');
+                updateDebug('Função togglePause() executada');
+            } else {
+                updateStatus('❌ Timer não encontrado!');
+            }
+        }
+        
+        function testReset() {
+            if (window.gameTimer) {
+                window.gameTimer.reset();
+                updateStatus('Timer resetado');
+                updateDebug('Função reset() executada');
+            } else {
+                updateStatus('❌ Timer não encontrado!');
+            }
+        }
+        
+        function testForceReset() {
+            if (window.gameTimer) {
+                window.gameTimer.forceReset();
+                updateStatus('Timer forçado para 45:00');
+                updateDebug('Função forceReset() executada');
+            } else {
+                updateStatus('❌ Timer não encontrado!');
+            }
+        }
+        
+        // Verificar se o timer carregou
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.gameTimer) {
+                    updateStatus('✅ Timer carregado com sucesso!');
+                    updateDebug('window.gameTimer disponível');
+                    
+                    // Configurar callbacks de teste
+                    window.gameTimer.on('timeout', () => {
+                        updateStatus('⏰ TEMPO ESGOTADO!');
+                        updateDebug('Evento timeout disparado');
+                    });
+                    
+                    window.gameTimer.on('critical', (time) => {
+                        updateStatus(`🚨 TEMPO CRÍTICO: ${Math.floor(time/60)}:${(time%60).toString().padStart(2, '0')}`);
+                        updateDebug('Evento critical disparado');
+                    });
+                    
+                    window.gameTimer.on('warning', (time) => {
+                        updateStatus(`⚠️ AVISO: ${Math.floor(time/60)}:${(time%60).toString().padStart(2, '0')} restantes`);
+                        updateDebug('Evento warning disparado');
+                    });
+                    
+                    // Atualizar display do timer
+                    setInterval(() => {
+                        if (window.gameTimer) {
+                            const time = window.gameTimer.getRemainingTime();
+                            const minutes = Math.floor(time / 60);
+                            const seconds = time % 60;
+                            document.getElementById('timer-display').textContent = 
+                                `Timer: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                        }
+                    }, 1000);
+                    
+                } else {
+                    updateStatus('❌ Timer não carregou!');
+                    updateDebug('window.gameTimer não encontrado após 2 segundos');
+                }
+            }, 2000);
+        });
+        
+        // Log de debug
+        console.log('Página de teste carregada');
+        console.log('Verificando window.gameTimer...');
+        
+        setTimeout(() => {
+            console.log('window.gameTimer após 3s:', window.gameTimer);
+            if (window.gameTimer) {
+                console.log('Timer properties:', {
+                    totalTime: window.gameTimer.totalTime,
+                    remainingTime: window.gameTimer.remainingTime,
+                    isRunning: window.gameTimer.isRunning,
+                    isPaused: window.gameTimer.isPaused
+                });
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

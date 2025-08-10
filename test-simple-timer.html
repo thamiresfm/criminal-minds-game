@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Timer Simples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #d4af37;
+        }
+        .test-button {
+            background: #d4af37;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background: #f4d03f;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste Timer Simples</h1>
+        
+        <div class="status" id="status">
+            Aguardando carregamento...
+        </div>
+        
+        <div>
+            <button class="test-button" onclick="testStart()">▶️ Iniciar</button>
+            <button class="test-button" onclick="testStop()">⏹️ Parar</button>
+            <button class="test-button" onclick="testReset()">🔄 Reset</button>
+        </div>
+        
+        <div class="status" id="timer-display">
+            Timer: 45:00
+        </div>
+        
+        <div class="status" id="debug-info">
+            Debug: Aguardando...
+        </div>
+    </div>
+
+    <!-- Carregar o timer simples -->
+    <script src="js/timer-simple-test.js"></script>
+    
+    <script>
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+            console.log('Status:', message);
+        }
+        
+        function updateDebug(info) {
+            document.getElementById('debug-info').textContent = 'Debug: ' + info;
+            console.log('Debug:', info);
+        }
+        
+        function testStart() {
+            if (window.simpleTimer) {
+                window.simpleTimer.start();
+                updateStatus('Timer iniciado');
+                updateDebug('Função start() executada');
+            } else {
+                updateStatus('❌ Timer não encontrado!');
+                updateDebug('window.simpleTimer é undefined');
+            }
+        }
+        
+        function testStop() {
+            if (window.simpleTimer) {
+                window.simpleTimer.stop();
+                updateStatus('Timer parado');
+                updateDebug('Função stop() executada');
+            } else {
+                updateStatus('❌ Timer não encontrado!');
+            }
+        }
+        
+        function testReset() {
+            if (window.simpleTimer) {
+                window.simpleTimer.reset();
+                updateStatus('Timer resetado');
+                updateDebug('Função reset() executada');
+            } else {
+                updateStatus('❌ Timer não encontrado!');
+            }
+        }
+        
+        // Verificar se o timer carregou
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.simpleTimer) {
+                    updateStatus('✅ Timer simples carregado!');
+                    updateDebug('window.simpleTimer disponível');
+                } else {
+                    updateStatus('❌ Timer simples não carregou!');
+                    updateDebug('window.simpleTimer não encontrado');
+                }
+            }, 1000);
+        });
+        
+        // Log de debug
+        console.log('Página de teste simples carregada');
+        
+        setTimeout(() => {
+            console.log('window.simpleTimer após 2s:', window.simpleTimer);
+            if (window.simpleTimer) {
+                console.log('Timer simples properties:', {
+                    totalTime: window.simpleTimer.totalTime,
+                    remainingTime: window.simpleTimer.remainingTime,
+                    isRunning: window.simpleTimer.isRunning
+                });
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

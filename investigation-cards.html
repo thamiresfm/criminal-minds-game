@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Investigação - Criminal Minds Cards</title>
+    
+    <!-- Timer do Jogo -->
+    <script src="js/game-timer-45min.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -3870,6 +3874,63 @@
                 userDiv.className = 'chat-message';
                 userDiv.innerHTML = `<span class="chat-user">🕵️ ${detectiveName}:</span> Online - 47 cartas`;
                 teamList.appendChild(userDiv);
+            }
+            
+            // Inicializar timer do jogo automaticamente
+            if (window.gameTimer) {
+                console.log('⏱️ Timer do jogo encontrado, iniciando automaticamente...');
+                window.gameTimer.start();
+                
+                // Configurar callbacks do timer para o jogo
+                window.gameTimer.on('timeout', () => {
+                    console.log('⏰ Tempo esgotado! Finalizando jogo...');
+                    alert('⏰ TEMPO ESGOTADO! A investigação será encerrada automaticamente.');
+                    // Aqui você pode adicionar lógica para finalizar o jogo
+                });
+                
+                window.gameTimer.on('critical', (remainingTime) => {
+                    console.log('🚨 Tempo crítico:', remainingTime, 'segundos restantes');
+                    // Adicionar mensagem ao chat da equipe
+                    addChatMessage('🚨 ATENÇÃO: Tempo crítico! Menos de 5 minutos restantes!', 'Sistema');
+                });
+                
+                window.gameTimer.on('warning', (remainingTime) => {
+                    console.log('⚠️ Aviso de tempo:', remainingTime, 'segundos restantes');
+                    // Adicionar mensagem ao chat da equipe
+                    addChatMessage('⚠️ AVISO: 15 minutos restantes para finalizar a investigação!', 'Sistema');
+                });
+            } else {
+                console.log('⚠️ Timer do jogo não encontrado, aguardando carregamento...');
+                
+                // Tentar novamente após um delay
+                setTimeout(() => {
+                    if (window.gameTimer) {
+                        console.log('⏱️ Timer carregado com delay, iniciando...');
+                        window.gameTimer.start();
+                        
+                        // Configurar callbacks
+                        window.gameTimer.on('timeout', () => {
+                            console.log('⏰ Tempo esgotado! Finalizando jogo...');
+                            alert('⏰ TEMPO ESGOTADO! A investigação será encerrada automaticamente.');
+                        });
+                        
+                        window.gameTimer.on('critical', (remainingTime) => {
+                            console.log('🚨 Tempo crítico:', remainingTime, 'segundos restantes');
+                            if (typeof addChatMessage === 'function') {
+                                addChatMessage('🚨 ATENÇÃO: Tempo crítico! Menos de 5 minutos restantes!', 'Sistema');
+                            }
+                        });
+                        
+                        window.gameTimer.on('warning', (remainingTime) => {
+                            console.log('⚠️ Aviso de tempo:', remainingTime, 'segundos restantes');
+                            if (typeof addChatMessage === 'function') {
+                                addChatMessage('⚠️ AVISO: 15 minutos restantes para finalizar a investigação!', 'Sistema');
+                            }
+                        });
+                    } else {
+                        console.log('❌ Timer do jogo não pôde ser carregado');
+                    }
+                }, 2000);
             }
             
             // Garantir que o timer inicie quando a página carregar completamente
