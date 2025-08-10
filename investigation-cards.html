@@ -262,10 +262,48 @@
             opacity: 0.6;
             transform: scale(0.95);
             filter: grayscale(50%);
+            border-color: rgba(107, 114, 128, 0.4);
+            background: linear-gradient(135deg, rgba(75, 85, 99, 0.95), rgba(55, 65, 81, 0.98));
+            cursor: not-allowed;
         }
 
         .card.played:hover {
-            transform: scale(0.95) translateY(-5px);
+            transform: scale(0.95);
+            border-color: rgba(107, 114, 128, 0.4);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .card.played::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #10b981;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .card:not(.played) {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .card:not(.played):hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.2);
+        }
+
+        .card:not(.played):active {
+            transform: translateY(-5px) rotateX(2deg) rotateY(2deg);
+            box-shadow: 0 15px 30px rgba(251, 191, 36, 0.3);
         }
 
         .card-inner {
@@ -3144,6 +3182,11 @@
         // Função para jogar uma carta
         function playCard(cardElement) {
             if (cardElement.classList.contains('played')) {
+                // Feedback visual para carta já jogada
+                cardElement.style.animation = 'cardShake 0.3s ease-in-out';
+                setTimeout(() => {
+                    cardElement.style.animation = '';
+                }, 300);
                 return; // Carta já foi jogada
             }
 
@@ -3155,8 +3198,18 @@
                 return;
             }
 
+            // Animação de ativação da carta
+            cardElement.style.animation = 'cardPulse 0.3s ease-in-out';
+            setTimeout(() => {
+                cardElement.style.animation = '';
+            }, 300);
+
             // Marcar carta como jogada
             cardElement.classList.add('played');
+            
+            // Efeito visual de "usado"
+            cardElement.style.transform = 'scale(0.95)';
+            cardElement.style.filter = 'grayscale(50%)';
             
             // Incrementar contadores
             cardsPlayed++;
@@ -3200,6 +3253,25 @@
             // Verificar conquistas
             checkAchievements();
             
+            // Efeito sonoro visual (emoji)
+            const soundEffect = document.createElement('div');
+            soundEffect.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 2rem;
+                z-index: 1000;
+                animation: cardPlayedAnim 1s ease-out forwards;
+                pointer-events: none;
+            `;
+            soundEffect.textContent = '🔍';
+            cardElement.appendChild(soundEffect);
+            
+            setTimeout(() => {
+                soundEffect.remove();
+            }, 1000);
+            
             // Adicionar mensagem ao chat sobre a evidência coletada
             setTimeout(() => {
                 const chatMessages = [
@@ -3216,7 +3288,62 @@
             
             // Verificar se atingiu objetivo de evidências
             if (currentCase.collectedEvidence >= currentCase.targetEvidence) {
-                showGameEndModal('victory');
+                setTimeout(() => {
+                    showGameEndModal('victory');
+                }, 1500);
+            }
+
+            // Mostrar progresso das cartas
+            updateCardProgress();
+        }
+
+        // Função para atualizar o progresso visual das cartas
+        function updateCardProgress() {
+            const totalCards = document.querySelectorAll('.card').length;
+            const playedCards = document.querySelectorAll('.card.played').length;
+            const progressPercentage = (playedCards / totalCards) * 100;
+
+            // Atualizar título da seção com progresso
+            const sectionTitle = document.querySelector('.section-title');
+            if (sectionTitle) {
+                sectionTitle.innerHTML = `🃏 Cartas de Investigação Ativas <span style="font-size: 0.8rem; color: #10b981;">(${playedCards}/${totalCards})</span>`;
+            }
+
+            // Adicionar barra de progresso se não existir
+            let progressBar = document.getElementById('cards-progress-bar');
+            if (!progressBar) {
+                progressBar = document.createElement('div');
+                progressBar.id = 'cards-progress-bar';
+                progressBar.style.cssText = `
+                    width: 100%;
+                    height: 4px;
+                    background: rgba(107, 114, 128, 0.3);
+                    border-radius: 2px;
+                    margin: 1rem 0;
+                    overflow: hidden;
+                `;
+                
+                const progressFill = document.createElement('div');
+                progressFill.id = 'cards-progress-fill';
+                progressFill.style.cssText = `
+                    height: 100%;
+                    background: linear-gradient(90deg, #10b981, #059669);
+                    border-radius: 2px;
+                    transition: width 0.5s ease;
+                    width: 0%;
+                `;
+                
+                progressBar.appendChild(progressFill);
+                const cardsContainer = document.getElementById('cardsContainer');
+                if (cardsContainer && cardsContainer.parentNode) {
+                    cardsContainer.parentNode.insertBefore(progressBar, cardsContainer);
+                }
+            }
+
+            // Atualizar barra de progresso
+            const progressFill = document.getElementById('cards-progress-fill');
+            if (progressFill) {
+                progressFill.style.width = `${progressPercentage}%`;
             }
         }
 
@@ -3326,7 +3453,70 @@
             const cards = document.querySelectorAll('.card');
             cards.forEach(card => {
                 card.addEventListener('click', () => playCard(card));
+                
+                // Adicionar tooltip ao passar o mouse
+                card.addEventListener('mouseenter', (e) => showCardTooltip(e, card));
+                card.addEventListener('mouseleave', hideCardTooltip);
             });
+        }
+
+        // Função para mostrar tooltip da carta
+        function showCardTooltip(event, cardElement) {
+            if (cardElement.classList.contains('played')) {
+                return; // Não mostrar tooltip para cartas já jogadas
+            }
+
+            const cardType = cardElement.getAttribute('data-type');
+            const cardEffect = cardEffects[cardType];
+            
+            if (!cardEffect) return;
+
+            const tooltip = document.createElement('div');
+            tooltip.id = 'card-tooltip';
+            tooltip.style.cssText = `
+                position: fixed;
+                background: linear-gradient(135deg, #1a1a2e, #16213e);
+                border: 2px solid rgba(251, 191, 36, 0.6);
+                border-radius: 12px;
+                padding: 1rem;
+                color: white;
+                font-size: 0.9rem;
+                z-index: 3000;
+                max-width: 250px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(10px);
+                animation: cardAppear 0.3s ease-out;
+            `;
+
+            tooltip.innerHTML = `
+                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 0.5rem;">
+                    ${cardElement.querySelector('.card-title').textContent}
+                </div>
+                <div style="color: #cbd5e1; margin-bottom: 0.5rem;">
+                    ${cardElement.querySelector('.card-description').textContent}
+                </div>
+                <div style="color: #10b981; font-weight: bold;">
+                    🔍 +${cardEffect.evidence} Evidências Base
+                </div>
+                <div style="color: #f59e0b; font-size: 0.8rem; margin-top: 0.5rem;">
+                    💡 Pista: ${cardEffect.clue}
+                </div>
+            `;
+
+            document.body.appendChild(tooltip);
+
+            // Posicionar tooltip
+            const rect = cardElement.getBoundingClientRect();
+            tooltip.style.left = rect.right + 10 + 'px';
+            tooltip.style.top = rect.top + 'px';
+        }
+
+        // Função para esconder tooltip
+        function hideCardTooltip() {
+            const tooltip = document.getElementById('card-tooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
         }
 
         // SISTEMA DE TEMPO RESTANTE COMPLETO
@@ -3495,6 +3685,36 @@
                 50% { 
                     background: linear-gradient(90deg, #991b1b, #dc2626);
                     box-shadow: 0 0 30px rgba(220, 38, 38, 0.8);
+                }
+            }
+
+            @keyframes cardGlow {
+                0%, 100% {
+                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(251, 191, 36, 0.1);
+                }
+                50% {
+                    box-shadow: 0 6px 20px rgba(251, 191, 36, 0.3), inset 0 1px 0 rgba(251, 191, 36, 0.2);
+                }
+            }
+
+            @keyframes cardPulse {
+                0%, 100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.05);
+                }
+            }
+
+            @keyframes cardShake {
+                0%, 100% {
+                    transform: translateX(0);
+                }
+                25% {
+                    transform: translateX(-2px);
+                }
+                75% {
+                    transform: translateX(2px);
                 }
             }
         `;
