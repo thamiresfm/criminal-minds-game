@@ -1774,6 +1774,10 @@
                 setTimeout(() => {
                     coinElement.style.transform = 'scale(1)';
                 }, 200);
+                
+                console.log(`💰 Display de moedas atualizado: ${playerCoins}`);
+            } else {
+                console.error('💰 Elemento coin-display não encontrado');
             }
             savePlayerCoins();
         }
@@ -2408,20 +2412,68 @@
         }
         
         function updateDifficultyStatsDisplay(stats) {
-            // Atualizar Iniciante
-            document.getElementById('easyWinRate').textContent = stats.easy.winRate + '%';
-            document.getElementById('easyStats').textContent = `${stats.easy.gamesWon}/${stats.easy.gamesPlayed} jogos`;
-            document.getElementById('easyBestTime').textContent = stats.easy.bestTimeFormatted;
+            console.log('📊 Tentando atualizar estatísticas por dificuldade...');
             
-            // Atualizar Intermediário
-            document.getElementById('mediumWinRate').textContent = stats.medium.winRate + '%';
-            document.getElementById('mediumStats').textContent = `${stats.medium.gamesWon}/${stats.medium.gamesPlayed} jogos`;
-            document.getElementById('mediumBestTime').textContent = stats.medium.bestTimeFormatted;
+            // Verificar se os elementos existem antes de tentar acessá-los
+            const elements = {
+                easyWinRate: document.getElementById('easyWinRate'),
+                easyStats: document.getElementById('easyStats'),
+                easyBestTime: document.getElementById('easyBestTime'),
+                mediumWinRate: document.getElementById('mediumWinRate'),
+                mediumStats: document.getElementById('mediumStats'),
+                mediumBestTime: document.getElementById('mediumBestTime'),
+                hardWinRate: document.getElementById('hardWinRate'),
+                hardStats: document.getElementById('hardStats'),
+                hardBestTime: document.getElementById('hardBestTime')
+            };
             
-            // Atualizar Difícil
-            document.getElementById('hardWinRate').textContent = stats.hard.winRate + '%';
-            document.getElementById('hardStats').textContent = `${stats.hard.gamesWon}/${stats.hard.gamesPlayed} jogos`;
-            document.getElementById('hardBestTime').textContent = stats.hard.bestTimeFormatted;
+            // Atualizar apenas elementos que existem
+            if (elements.easyWinRate) {
+                elements.easyWinRate.textContent = stats.easy.winRate + '%';
+                console.log('📊 easyWinRate atualizado');
+            }
+            
+            if (elements.easyStats) {
+                elements.easyStats.textContent = `${stats.easy.gamesWon}/${stats.easy.gamesPlayed} jogos`;
+                console.log('📊 easyStats atualizado');
+            }
+            
+            if (elements.easyBestTime) {
+                elements.easyBestTime.textContent = stats.easy.bestTimeFormatted;
+                console.log('📊 easyBestTime atualizado');
+            }
+            
+            if (elements.mediumWinRate) {
+                elements.mediumWinRate.textContent = stats.medium.winRate + '%';
+                console.log('📊 mediumWinRate atualizado');
+            }
+            
+            if (elements.mediumStats) {
+                elements.mediumStats.textContent = `${stats.medium.gamesWon}/${stats.medium.gamesPlayed} jogos`;
+                console.log('📊 mediumStats atualizado');
+            }
+            
+            if (elements.mediumBestTime) {
+                elements.mediumBestTime.textContent = stats.medium.bestTimeFormatted;
+                console.log('📊 mediumBestTime atualizado');
+            }
+            
+            if (elements.hardWinRate) {
+                elements.hardWinRate.textContent = stats.hard.winRate + '%';
+                console.log('📊 hardWinRate atualizado');
+            }
+            
+            if (elements.hardStats) {
+                elements.hardStats.textContent = `${stats.hard.gamesWon}/${stats.hard.gamesPlayed} jogos`;
+                console.log('📊 hardStats atualizado');
+            }
+            
+            if (elements.hardBestTime) {
+                elements.hardBestTime.textContent = stats.hard.bestTimeFormatted;
+                console.log('📊 hardBestTime atualizado');
+            }
+            
+            console.log('📊 Atualização de estatísticas por dificuldade concluída');
         }
         
         function startTimer() {
@@ -3466,16 +3518,42 @@
             
             // Calcular multiplicador baseado na dificuldade
             const difficultyMultiplier = 1.0 + (comboStreak * 0.1);
-            document.getElementById('currentMultiplier').textContent = `${difficultyMultiplier.toFixed(1)}x`;
+            const currentMultiplierElement = document.getElementById('currentMultiplier');
+            if (currentMultiplierElement) {
+                currentMultiplierElement.textContent = `${difficultyMultiplier.toFixed(1)}x`;
+                console.log(`📊 Multiplicador atualizado: ${difficultyMultiplier.toFixed(1)}x`);
+            } else {
+                console.error('📊 Elemento currentMultiplier não encontrado');
+            }
             
             // Atualizar barras de progresso
             const cardsProgress = (cardsPlayed / 20) * 100;
             const comboProgress = Math.min((comboStreak / 10) * 100, 100);
             const evidenceProgress = (currentCase.collectedEvidence / currentCase.targetEvidence) * 100;
             
-            document.getElementById('cardsProgress').style.width = `${cardsProgress}%`;
-            document.getElementById('comboProgress').style.width = `${comboProgress}%`;
-            document.getElementById('evidenceProgress').style.width = `${evidenceProgress}%`;
+            const cardsProgressElement = document.getElementById('cardsProgress');
+            if (cardsProgressElement) {
+                cardsProgressElement.style.width = `${cardsProgress}%`;
+                console.log(`📊 Barra de progresso de cartas atualizada: ${cardsProgress}%`);
+            } else {
+                console.error('📊 Elemento cardsProgress não encontrado');
+            }
+            
+            const comboProgressElement = document.getElementById('comboProgress');
+            if (comboProgressElement) {
+                comboProgressElement.style.width = `${comboProgress}%`;
+                console.log(`📊 Barra de progresso de combo atualizada: ${comboProgress}%`);
+            } else {
+                console.error('📊 Elemento comboProgress não encontrado');
+            }
+            
+            const evidenceProgressElement = document.getElementById('evidenceProgress');
+            if (evidenceProgressElement) {
+                evidenceProgressElement.style.width = `${evidenceProgress}%`;
+                console.log(`📊 Barra de progresso de evidências atualizada: ${evidenceProgress}%`);
+            } else {
+                console.error('📊 Elemento evidenceProgress não encontrado');
+            }
             
             // Atualizar título do caso com progresso
             const caseTitle = document.querySelector('.case-title');
