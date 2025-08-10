@@ -2464,7 +2464,16 @@
             }
         }
 
+        // Inicializar timer imediatamente quando a página carrega
         startTimer();
+        
+        // Garantir que o timer inicie imediatamente
+        setTimeout(() => {
+            if (!isTimerRunning) {
+                console.log('🔄 Reiniciando timer...');
+                startTimerInterval();
+            }
+        }, 100);
 
         // Sistema de cartas
         function playCard(cardId) {
@@ -3595,6 +3604,13 @@
                 userDiv.className = 'chat-message';
                 userDiv.innerHTML = `<span class="chat-user">🕵️ ${detectiveName}:</span> Online - 47 cartas`;
                 teamList.appendChild(userDiv);
+            }
+            
+            // Garantir que o timer inicie quando a página carregar completamente
+            if (!isTimerRunning) {
+                console.log('⏱️ Iniciando timer no carregamento da página...');
+                startTimerInterval();
+                updateTimeDisplay();
             }
             
             // Inicializar sistema completo de testes e melhorias
