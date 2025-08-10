@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⏱️ Timer Demo - Criminal Minds Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid #d4af37;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #d4af37;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+        
+        .demo-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #d4af37;
+        }
+        
+        .demo-section h2 {
+            color: #d4af37;
+            margin-top: 0;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-start {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-start:hover {
+            background: #2ecc71;
+        }
+        
+        .btn-pause {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .btn-pause:hover {
+            background: #f1c40f;
+        }
+        
+        .btn-reset {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            background: #c0392b;
+        }
+        
+        .btn-test {
+            background: #9b59b6;
+            color: white;
+        }
+        
+        .btn-test:hover {
+            background: #8e44ad;
+        }
+        
+        .info {
+            background: rgba(52, 152, 219, 0.2);
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .warning {
+            background: rgba(243, 156, 18, 0.2);
+            border: 1px solid #f39c12;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .critical {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .keyboard-shortcuts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .shortcut {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .shortcut kbd {
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: monospace;
+            color: #d4af37;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #d4af37;
+        }
+        
+        .feature h3 {
+            color: #d4af37;
+            margin-top: 0;
+        }
+        
+        .game-container {
+            position: relative;
+            min-height: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 2px dashed #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .game-container::before {
+            content: "🎮 Área do Jogo - Timer aparecerá aqui";
+            color: #d4af37;
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏱️ Timer Demo - Criminal Minds Game</h1>
+        
+        <div class="demo-section">
+            <h2>🎯 Funcionalidades do Timer</h2>
+            <div class="features">
+                <div class="feature">
+                    <h3>⏰ Contador Regressivo</h3>
+                    <p>Timer de 45 minutos com contagem regressiva precisa</p>
+                </div>
+                <div class="feature">
+                    <h3>🎮 Controles Intuitivos</h3>
+                    <p>Botões para iniciar, pausar e resetar o timer</p>
+                </div>
+                <div class="feature">
+                    <h3>🚨 Alertas Visuais</h3>
+                    <p>Mudança de cores e animações conforme o tempo</p>
+                </div>
+                <div class="feature">
+                    <h3>🔊 Alertas Sonoros</h3>
+                    <p>Sons de alerta para tempo crítico</p>
+                </div>
+                <div class="feature">
+                    <h3>💾 Salvamento Automático</h3>
+                    <p>Estado do timer salvo no navegador</p>
+                </div>
+                <div class="feature">
+                    <h3>⌨️ Atalhos de Teclado</h3>
+                    <p>Controles rápidos via teclado</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🎮 Área do Jogo</h2>
+            <div class="game-container">
+                <!-- O timer será inserido aqui automaticamente -->
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🎛️ Controles de Teste</h2>
+            <div class="controls">
+                <button class="btn btn-start" onclick="testStart()">▶️ Iniciar Timer</button>
+                <button class="btn btn-pause" onclick="testPause()">⏸️ Pausar/Retomar</button>
+                <button class="btn btn-reset" onclick="testReset()">🔄 Reset Timer</button>
+                <button class="btn btn-test" onclick="testForceReset()">🔄 Forçar 45:00</button>
+                <button class="btn btn-test" onclick="testWarning()">⚠️ Testar Aviso</button>
+                <button class="btn btn-test" onclick="testCritical()">🚨 Testar Crítico</button>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>⌨️ Atalhos de Teclado</h2>
+            <div class="keyboard-shortcuts">
+                <div class="shortcut">
+                    <kbd>Ctrl</kbd> + <kbd>Espaço</kbd>
+                    <br>Pausar/Retomar
+                </div>
+                <div class="shortcut">
+                    <kbd>Ctrl</kbd> + <kbd>R</kbd>
+                    <br>Reset Timer
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>📊 Estados do Timer</h2>
+            <div class="info">
+                <strong>🟢 Normal (45:00 - 15:01):</strong> Timer verde, funcionamento normal
+            </div>
+            <div class="warning">
+                <strong>🟡 Aviso (15:00 - 5:01):</strong> Timer laranja, atenção ao tempo
+            </div>
+            <div class="critical">
+                <strong>🔴 Crítico (5:00 - 0:01):</strong> Timer vermelho, tempo crítico!
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>📝 Status do Timer</h2>
+            <div id="timer-status" class="status">
+                Aguardando inicialização do timer...
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🔧 Como Usar</h2>
+            <ol>
+                <li>O timer aparecerá automaticamente no canto superior direito</li>
+                <li>Clique em "Iniciar" para começar a contagem regressiva</li>
+                <li>Use "Pausar" para interromper temporariamente</li>
+                <li>Use "Reset" para voltar ao tempo inicial</li>
+                <li>Observe as mudanças de cor conforme o tempo diminui</li>
+                <li>O estado é salvo automaticamente no navegador</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Carregar o script do timer -->
+    <script src="js/game-timer-45min.js"></script>
+    
+    <script>
+        // Funções de teste
+        function testStart() {
+            if (window.gameTimer) {
+                window.gameTimer.start();
+                updateStatus('Timer iniciado via botão de teste');
+            }
+        }
+        
+        function testPause() {
+            if (window.gameTimer) {
+                window.gameTimer.togglePause();
+                updateStatus('Timer pausado/retomado via botão de teste');
+            }
+        }
+        
+        function testReset() {
+            if (window.gameTimer) {
+                window.gameTimer.reset();
+                updateStatus('Timer resetado via botão de teste');
+            }
+        }
+        
+        function testForceReset() {
+            if (window.gameTimer) {
+                window.gameTimer.forceReset();
+                updateStatus('Timer forçado para 45:00 via botão de teste');
+            }
+        }
+        
+        function testWarning() {
+            if (window.gameTimer) {
+                // Simular tempo de aviso (15 minutos)
+                window.gameTimer.remainingTime = 15 * 60;
+                window.gameTimer.checkWarnings();
+                updateStatus('Teste de aviso ativado (15 minutos)');
+            }
+        }
+        
+        function testCritical() {
+            if (window.gameTimer) {
+                // Simular tempo crítico (5 minutos)
+                window.gameTimer.remainingTime = 5 * 60;
+                window.gameTimer.checkWarnings();
+                updateStatus('Teste crítico ativado (5 minutos)');
+            }
+        }
+        
+        function updateStatus(message) {
+            const statusElement = document.getElementById('timer-status');
+            if (statusElement) {
+                statusElement.textContent = message;
+            }
+        }
+        
+        // Aguardar carregamento do timer
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.gameTimer) {
+                    updateStatus('Timer carregado e pronto para uso!');
+                    
+                    // Configurar callbacks de teste
+                    window.gameTimer.on('timeout', () => {
+                        updateStatus('⏰ TEMPO ESGOTADO! Demo finalizado.');
+                    });
+                    
+                    window.gameTimer.on('critical', (time) => {
+                        updateStatus(`🚨 TEMPO CRÍTICO: ${Math.floor(time/60)}:${(time%60).toString().padStart(2, '0')}`);
+                    });
+                    
+                    window.gameTimer.on('warning', (time) => {
+                        updateStatus(`⚠️ AVISO: ${Math.floor(time/60)}:${(time%60).toString().padStart(2, '0')} restantes`);
+                    });
+                } else {
+                    updateStatus('❌ Erro: Timer não foi carregado corretamente');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
