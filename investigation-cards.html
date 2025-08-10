@@ -63,35 +63,6 @@
             padding: 0.5rem 1rem;
             border-radius: 8px;
             border: 1px solid rgba(239, 68, 68, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .timer-controls {
-            display: flex;
-            gap: 0.2rem;
-        }
-
-        .timer-btn {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            color: #ef4444;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-        }
-
-        .timer-btn:hover {
-            background: rgba(239, 68, 68, 0.3);
-            border-color: rgba(239, 68, 68, 0.6);
-            transform: scale(1.1);
-        }
-
-        .timer-btn:active {
-            transform: scale(0.95);
         }
 
         .sidebar {
@@ -1469,14 +1440,7 @@
                 </button>
                 <div class="case-title">🎯 CRIMINAL MINDS: DIGITAL CARDS</div>
             </div>
-            <div class="timer" id="gameTimer">
-                <span>⏱️ 45:00</span>
-                <div class="timer-controls">
-                    <button onclick="pauseTimer()" class="timer-btn" title="Pausar Timer">⏸️</button>
-                    <button onclick="resumeTimer()" class="timer-btn" title="Retomar Timer">▶️</button>
-                    <button onclick="resetTimer()" class="timer-btn" title="Reiniciar Timer">🔄</button>
-                </div>
-            </div>
+            <div class="timer" id="gameTimer">⏱️ 45:00</div>
                         <div style="display: flex; gap: 1rem;">
                 <button class="btn" onclick="openDeck()">🃏 Meu Deck</button>
                 <button class="btn" onclick="showCollection()">📚 Coleção</button>
@@ -2506,13 +2470,13 @@
             // Atualizar display inicial de moedas
             updateCoinDisplay();
             
-            // Inicializar o timer com o novo sistema
+            // Inicializar o timer automaticamente
             startTimerInterval();
             
             // Adicionar mensagem inicial sobre o tempo
             setTimeout(() => {
                 addChatMessage("⏱️ 45 minutos para resolver o caso. Boa sorte!", "Hotchner");
-            }, 4000);
+            }, 2000);
         }
 
         function calculateFinalRewards() {
@@ -3648,29 +3612,7 @@
             }, 3000);
         }
 
-        // Função para pausar o timer
-        function pauseTimer() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                isTimerRunning = false;
-                console.log('⏸️ Timer pausado');
-            }
-        }
 
-        // Função para retomar o timer
-        function resumeTimer() {
-            if (!isTimerRunning && gameTime > 0) {
-                startTimerInterval();
-                console.log('▶️ Timer retomado');
-            }
-        }
-
-        // Função para reiniciar o timer
-        function resetTimer() {
-            gameTime = 45 * 60; // 45 minutos
-            updateTimeDisplay();
-            console.log('🔄 Timer reiniciado');
-        }
 
         // Função para iniciar o intervalo do timer
         function startTimerInterval() {
