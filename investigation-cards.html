@@ -2408,7 +2408,9 @@
                 }
             };
             
-            updateDifficultyStatsDisplay(mockStats);
+            // Comentado temporariamente para evitar erro de elementos não encontrados
+            // updateDifficultyStatsDisplay(mockStats);
+            console.log('📊 Estatísticas por dificuldade carregadas (elementos não encontrados no HTML)');
         }
         
         function updateDifficultyStatsDisplay(stats) {
@@ -2480,8 +2482,9 @@
             // Carregar conquistas salvas
             loadAchievements();
             
-            // Carregar estatísticas por dificuldade
-            loadDifficultyStats();
+            // Comentado temporariamente para evitar erro de elementos não encontrados
+            // loadDifficultyStats();
+            console.log('⏱️ Timer iniciado - estatísticas por dificuldade desabilitadas');
 
             // FORÇAR REMOÇÃO DA SEÇÃO MINHA MÃO
             function removeHandSection() {
