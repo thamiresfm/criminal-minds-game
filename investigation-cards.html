@@ -152,20 +152,21 @@
             overflow: hidden !important;
         }
         
-        /* SISTEMA DE CARTAS - GRID QUADRADO 3 COLUNAS MELHORADO */
+        /* SISTEMA DE CARTAS - GRID QUADRADO 3 COLUNAS PERFEITO */
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(3, 208px) !important;
-            gap: 1.2rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
             justify-content: center;
             align-content: center;
             width: 100%;
-            max-width: 100%;
-            padding: 1rem;
-            min-height: calc(100vh - 200px);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
             background: rgba(15, 15, 35, 0.3);
-            border-radius: 15px;
-            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 20px;
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
         /* Grid específico para iniciante (6 cartas = 2x3) */
@@ -189,50 +190,82 @@
         /* Media queries para responsividade */
         @media (max-width: 1200px) {
             .cards-container {
-                grid-template-columns: repeat(3, 180px) !important;
-                gap: 0.6rem;
-                padding: 0 0.6rem;
-                align-content: center;
+                max-width: 700px;
+                gap: 1.2rem;
+                padding: 1.5rem;
             }
             
             .card {
-                width: 180px;
-                height: 110px;
+                height: 130px;
+            }
+            
+            .card-icon {
+                font-size: 2.2rem;
+            }
+            
+            .card-title {
+                font-size: 1rem;
+            }
+            
+            .card-description {
+                font-size: 0.8rem;
             }
         }
         
         @media (max-width: 768px) {
             .cards-container {
-                grid-template-columns: repeat(3, 140px) !important;
-                gap: 0.5rem;
-                align-content: center;
+                max-width: 600px;
+                gap: 1rem;
+                padding: 1rem;
             }
             
             .card {
-                width: 140px;
-                height: 90px;
+                height: 120px;
+            }
+            
+            .card-icon {
+                font-size: 2rem;
+            }
+            
+            .card-title {
+                font-size: 0.9rem;
+            }
+            
+            .card-description {
+                font-size: 0.75rem;
             }
         }
         
         @media (max-width: 480px) {
             .cards-container {
-                grid-template-columns: repeat(2, 120px) !important;
-                gap: 0.4rem;
-                padding: 0 0.3rem;
-                align-content: center;
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 400px;
+                gap: 0.8rem;
+                padding: 0.8rem;
             }
             
             .card {
-                width: 120px;
-                height: 80px;
+                height: 110px;
+            }
+            
+            .card-icon {
+                font-size: 1.8rem;
+            }
+            
+            .card-title {
+                font-size: 0.85rem;
+            }
+            
+            .card-description {
+                font-size: 0.7rem;
             }
         }
 
         .card {
             position: relative;
-            width: 208px;
-            height: 130px;
-            margin: 0 auto;
+            width: 100%;
+            height: 140px;
+            margin: 0;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -245,6 +278,7 @@
             flex-direction: column;
             justify-content: space-between;
             overflow: hidden;
+            padding: 1rem;
         }
 
         .card:hover {
@@ -382,31 +416,30 @@
         }
 
         .card-icon {
-            font-size: 1.6rem;
+            font-size: 2.5rem;
             text-align: center;
-            margin: 0.4rem 0;
-            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.4));
+            margin-bottom: 0.75rem;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
             flex-shrink: 0;
         }
 
         .card-title {
-            font-size: 0.8rem;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: bold;
             color: #fbbf24;
             text-align: center;
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.5rem;
             text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
             line-height: 1.2;
             flex-shrink: 0;
         }
 
         .card-description {
-            font-size: 0.65rem;
-            color: #e2e8f0;
-            line-height: 1.2;
-            padding: 0 0.4rem;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            line-height: 1.3;
             text-align: center;
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.75rem;
             flex: 1;
             display: flex;
             align-items: center;
@@ -414,17 +447,13 @@
         }
 
         .card-stats {
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(15, 15, 35, 0.9));
-            padding: 0.3rem 0.6rem;
             display: flex;
             justify-content: space-between;
-            font-size: 0.6rem;
-            color: #fbbf24;
-            border-radius: 0 0 12px 12px;
-            backdrop-filter: blur(10px);
+            align-items: center;
+            font-size: 0.75rem;
+            color: #e2e8f0;
             margin-top: auto;
             flex-shrink: 0;
-            border-top: 1px solid rgba(251, 191, 36, 0.2);
         }
 
         .stat {
