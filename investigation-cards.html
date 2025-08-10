@@ -513,6 +513,24 @@
             background: linear-gradient(135deg, #dc2626, #ef4444);
         }
 
+        .btn-exit {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            border: 2px solid rgba(107, 114, 128, 0.6);
+            color: #e5e7eb;
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+        }
+
+        .btn-exit:hover {
+            background: linear-gradient(135deg, #4b5563, #374151);
+            border-color: rgba(107, 114, 128, 0.8);
+            box-shadow: 0 6px 20px rgba(107, 114, 128, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-exit:active {
+            transform: translateY(0);
+        }
+
         /* BOTÃO SAIR MODERNO */
         .exit-button {
             background: rgba(15, 15, 35, 0.9);
@@ -1445,6 +1463,7 @@
                 <button class="btn" onclick="openDeck()">🃏 Meu Deck</button>
                 <button class="btn" onclick="showCollection()">📚 Coleção</button>
                 <button class="btn btn-danger" onclick="makeAccusation()">⚖️ Acusar</button>
+                <button class="btn btn-exit" onclick="exitInvestigation()">🚪 Sair</button>
             </div>
         </div>
 
