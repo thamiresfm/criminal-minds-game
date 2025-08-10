@@ -2475,100 +2475,7 @@
             }
         }, 100);
 
-        // Sistema de cartas
-        function playCard(cardId) {
-            const cardElement = event.currentTarget;
-            
-            // Animação de uso da carta
-            cardElement.style.transform = 'scale(1.1) rotateY(180deg)';
-            cardElement.style.opacity = '0.7';
-            
-            setTimeout(() => {
-                cardElement.style.transform = 'scale(1) rotateY(0deg)';
-                cardElement.style.opacity = '1';
-            }, 800);
 
-            // Processar efeito da carta
-            const cardEffects = {
-                'dna-evidence': {
-                    title: '🧬 DNA do Assassino Analisado!',
-                    effect: 'Revelou a identidade do assassino! +95 pontos de investigação.',
-                    sound: '🔬 *Som de análise de laboratório*'
-                },
-                'main-suspect': {
-                    title: '👨‍💼 Suspeito Principal Identificado!',
-                    effect: 'Marcus Thompson confirmado como suspeito principal! +78 pontos.',
-                    sound: '🚨 *Som de sirene*'
-                },
-                'interrogation': {
-                    title: '🔍 Interrogatório Bem-sucedido!',
-                    effect: 'Suspeito revelou informações cruciais! +65 pontos.',
-                    sound: '🎤 *Som de gravação*'
-                },
-                'crime-scene': {
-                    title: '🏠 Cena do Crime Investigada!',
-                    effect: 'Novas evidências coletadas! +60 pontos.',
-                    sound: '📸 *Som de câmera*'
-                },
-                'forensic-kit': {
-                    title: '🔬 Kit Forense Ativado!',
-                    effect: 'Velocidade de análise aumentada em 50%! +85 pontos.',
-                    sound: '⚗️ *Som de equipamento científico*'
-                },
-                'backup-officer': {
-                    title: '👮‍♂️ Reforço Chegou!',
-                    effect: 'Segurança aumentada! +45 pontos.',
-                    sound: '🚓 *Som de viatura*'
-                }
-            };
-
-            const effect = cardEffects[cardId] || {
-                title: '🃏 Carta Jogada!',
-                effect: 'Efeito ativado com sucesso!',
-                sound: '✨ *Som mágico*'
-            };
-
-            // Mostrar efeito
-            showCardEffect(effect);
-            
-            // Recompensa base por jogar carta
-            rewardCoins(coinRewards.cardPlayed.amount, coinRewards.cardPlayed.message);
-            
-            // Bônus específico por tipo de carta
-            const cardBonuses = {
-                'dna-evidence': 15,
-                'main-suspect': 12,
-                'interrogation': 10,
-                'crime-scene': 8,
-                'forensic-kit': 14,
-                'backup-officer': 6
-            };
-            
-            if (cardBonuses[cardId]) {
-                rewardCoins(cardBonuses[cardId], `Bônus da carta ${effect.title}`);
-            }
-            
-            // Atualizar estatísticas
-            cardsPlayed++;
-            comboStreak++;
-            
-            // Sistema de recompensas por combo
-            if (comboStreak === 3) {
-                rewardCoins(coinRewards.combo3.amount, coinRewards.combo3.message);
-            } else if (comboStreak === 5) {
-                rewardCoins(coinRewards.combo5.amount, coinRewards.combo5.message);
-            } else if (comboStreak >= 7) {
-                rewardCoins(coinRewards.combo7.amount, coinRewards.combo7.message);
-            }
-            
-            updateStats();
-            
-            // Verificar conquistas
-            checkAchievements();
-            
-            // Adicionar mensagem no chat
-            addChatMessage(`🎴 Jogou: ${effect.title}`, 'self');
-        }
 
         function playFromHand(cardId) {
             const handCards = {
@@ -2674,15 +2581,7 @@
             }, 3000);
         }
 
-        function updateStats() {
-            // Atualizar barras de progresso
-            const cardsProgress = (cardsPlayed / 20) * 100;
-            document.querySelector('.progress-fill').style.width = `${Math.min(cardsProgress, 100)}%`;
-            
-            // Atualizar combo streak
-            const comboProgress = (comboStreak / 10) * 100;
-            document.querySelectorAll('.progress-fill')[1].style.width = `${Math.min(comboProgress, 100)}%`;
-        }
+
 
         // Funções do deck
         function drawCard() {
@@ -3290,10 +3189,16 @@
             playerCoins += totalCoins;
             
             // Atualizar display de moedas
-            document.getElementById('coin-display').textContent = playerCoins;
+            const coinDisplay = document.getElementById('coin-display');
+            if (coinDisplay) {
+                coinDisplay.textContent = playerCoins;
+            }
             
             // Mostrar notificação de evidências e moedas
             showEvidenceNotification(totalEvidenceGained, cardEffect.description, totalCoins, comboStreak);
+            
+            // Verificar conquistas
+            checkAchievements();
             
             // Adicionar mensagem ao chat sobre a evidência coletada
             setTimeout(() => {
@@ -3425,7 +3330,7 @@
         }
 
         // SISTEMA DE TEMPO RESTANTE COMPLETO
-        let gameTime = 45 * 60; // 45 minutos em segundos
+        // gameTime já declarado anteriormente
         let timerInterval;
         let isTimerRunning = false;
 
