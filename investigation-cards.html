@@ -46,6 +46,20 @@
             backdrop-filter: blur(20px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(251, 191, 36, 0.1);
         }
+        
+        .header .case-title {
+            flex: 1;
+            text-align: left;
+        }
+        
+        .header .main-timer {
+            flex: 0 0 auto;
+            margin: 0 2rem;
+        }
+        
+        .header .btn {
+            flex: 0 0 auto;
+        }
 
         .case-title {
             font-size: 1.6rem;
@@ -58,15 +72,28 @@
             letter-spacing: 0.5px;
         }
 
-        .timer {
-            font-size: 1.4rem;
+        .main-timer {
+            font-size: 1.6rem;
             color: #ef4444;
-            font-weight: 700;
-            text-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
-            background: rgba(239, 68, 68, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            font-weight: 800;
+            text-shadow: 0 0 15px rgba(239, 68, 68, 0.7);
+            background: rgba(239, 68, 68, 0.15);
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            border: 2px solid rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: timerGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes timerGlow {
+            0% { 
+                box-shadow: 0 0 20px rgba(239, 68, 68, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                border-color: rgba(239, 68, 68, 0.5);
+            }
+            100% { 
+                box-shadow: 0 0 30px rgba(239, 68, 68, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                border-color: rgba(239, 68, 68, 0.8);
+            }
         }
 
         .sidebar {
@@ -1575,12 +1602,10 @@
     <div class="game-container">
         <div class="header">
             <div style="display: flex; align-items: center; gap: 1rem;">
-                <div class="case-title">🎯 CRIMINAL MINDS: DIGITAL CARDS</div>
+                <div class="case-title">🎯 CRIMINAL MINDS: INICIANTE</div>
             </div>
-            <div class="timer" id="gameTimer">⏱️ 45:00</div>
-                        <div style="display: flex; gap: 1rem;">
-                <button class="btn" onclick="openDeck()">🃏 Meu Deck</button>
-                <button class="btn" onclick="showCollection()">📚 Coleção</button>
+            <div class="main-timer" id="gameTimer">⏱️ 45:00</div>
+            <div style="display: flex; gap: 1rem;">
                 <button class="btn btn-danger" onclick="makeAccusation()">⚖️ Acusar</button>
             </div>
         </div>
