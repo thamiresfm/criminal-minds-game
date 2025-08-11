@@ -59,58 +59,7 @@ class SimpleGameTimer {
             }
         }
         
-        // Criar controles do timer (opcional)
-        this.createTimerControls();
-    }
-    
-    createTimerControls() {
-        // Adicionar controles discretos
-        const controlsHTML = `
-            <div id="timer-controls" style="
-                position: fixed;
-                top: 10px;
-                right: 10px;
-                background: rgba(0, 0, 0, 0.8);
-                border: 1px solid #d4af37;
-                border-radius: 8px;
-                padding: 8px;
-                z-index: 1000;
-                display: flex;
-                gap: 4px;
-                font-size: 12px;
-            ">
-                <button id="timer-start" onclick="window.simpleGameTimer.start()" style="
-                    background: #27ae60;
-                    color: white;
-                    border: none;
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 10px;
-                ">▶️</button>
-                <button id="timer-pause" onclick="window.simpleGameTimer.togglePause()" style="
-                    background: #f39c12;
-                    color: white;
-                    border: none;
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 10px;
-                ">⏸️</button>
-                <button id="timer-reset" onclick="window.simpleGameTimer.reset()" style="
-                    background: #e74c3c;
-                    color: white;
-                    border: none;
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 10px;
-                ">🔄</button>
-            </div>
-        `;
-        
-        document.body.insertAdjacentHTML('beforeend', controlsHTML);
-        console.log('✅ Controles do timer criados');
+        // Controles do timer removidos conforme solicitado
     }
     
     start() {
