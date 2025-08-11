@@ -716,6 +716,17 @@
             background: linear-gradient(135deg, #6b7280, #4b5563);
         }
 
+        .timer-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ef4444;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
 
 
 
@@ -1595,9 +1606,12 @@
         <div class="header">
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <button class="btn btn-exit" onclick="exitGame()">← Sair</button>
-                <div class="case-title">🎯 CRIMINAL MINDS: INICIANTE</div>
             </div>
-            <div style="display: flex; gap: 1rem;">
+            <div style="display: flex; align-items: center; justify-content: center; flex: 1;">
+                <div class="case-title" style="color: #f97316; font-size: 1.8rem;">💣 CRIMINAL MINDS: DIGITAL CARDS</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="timer-display">⏱️ 42:32</div>
                 <button class="btn btn-danger" onclick="makeAccusation()">⚖️ Acusar</button>
             </div>
         </div>
