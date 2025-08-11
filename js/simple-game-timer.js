@@ -173,6 +173,30 @@ class SimpleGameTimer {
         if (gameTimer) {
             gameTimer.textContent = `⏱️ ${timeString}`;
         }
+        
+        // Atualizar o elemento "Tempo Restante" nas estatísticas
+        const timeRemaining = document.getElementById('timeRemaining');
+        if (timeRemaining) {
+            timeRemaining.textContent = timeString;
+        }
+        
+        // Atualizar a barra de progresso do tempo
+        const timeProgress = document.getElementById('timeProgress');
+        if (timeProgress) {
+            const progress = (this.remainingTime / this.totalTime) * 100;
+            timeProgress.style.width = `${progress}%`;
+            
+            // Mudar cor da barra conforme o tempo diminui
+            if (progress <= 25) {
+                timeProgress.style.background = 'linear-gradient(90deg, #dc2626, #991b1b)'; // Vermelho escuro
+            } else if (progress <= 50) {
+                timeProgress.style.background = 'linear-gradient(90deg, #ef4444, #dc2626)'; // Vermelho
+            } else if (progress <= 75) {
+                timeProgress.style.background = 'linear-gradient(90deg, #f59e0b, #d97706)'; // Laranja
+            } else {
+                timeProgress.style.background = 'linear-gradient(90deg, #10b981, #059669)'; // Verde
+            }
+        }
     }
     
     on(event, callback) {

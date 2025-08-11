@@ -52,10 +52,7 @@
             text-align: left;
         }
         
-        .header .main-timer {
-            flex: 0 0 auto;
-            margin: 0 2rem;
-        }
+
         
         .header .btn {
             flex: 0 0 auto;
@@ -72,29 +69,7 @@
             letter-spacing: 0.5px;
         }
 
-        .main-timer {
-            font-size: 1.6rem;
-            color: #ef4444;
-            font-weight: 800;
-            text-shadow: 0 0 15px rgba(239, 68, 68, 0.7);
-            background: rgba(239, 68, 68, 0.15);
-            padding: 0.8rem 1.5rem;
-            border-radius: 12px;
-            border: 2px solid rgba(239, 68, 68, 0.5);
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            animation: timerGlow 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes timerGlow {
-            0% { 
-                box-shadow: 0 0 20px rgba(239, 68, 68, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-                border-color: rgba(239, 68, 68, 0.5);
-            }
-            100% { 
-                box-shadow: 0 0 30px rgba(239, 68, 68, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-                border-color: rgba(239, 68, 68, 0.8);
-            }
-        }
+
 
         .sidebar {
             background: linear-gradient(135deg, rgba(15, 15, 35, 0.98), rgba(26, 26, 46, 0.98));
@@ -1604,7 +1579,6 @@
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <div class="case-title">🎯 CRIMINAL MINDS: INICIANTE</div>
             </div>
-            <div class="main-timer" id="gameTimer">⏱️ 45:00</div>
             <div style="display: flex; gap: 1rem;">
                 <button class="btn btn-danger" onclick="makeAccusation()">⚖️ Acusar</button>
             </div>
