@@ -161,13 +161,13 @@
         /* SISTEMA DE CARTAS - GRID MELHORADO */
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(3, 480px);
-            grid-template-rows: repeat(2, 380px);
+            grid-template-columns: repeat(3, 520px);
+            grid-template-rows: repeat(2, 420px);
             gap: 3rem;
             justify-content: center;
             align-content: center;
             width: fit-content;
-            max-width: 1500px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 4rem;
             background: rgba(15, 15, 35, 0.4);
@@ -199,19 +199,46 @@
         @media (max-width: 1200px) {
             .cards-container {
                 max-width: 1200px;
-                grid-template-columns: repeat(3, 400px);
-                grid-template-rows: repeat(2, 320px);
+                grid-template-columns: repeat(3, 450px);
+                grid-template-rows: repeat(2, 360px);
                 gap: 2.5rem;
                 padding: 3rem;
             }
             
             .card {
-                width: 400px;
-                height: 320px;
+                width: 450px !important;
+                height: 360px !important;
             }
             
             .card-icon {
-                font-size: 6rem;
+                font-size: 7rem;
+            }
+            
+            .card-title {
+                font-size: 1.7rem;
+            }
+            
+            .card-description {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .cards-container {
+                max-width: 720px;
+                grid-template-columns: repeat(2, 350px);
+                grid-template-rows: repeat(3, 280px);
+                gap: 2rem;
+                padding: 2.5rem;
+            }
+            
+            .card {
+                width: 350px !important;
+                height: 280px !important;
+            }
+            
+            .card-icon {
+                font-size: 5.5rem;
             }
             
             .card-title {
@@ -223,22 +250,22 @@
             }
         }
         
-        @media (max-width: 768px) {
+        @media (max-width: 480px) {
             .cards-container {
-                max-width: 720px;
-                grid-template-columns: repeat(2, 300px);
-                grid-template-rows: repeat(3, 240px);
-                gap: 2rem;
-                padding: 2.5rem;
+                grid-template-columns: repeat(2, 250px);
+                grid-template-rows: repeat(3, 200px);
+                max-width: 520px;
+                gap: 1.5rem;
+                padding: 2rem;
             }
             
             .card {
-                width: 300px;
-                height: 240px;
+                width: 250px !important;
+                height: 200px !important;
             }
             
             .card-icon {
-                font-size: 4.5rem;
+                font-size: 4rem;
             }
             
             .card-title {
@@ -249,38 +276,11 @@
                 font-size: 0.9rem;
             }
         }
-        
-        @media (max-width: 480px) {
-            .cards-container {
-                grid-template-columns: repeat(2, 220px);
-                grid-template-rows: repeat(3, 180px);
-                max-width: 480px;
-                gap: 1.5rem;
-                padding: 2rem;
-            }
-            
-            .card {
-                width: 220px;
-                height: 180px;
-            }
-            
-            .card-icon {
-                font-size: 3.5rem;
-            }
-            
-            .card-title {
-                font-size: 1.1rem;
-            }
-            
-            .card-description {
-                font-size: 0.8rem;
-            }
-        }
 
         .card {
             position: relative;
-            width: 480px;
-            height: 380px;
+            width: 520px !important;
+            height: 420px !important;
             margin: 0;
             border-radius: 20px;
             cursor: pointer;
@@ -434,7 +434,7 @@
         }
 
         .card-icon {
-            font-size: 7rem;
+            font-size: 8rem;
             text-align: center;
             margin: auto 0;
             filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
@@ -448,7 +448,7 @@
         }
 
         .card-title {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: bold;
             color: white;
             text-align: left;
@@ -457,10 +457,10 @@
             line-height: 1.2;
             flex-shrink: 0;
             position: absolute;
-            top: 2.5rem;
-            left: 2.5rem;
+            top: 3rem;
+            left: 3rem;
             z-index: 3;
-            max-width: 350px;
+            max-width: 400px;
             word-wrap: break-word;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
