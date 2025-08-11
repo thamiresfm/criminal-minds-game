@@ -704,16 +704,16 @@
         }
 
         .btn-exit {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            background: linear-gradient(135deg, #4b5563, #374151);
             color: white;
-            border: 2px solid #8b5cf6;
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+            border: 2px solid #9ca3af;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .btn-exit:hover {
-            box-shadow: 0 0 25px rgba(139, 92, 246, 0.6);
-            border-color: #a78bfa;
-            background: linear-gradient(135deg, #1e1e3f, #1a2040);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border-color: #d1d5db;
+            background: linear-gradient(135deg, #6b7280, #4b5563);
         }
 
 
@@ -1594,11 +1594,11 @@
     <div class="game-container">
         <div class="header">
             <div style="display: flex; align-items: center; gap: 1rem;">
+                <button class="btn btn-exit" onclick="exitGame()">← Sair</button>
                 <div class="case-title">🎯 CRIMINAL MINDS: INICIANTE</div>
             </div>
             <div style="display: flex; gap: 1rem;">
                 <button class="btn btn-danger" onclick="makeAccusation()">⚖️ Acusar</button>
-                <button class="btn btn-exit" onclick="exitGame()">🚪 Sair</button>
             </div>
         </div>
 
