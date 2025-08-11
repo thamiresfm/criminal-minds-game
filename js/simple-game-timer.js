@@ -20,49 +20,8 @@ class SimpleGameTimer {
     }
     
     createTimerDisplay() {
-        // Criar display do timer no header com destaque
-        const header = document.querySelector('.header');
-        if (header) {
-            const existingTimer = header.querySelector('.game-timer-display');
-            if (!existingTimer) {
-                const timerDiv = document.createElement('div');
-                timerDiv.className = 'game-timer-display';
-                timerDiv.id = 'gameTimer';
-                timerDiv.innerHTML = `
-                    <div style="
-                        font-size: 1.8rem;
-                        color: #fbbf24;
-                        font-weight: 900;
-                        text-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
-                        background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(251, 191, 36, 0.05));
-                        padding: 1rem 1.5rem;
-                        border-radius: 12px;
-                        border: 3px solid rgba(251, 191, 36, 0.6);
-                        display: flex;
-                        align-items: center;
-                        gap: 10px;
-                        box-shadow: 
-                            0 0 30px rgba(251, 191, 36, 0.4),
-                            inset 0 2px 0 rgba(251, 191, 36, 0.2);
-                        animation: timerGlow 2s ease-in-out infinite alternate;
-                        backdrop-filter: blur(10px);
-                    ">
-                        <span style="font-size: 2rem;">⏱️</span>
-                        <span id="timerDisplay" style="font-family: 'Courier New', monospace; letter-spacing: 2px;">45:00</span>
-                    </div>
-                `;
-                
-                // Inserir após o título do caso
-                const caseTitle = header.querySelector('.case-title');
-                if (caseTitle) {
-                    caseTitle.parentNode.insertBefore(timerDiv, caseTitle.nextSibling);
-                } else {
-                    header.appendChild(timerDiv);
-                }
-                
-                console.log('✅ Display do timer criado no header com destaque');
-            }
-        }
+        // Display do timer removido - não criar no header
+        console.log('✅ Display do timer removido do header');
     }
     
     start() {
