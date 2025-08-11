@@ -439,13 +439,14 @@
             flex-shrink: 0;
             color: white;
             position: absolute;
-            top: 55%;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            z-index: 1;
         }
 
         .card-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
             color: white;
             text-align: left;
@@ -454,10 +455,10 @@
             line-height: 1.2;
             flex-shrink: 0;
             position: absolute;
-            top: 1.2rem;
-            left: 1.2rem;
-            z-index: 2;
-            max-width: 200px;
+            top: 1rem;
+            left: 1rem;
+            z-index: 3;
+            max-width: 180px;
             word-wrap: break-word;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
@@ -465,24 +466,77 @@
         .card-description {
             display: none;
         }
+        
+        /* Valor numérico no canto inferior esquerdo */
+        .card-value {
+            position: absolute;
+            bottom: 0.8rem;
+            left: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            z-index: 3;
+        }
+        
+        .card-value-icon {
+            width: 16px;
+            height: 16px;
+            background: #fbbf24;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: #000;
+            font-weight: bold;
+        }
+        
+        .card-value-number {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
 
         .card-stats {
             display: none;
+        }
+        
+        /* Barra de progresso no centro inferior */
+        .card-progress {
+            position: absolute;
+            bottom: 0.8rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            z-index: 3;
+        }
+        
+        .card-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 75%; /* Valor padrão, será ajustado via JavaScript */
         }
 
         /* Rótulo de raridade */
         .card-rarity {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
+            top: 0.8rem;
+            right: 0.8rem;
             background: rgba(59, 130, 246, 0.9);
             color: white;
-            padding: 0.3rem 0.7rem;
-            border-radius: 15px;
-            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
             font-weight: bold;
             text-transform: uppercase;
-            z-index: 2;
+            z-index: 3;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
@@ -502,6 +556,20 @@
             display: flex;
             align-items: center;
             gap: 0.2rem;
+        }
+        
+        /* Descrição/estatística no canto inferior direito */
+        .card-stat {
+            position: absolute;
+            bottom: 0.8rem;
+            right: 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            z-index: 3;
+            max-width: 80px;
+            text-align: right;
         }
 
         /* EFEITO DE FLIP DAS CARTAS */
@@ -1558,46 +1626,94 @@
                 🃏 Cartas de Investigação Ativas
             </div>
             <div class="cards-container" id="cardsContainer">
-                <!-- Carta 1: Registros Telefônicos -->
-                <div class="card" data-type="phone-records">
-                    <div class="card-icon">📱</div>
-                    <div class="card-title">Registros Telefônicos</div>
-                    <div class="card-rarity rare">Rara</div>
+                <!-- Carta 1: Equipamento (Épica) -->
+                <div class="card" data-type="equipment" data-rarity="epic">
+                    <div class="card-icon">🔍</div>
+                    <div class="card-title">EQUIPAMENTO</div>
+                    <div class="card-rarity epic">ÉPICA</div>
+                    <div class="card-value">
+                        <div class="card-value-icon">💰</div>
+                        <div class="card-value-number">90</div>
+                    </div>
+                    <div class="card-progress">
+                        <div class="card-progress-bar" style="width: 75%"></div>
+                    </div>
+                    <div class="card-stat">+ 50% analise</div>
                 </div>
 
-                <!-- Carta 2: Mandado de Busca -->
-                <div class="card" data-type="search-warrant">
-                    <div class="card-icon">📜</div>
-                    <div class="card-title">Mandado de Busca</div>
-                    <div class="card-rarity rare">Rara</div>
-                </div>
-
-                <!-- Carta 3: Cena do Crime -->
-                <div class="card" data-type="crime-scene">
-                    <div class="card-icon">🏠</div>
-                    <div class="card-title">Cena do Crime</div>
-                    <div class="card-rarity rare">Rara</div>
-                </div>
-
-                <!-- Carta 4: DNA Assassino -->
-                <div class="card" data-type="killer-dna">
-                    <div class="card-icon">🧬</div>
-                    <div class="card-title">DNA Assassino</div>
-                    <div class="card-rarity legendary">Lendária</div>
-                </div>
-
-                <!-- Carta 5: Câmera de Segurança -->
-                <div class="card" data-type="security-camera">
+                <!-- Carta 2: Equipamento (Rara) -->
+                <div class="card" data-type="equipment" data-rarity="rare">
                     <div class="card-icon">📹</div>
-                    <div class="card-title">Câmera de Segurança</div>
-                    <div class="card-rarity rare">Rara</div>
+                    <div class="card-title">EQUIPAMENTO</div>
+                    <div class="card-rarity rare">RARA</div>
+                    <div class="card-value">
+                        <div class="card-value-icon">💰</div>
+                        <div class="card-value-number">30</div>
+                    </div>
+                    <div class="card-progress">
+                        <div class="card-progress-bar" style="width: 35%"></div>
+                    </div>
+                    <div class="card-stat">HD</div>
                 </div>
 
-                <!-- Carta 6: Relatório Balístico -->
-                <div class="card" data-type="ballistics-report">
-                    <div class="card-icon">🎯</div>
-                    <div class="card-title">Relatório Balístico</div>
-                    <div class="card-rarity epic">Épica</div>
+                <!-- Carta 3: Aliado (Comum) -->
+                <div class="card" data-type="ally" data-rarity="common">
+                    <div class="card-icon">📚</div>
+                    <div class="card-title">ALIADO</div>
+                    <div class="card-rarity common">COMUM</div>
+                    <div class="card-value">
+                        <div class="card-value-icon">💰</div>
+                        <div class="card-value-number">45</div>
+                    </div>
+                    <div class="card-progress">
+                        <div class="card-progress-bar" style="width: 55%"></div>
+                    </div>
+                    <div class="card-stat">Protocão</div>
+                </div>
+
+                <!-- Carta 4: Ação (Comum) -->
+                <div class="card" data-type="action" data-rarity="common">
+                    <div class="card-icon">📦</div>
+                    <div class="card-title">AÇÃO</div>
+                    <div class="card-rarity common">COMUM</div>
+                    <div class="card-value">
+                        <div class="card-value-icon">💰</div>
+                        <div class="card-value-number">30</div>
+                    </div>
+                    <div class="card-progress">
+                        <div class="card-progress-bar" style="width: 45%"></div>
+                    </div>
+                    <div class="card-stat">Legal</div>
+                </div>
+
+                <!-- Carta 5: Evidência (Rara) -->
+                <div class="card" data-type="evidence" data-rarity="rare">
+                    <div class="card-icon">👤</div>
+                    <div class="card-title">EVIDÊNCIA</div>
+                    <div class="card-rarity rare">RARA</div>
+                    <div class="card-value">
+                        <div class="card-value-icon">💰</div>
+                        <div class="card-value-number">30</div>
+                    </div>
+                    <div class="card-progress">
+                        <div class="card-progress-bar" style="width: 25%"></div>
+                    </div>
+                    <div class="card-stat">Dados</div>
+                </div>
+
+                <!-- Carta 6: Testemunho (Épica) -->
+                <div class="card" data-type="testimony" data-rarity="epic">
+                    <div class="card-icon">👓</div>
+                    <div class="card-title">TESTEMUNHO</div>
+                    <div class="card-rarity epic">ÉPICA</div>
+                    <div class="card-value">
+                        <div class="card-value-icon">💰</div>
+                        <div class="card-value-number">80</div>
+                    </div>
+                    <div class="card-progress">
+                        <div class="card-progress-bar" style="width: 85%"></div>
+                    </div>
+                    <div class="card-stat">Testemunho</div>
                 </div>
             </div>
         </div>
