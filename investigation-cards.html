@@ -698,6 +698,17 @@
             background: linear-gradient(135deg, #dc2626, #ef4444);
         }
 
+        .btn-exit {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+        }
+
+        .btn-exit:hover {
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.5);
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+        }
+
 
 
 
@@ -1580,6 +1591,7 @@
             </div>
             <div style="display: flex; gap: 1rem;">
                 <button class="btn btn-danger" onclick="makeAccusation()">⚖️ Acusar</button>
+                <button class="btn btn-exit" onclick="exitGame()">🚪 Sair</button>
             </div>
         </div>
 
@@ -2920,6 +2932,35 @@
                 
                 // Mostrar resultado final
                 showGameEndModal(success ? 'win' : 'lose');
+            }
+        }
+
+        function exitGame() {
+            const confirmExit = confirm('🚪 Tem certeza que deseja sair do jogo?\n\n⚠️ Todo o progresso não salvo será perdido.\n\n✅ Clique OK para sair\n❌ Clique Cancelar para continuar jogando');
+            
+            if (confirmExit) {
+                // Parar o timer se estiver rodando
+                if (window.simpleGameTimer) {
+                    window.simpleGameTimer.stop();
+                }
+                
+                // Limpar dados temporários
+                localStorage.removeItem('criminalMinds_timerStarted');
+                localStorage.removeItem('criminalMinds_timerStartTime');
+                
+                // Salvar estatísticas finais
+                const exitData = {
+                    exitTime: new Date().toISOString(),
+                    cardsPlayed: cardsPlayed || 0,
+                    playerCoins: playerCoins || 0,
+                    timeRemaining: gameTime || 0,
+                    reason: 'user_exit'
+                };
+                
+                localStorage.setItem('criminalMinds_exitData', JSON.stringify(exitData));
+                
+                // Redirecionar para o lobby
+                window.location.href = 'lobby.html';
             }
         }
 
