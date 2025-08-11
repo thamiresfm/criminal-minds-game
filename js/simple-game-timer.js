@@ -20,46 +20,8 @@ class SimpleGameTimer {
     }
     
     createTimerDisplay() {
-        // Criar display do timer no header
-        const header = document.querySelector('.header');
-        if (header) {
-            const existingTimer = header.querySelector('.game-timer-display');
-            if (!existingTimer) {
-                const timerDiv = document.createElement('div');
-                timerDiv.className = 'game-timer-display';
-                timerDiv.id = 'gameTimer';
-                timerDiv.innerHTML = `
-                    <div style="
-                        font-size: 1.4rem;
-                        color: #ef4444;
-                        font-weight: 700;
-                        text-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
-                        background: rgba(239, 68, 68, 0.1);
-                        padding: 0.5rem 1rem;
-                        border-radius: 8px;
-                        border: 1px solid rgba(239, 68, 68, 0.3);
-                        display: flex;
-                        align-items: center;
-                        gap: 8px;
-                    ">
-                        <span>⏱️</span>
-                        <span id="timerDisplay">45:00</span>
-                    </div>
-                `;
-                
-                // Inserir após o título do caso
-                const caseTitle = header.querySelector('.case-title');
-                if (caseTitle) {
-                    caseTitle.parentNode.insertBefore(timerDiv, caseTitle.nextSibling);
-                } else {
-                    header.appendChild(timerDiv);
-                }
-                
-                console.log('✅ Display do timer criado no header');
-            }
-        }
-        
-        // Controles do timer removidos conforme solicitado
+        // Display do timer removido conforme solicitado
+        console.log('✅ Display do timer removido do header');
     }
     
     start() {
@@ -168,11 +130,7 @@ class SimpleGameTimer {
             display.textContent = timeString;
         }
         
-        // Atualizar também o elemento original do jogo se existir
-        const gameTimer = document.getElementById('gameTimer');
-        if (gameTimer) {
-            gameTimer.textContent = `⏱️ ${timeString}`;
-        }
+
         
         // Atualizar o elemento "Tempo Restante" nas estatísticas
         const timeRemaining = document.getElementById('timeRemaining');
