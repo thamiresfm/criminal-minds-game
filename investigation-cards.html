@@ -3960,20 +3960,7 @@
             document.getElementById('collectionModal').style.display = 'block';
         }
 
-        function makeAccusation() {
-            const confirmAccusation = confirm('⚖️ Tem certeza que deseja fazer sua acusação final?\n\n🃏 Suas cartas jogadas determinarão o resultado.\n\n✅ Clique OK para fazer a acusação\n❌ Clique Cancelar para continuar investigando');
-            
-            if (confirmAccusation) {
-                // Calcular resultado baseado nas cartas jogadas
-                const success = Math.random() > 0.5; // Simulação simples (50% chance)
-                
-                // Bônus final baseado no desempenho
-                calculateFinalRewards();
-                
-                // Mostrar resultado final
-                showGameEndModal(success ? 'win' : 'lose');
-            }
-        }
+
 
         function exitGame() {
             const confirmExit = confirm('🚪 Tem certeza que deseja sair do jogo?\n\n⚠️ Todo o progresso não salvo será perdido.\n\n✅ Clique OK para sair\n❌ Clique Cancelar para continuar jogando');
@@ -5761,6 +5748,26 @@
         document.head.appendChild(style);
 
         // Recuperar dados do usuário
+        // Verificar se as funções estão disponíveis globalmente
+        window.checkFunctionsAvailability = function() {
+            const functions = ['showAllCards', 'makeAccusation', 'buyPack', 'showCardDetailsById', 'closeCardDetails'];
+            const missingFunctions = [];
+            
+            functions.forEach(func => {
+                if (typeof window[func] !== 'function') {
+                    missingFunctions.push(func);
+                }
+            });
+            
+            if (missingFunctions.length > 0) {
+                console.error('❌ Funções não encontradas:', missingFunctions);
+                return false;
+            } else {
+                console.log('✅ Todas as funções principais estão disponíveis');
+                return true;
+            }
+        };
+
         window.onload = function() {
             const detectiveName = localStorage.getItem('detectiveName');
             if (detectiveName) {
@@ -5857,6 +5864,11 @@
             // Inicializar chat da equipe
             initializeChat();
             console.log('💬 Chat da equipe inicializado');
+            
+            // Verificar disponibilidade das funções
+            setTimeout(() => {
+                checkFunctionsAvailability();
+            }, 1000);
         };
     </script>
 </body>

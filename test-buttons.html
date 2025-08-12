@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Botões</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .test-title {
+            color: #fbbf24;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #fbbf24;
+            color: #1f2937;
+        }
+        
+        .btn-primary:hover {
+            background: #f59e0b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .debug-panel {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .debug-title {
+            color: #fbbf24;
+            margin-bottom: 0.5rem;
+        }
+        
+        .debug-log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+        
+        .success-log {
+            background: rgba(16, 185, 129, 0.2);
+            border-left: 3px solid #10b981;
+        }
+        
+        .error-log {
+            background: rgba(239, 68, 68, 0.2);
+            border-left: 3px solid #ef4444;
+        }
+        
+        .info-log {
+            background: rgba(59, 130, 246, 0.2);
+            border-left: 3px solid #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🔧 Teste - Botões da Página</h1>
+            <p>Verificando se os botões estão funcionando corretamente</p>
+        </div>
+        
+        <!-- Seção de Teste de Botões -->
+        <div class="test-section">
+            <h2 class="test-title">🎮 Teste de Botões Principais</h2>
+            <div class="test-buttons">
+                <button class="btn btn-primary" onclick="testShowAllCards()">👁️ Ver Todas as Cartas</button>
+                <button class="btn btn-danger" onclick="testMakeAccusation()">ACUSAR</button>
+                <button class="btn btn-secondary" onclick="testBuyPack('basic')">📦 Pacote Básico</button>
+                <button class="btn btn-secondary" onclick="testBuyPack('premium')">✨ Pacote Premium</button>
+                <button class="btn btn-secondary" onclick="testBuyPack('legendary')">🌟 Pacote Lendário</button>
+            </div>
+        </div>
+        
+        <!-- Seção de Teste de Funções -->
+        <div class="test-section">
+            <h2 class="test-title">🔍 Teste de Funções JavaScript</h2>
+            <div class="test-buttons">
+                <button class="btn btn-primary" onclick="testFunctionExists('showAllCards')">Verificar showAllCards()</button>
+                <button class="btn btn-primary" onclick="testFunctionExists('makeAccusation')">Verificar makeAccusation()</button>
+                <button class="btn btn-primary" onclick="testFunctionExists('buyPack')">Verificar buyPack()</button>
+                <button class="btn btn-primary" onclick="testFunctionExists('showCardDetailsById')">Verificar showCardDetailsById()</button>
+                <button class="btn btn-primary" onclick="testFunctionExists('closeCardDetails')">Verificar closeCardDetails()</button>
+            </div>
+        </div>
+        
+        <!-- Seção de Teste de Variáveis -->
+        <div class="test-section">
+            <h2 class="test-title">📊 Teste de Variáveis Globais</h2>
+            <div class="test-buttons">
+                <button class="btn btn-primary" onclick="testGlobalVariables()">Verificar Variáveis</button>
+                <button class="btn btn-primary" onclick="testCardDatabase()">Verificar cardDatabase</button>
+                <button class="btn btn-primary" onclick="testDifficultySettings()">Verificar difficultySettings</button>
+            </div>
+        </div>
+        
+        <!-- Painel de Debug -->
+        <div class="test-section">
+            <h2 class="test-title">🐛 Painel de Debug</h2>
+            <div class="debug-panel" id="debugPanel">
+                <div class="debug-title">Log de Eventos:</div>
+                <div class="debug-log">Sistema de teste inicializado. Clique nos botões para verificar a funcionalidade.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para adicionar log de debug
+        function addDebug(message, type = 'info') {
+            const debugPanel = document.getElementById('debugPanel');
+            const logEntry = document.createElement('div');
+            logEntry.className = `debug-log ${type}-log`;
+            
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            
+            debugPanel.appendChild(logEntry);
+            debugPanel.scrollTop = debugPanel.scrollHeight;
+        }
+        
+        // Função para testar se uma função existe
+        function testFunctionExists(functionName) {
+            addDebug(`🔍 Verificando se a função ${functionName}() existe...`, 'info');
+            
+            if (typeof window[functionName] === 'function') {
+                addDebug(`✅ Função ${functionName}() encontrada e disponível`, 'success');
+            } else {
+                addDebug(`❌ Função ${functionName}() NÃO encontrada`, 'error');
+            }
+        }
+        
+        // Função para testar showAllCards
+        function testShowAllCards() {
+            addDebug('👁️ Testando função showAllCards()...', 'info');
+            
+            if (typeof showAllCards === 'function') {
+                try {
+                    showAllCards();
+                    addDebug('✅ showAllCards() executada com sucesso', 'success');
+                } catch (error) {
+                    addDebug(`❌ Erro ao executar showAllCards(): ${error.message}`, 'error');
+                }
+            } else {
+                addDebug('❌ Função showAllCards() não encontrada', 'error');
+            }
+        }
+        
+        // Função para testar makeAccusation
+        function testMakeAccusation() {
+            addDebug('⚖️ Testando função makeAccusation()...', 'info');
+            
+            if (typeof makeAccusation === 'function') {
+                try {
+                    makeAccusation();
+                    addDebug('✅ makeAccusation() executada com sucesso', 'success');
+                } catch (error) {
+                    addDebug(`❌ Erro ao executar makeAccusation(): ${error.message}`, 'error');
+                }
+            } else {
+                addDebug('❌ Função makeAccusation() não encontrada', 'error');
+            }
+        }
+        
+        // Função para testar buyPack
+        function testBuyPack(packType) {
+            addDebug(`💰 Testando função buyPack('${packType}')...`, 'info');
+            
+            if (typeof buyPack === 'function') {
+                try {
+                    buyPack(packType);
+                    addDebug(`✅ buyPack('${packType}') executada com sucesso`, 'success');
+                } catch (error) {
+                    addDebug(`❌ Erro ao executar buyPack('${packType}'): ${error.message}`, 'error');
+                }
+            } else {
+                addDebug('❌ Função buyPack() não encontrada', 'error');
+            }
+        }
+        
+        // Função para testar variáveis globais
+        function testGlobalVariables() {
+            addDebug('📊 Verificando variáveis globais...', 'info');
+            
+            const variables = ['cardsPlayed', 'comboStreak', 'playerCoins', 'totalEvidence', 'currentCase', 'cardDatabase', 'currentDifficulty'];
+            
+            variables.forEach(varName => {
+                if (typeof window[varName] !== 'undefined') {
+                    addDebug(`✅ Variável ${varName} encontrada: ${typeof window[varName]}`, 'success');
+                } else {
+                    addDebug(`❌ Variável ${varName} NÃO encontrada`, 'error');
+                }
+            });
+        }
+        
+        // Função para testar cardDatabase
+        function testCardDatabase() {
+            addDebug('🃏 Verificando cardDatabase...', 'info');
+            
+            if (typeof cardDatabase !== 'undefined' && Array.isArray(cardDatabase)) {
+                addDebug(`✅ cardDatabase encontrado com ${cardDatabase.length} cartas`, 'success');
+                
+                if (cardDatabase.length > 0) {
+                    const firstCard = cardDatabase[0];
+                    addDebug(`📋 Primeira carta: ${firstCard.title} (${firstCard.type})`, 'info');
+                }
+            } else {
+                addDebug('❌ cardDatabase não encontrado ou não é um array', 'error');
+            }
+        }
+        
+        // Função para testar difficultySettings
+        function testDifficultySettings() {
+            addDebug('🎯 Verificando difficultySettings...', 'info');
+            
+            if (typeof difficultySettings !== 'undefined' && typeof difficultySettings === 'object') {
+                addDebug('✅ difficultySettings encontrado', 'success');
+                
+                const difficulties = Object.keys(difficultySettings);
+                addDebug(`📋 Dificuldades disponíveis: ${difficulties.join(', ')}`, 'info');
+                
+                if (difficulties.length > 0) {
+                    const firstDifficulty = difficulties[0];
+                    const config = difficultySettings[firstDifficulty];
+                    addDebug(`📊 Configuração ${firstDifficulty}: ${config.cards} cartas, ${config.name}`, 'info');
+                }
+            } else {
+                addDebug('❌ difficultySettings não encontrado', 'error');
+            }
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            addDebug('🚀 Sistema de teste inicializado', 'success');
+            addDebug('🔍 Verificando funções disponíveis...', 'info');
+            
+            // Verificar funções principais
+            const mainFunctions = ['showAllCards', 'makeAccusation', 'buyPack', 'showCardDetailsById', 'closeCardDetails'];
+            mainFunctions.forEach(func => {
+                if (typeof window[func] === 'function') {
+                    addDebug(`✅ ${func}() disponível`, 'success');
+                } else {
+                    addDebug(`❌ ${func}() não disponível`, 'error');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
