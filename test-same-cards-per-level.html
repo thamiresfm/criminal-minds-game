@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Mesma Quantidade por Nível</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #374151;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .level-comparison {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .level-card {
+            background: #1e40af;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+        
+        .level-card.active {
+            border-color: #fbbf24;
+        }
+        
+        .level-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .level-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .level-stats {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fbbf24;
+            margin: 5px 0;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn.play {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .cards-display {
+            background: #1f2937;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border: 2px solid #fbbf24;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: scale(1.02);
+        }
+        
+        .card.played {
+            opacity: 0.5;
+            border-color: #10b981;
+        }
+        
+        .debug-panel {
+            background: #1f2937;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .highlight {
+            background: #fbbf24;
+            color: #1f2937;
+            padding: 2px 6px;
+            border-radius: 4px;
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .info-box {
+            background: #1e40af;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #fbbf24;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>🧪 Teste - Mesma Quantidade por Nível</h1>
+            <p>Verificando se todos os níveis têm exatamente a mesma quantidade de cartas</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>🎯 Objetivo do Teste</h3>
+            <p>Confirmar que <strong>TODOS os níveis</strong> têm a mesma quantidade de cartas:</p>
+            <ul>
+                <li><strong>Iniciante:</strong> 20 cartas</li>
+                <li><strong>Intermediário:</strong> 20 cartas</li>
+                <li><strong>Difícil:</strong> 20 cartas</li>
+            </ul>
+            <p><strong>Resultado esperado:</strong> Todos os níveis devem mostrar 0/20 → 1/20 → 2/20... → 20/20</p>
+        </div>
+        
+        <div class="level-comparison">
+            <div class="level-card" id="beginner-card">
+                <div class="level-icon">🟢</div>
+                <div class="level-name">Iniciante</div>
+                <div class="level-stats">
+                    <div>🃏 Cartas Jogadas</div>
+                    <div class="stat-value" id="beginner-cards">0/20</div>
+                    <div>⚡ Combo</div>
+                    <div class="stat-value" id="beginner-combo">0x</div>
+                </div>
+                <button class="btn play" onclick="setLevel('beginner')">Selecionar</button>
+            </div>
+            
+            <div class="level-card" id="intermediate-card">
+                <div class="level-icon">🟡</div>
+                <div class="level-name">Intermediário</div>
+                <div class="level-stats">
+                    <div>🃏 Cartas Jogadas</div>
+                    <div class="stat-value" id="intermediate-cards">0/20</div>
+                    <div>⚡ Combo</div>
+                    <div class="stat-value" id="intermediate-combo">0x</div>
+                </div>
+                <button class="btn play" onclick="setLevel('intermediate')">Selecionar</button>
+            </div>
+            
+            <div class="level-card" id="hard-card">
+                <div class="level-icon">🔴</div>
+                <div class="level-name">Difícil</div>
+                <div class="level-stats">
+                    <div>🃏 Cartas Jogadas</div>
+                    <div class="stat-value" id="hard-cards">0/20</div>
+                    <div>⚡ Combo</div>
+                    <div class="stat-value" id="hard-combo">0x</div>
+                </div>
+                <button class="btn play" onclick="setLevel('hard')">Selecionar</button>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="playRandomCard()">🎲 Jogar Carta Aleatória</button>
+            <button class="btn" onclick="playMultipleCards()">🎯 Jogar 5 Cartas</button>
+            <button class="btn" onclick="resetAllLevels()">🔄 Resetar Todos</button>
+            <button class="btn" onclick="testAllCounters()">🔍 Testar Todos</button>
+            <button class="btn" onclick="clearDebug()">🗑️ Limpar Debug</button>
+        </div>
+        
+        <div class="cards-display">
+            <h3>🃏 Cartas do Nível Atual: <span id="current-level-name">Iniciante</span></h3>
+            <div class="cards-grid" id="cardsContainer">
+                <!-- Cartas serão geradas aqui -->
+            </div>
+        </div>
+        
+        <div class="debug-panel" id="debugPanel">
+            <div>🚀 Sistema iniciado. Testando mesma quantidade por nível...</div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let currentLevel = 'beginner';
+        let levelStats = {
+            beginner: { cardsPlayed: 0, combo: 0 },
+            intermediate: { cardsPlayed: 0, combo: 0 },
+            hard: { cardsPlayed: 0, combo: 0 }
+        };
+        
+        // Configurações de dificuldade - TODAS COM MESMA QUANTIDADE
+        const difficultySettings = {
+            beginner: { 
+                cards: 20, 
+                name: 'Iniciante', 
+                color: '#10b981',
+                icon: '🟢'
+            },
+            intermediate: { 
+                cards: 20, 
+                name: 'Intermediário', 
+                color: '#f59e0b',
+                icon: '🟡'
+            },
+            hard: { 
+                cards: 20, 
+                name: 'Difícil', 
+                color: '#ef4444',
+                icon: '🔴'
+            }
+        };
+        
+        // Banco de dados de cartas
+        const cardDatabase = [
+            { id: 'card1', title: 'Kit Forense', type: 'equipment', icon: '🔍', played: false },
+            { id: 'card2', title: 'Testemunha', type: 'evidence', icon: '👁️', played: false },
+            { id: 'card3', title: 'Mandado', type: 'action', icon: '📜', played: false },
+            { id: 'card4', title: 'DNA', type: 'evidence', icon: '🧬', played: false },
+            { id: 'card5', title: 'Psicologia', type: 'action', icon: '🧠', played: false },
+            { id: 'card6', title: 'Câmeras', type: 'equipment', icon: '📹', played: false },
+            { id: 'card7', title: 'Suspeito', type: 'suspect', icon: '👤', played: false },
+            { id: 'card8', title: 'Aliado', type: 'ally', icon: '🤝', played: false },
+            { id: 'card9', title: 'Evidência', type: 'evidence', icon: '🔎', played: false },
+            { id: 'card10', title: 'Equipamento', type: 'equipment', icon: '🔧', played: false },
+            { id: 'card11', title: 'Ação', type: 'action', icon: '⚡', played: false },
+            { id: 'card12', title: 'Pista', type: 'evidence', icon: '💡', played: false },
+            { id: 'card13', title: 'Análise', type: 'action', icon: '🔬', played: false },
+            { id: 'card14', title: 'Busca', type: 'action', icon: '🔍', played: false },
+            { id: 'card15', title: 'Interrogatório', type: 'action', icon: '👮', played: false },
+            { id: 'card16', title: 'Laboratório', type: 'equipment', icon: '🧪', played: false },
+            { id: 'card17', title: 'Detetive', type: 'ally', icon: '🕵️', played: false },
+            { id: 'card18', title: 'Perito', type: 'ally', icon: '👨‍🔬', played: false },
+            { id: 'card19', title: 'Vítima', type: 'evidence', icon: '💀', played: false },
+            { id: 'card20', title: 'Local', type: 'evidence', icon: '🏠', played: false }
+        ];
+        
+        function setLevel(level) {
+            currentLevel = level;
+            
+            // Atualizar cards ativos
+            document.querySelectorAll('.level-card').forEach(card => card.classList.remove('active'));
+            document.getElementById(`${level}-card`).classList.add('active');
+            
+            // Atualizar nome do nível atual
+            document.getElementById('current-level-name').textContent = difficultySettings[level].name;
+            
+            // Gerar cartas
+            generateCards();
+            
+            addDebug(`🎯 Nível alterado para: ${difficultySettings[level].name}`);
+        }
+        
+        function updateLevelDisplay() {
+            Object.keys(levelStats).forEach(level => {
+                const cardsElement = document.getElementById(`${level}-cards`);
+                const comboElement = document.getElementById(`${level}-combo`);
+                
+                if (cardsElement) {
+                    cardsElement.textContent = `${levelStats[level].cardsPlayed}/20`;
+                }
+                
+                if (comboElement) {
+                    comboElement.textContent = `${levelStats[level].combo}x`;
+                }
+            });
+        }
+        
+        function generateCards() {
+            const container = document.getElementById('cardsContainer');
+            if (!container) return;
+            
+            const availableCards = cardDatabase.filter(card => !card.played);
+            
+            if (availableCards.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: 1 / -1;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                        <h3>Todas as cartas foram jogadas!</h3>
+                        <p>Total: ${levelStats[currentLevel].cardsPlayed}/20 cartas jogadas</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Mostrar todas as cartas disponíveis
+            availableCards.forEach((cardData, index) => {
+                const cardElement = createCardElement(cardData);
+                container.appendChild(cardElement);
+                
+                setTimeout(() => {
+                    cardElement.style.opacity = '1';
+                    cardElement.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+            
+            addDebug(`🃏 Geradas ${availableCards.length} cartas para nível ${difficultySettings[currentLevel].name}`);
+        }
+        
+        function createCardElement(cardData) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-card-id', cardData.id);
+            card.onclick = () => playCard(cardData.id);
+            
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease-out';
+            
+            card.innerHTML = `
+                <div style="font-size: 1.5rem; margin-bottom: 5px;">${cardData.icon}</div>
+                <div style="font-weight: bold; font-size: 0.9rem; margin-bottom: 3px;">${cardData.title}</div>
+                <div style="font-size: 0.7rem; color: #fbbf24;">${cardData.type}</div>
+            `;
+            
+            return card;
+        }
+        
+        function playCard(cardId) {
+            const cardData = cardDatabase.find(card => card.id === cardId);
+            if (!cardData || cardData.played) return;
+            
+            cardData.played = true;
+            levelStats[currentLevel].cardsPlayed++;
+            levelStats[currentLevel].combo++;
+            
+            updateLevelDisplay();
+            generateCards();
+            
+            addDebug(`🎮 Carta jogada no nível ${difficultySettings[currentLevel].name}: ${cardData.title} (${levelStats[currentLevel].cardsPlayed}/20)`);
+        }
+        
+        function playRandomCard() {
+            const availableCards = cardDatabase.filter(card => !card.played);
+            if (availableCards.length === 0) {
+                addDebug('⚠️ Não há mais cartas disponíveis');
+                return;
+            }
+            
+            const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+            playCard(randomCard.id);
+        }
+        
+        function playMultipleCards() {
+            addDebug('🎯 Jogando 5 cartas...');
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    playRandomCard();
+                }, i * 200);
+            }
+        }
+        
+        function resetAllLevels() {
+            levelStats = {
+                beginner: { cardsPlayed: 0, combo: 0 },
+                intermediate: { cardsPlayed: 0, combo: 0 },
+                hard: { cardsPlayed: 0, combo: 0 }
+            };
+            
+            cardDatabase.forEach(card => card.played = false);
+            
+            updateLevelDisplay();
+            generateCards();
+            
+            addDebug('🔄 Todos os níveis resetados!');
+        }
+        
+        function testAllCounters() {
+            addDebug('🔍 Testando todos os contadores...');
+            
+            Object.keys(levelStats).forEach(level => {
+                const cardsElement = document.getElementById(`${level}-cards`);
+                const expectedValue = `${levelStats[level].cardsPlayed}/20`;
+                
+                if (cardsElement && cardsElement.textContent === expectedValue) {
+                    addDebug(`✅ ${difficultySettings[level].name}: ${expectedValue} - CORRETO`);
+                } else {
+                    addDebug(`❌ ${difficultySettings[level].name}: esperado ${expectedValue}, atual ${cardsElement?.textContent || 'N/A'} - INCORRETO`);
+                }
+            });
+        }
+        
+        function addDebug(message) {
+            const debugPanel = document.getElementById('debugPanel');
+            if (!debugPanel) return;
+
+            const timestamp = new Date().toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const debugLine = document.createElement('div');
+            debugLine.innerHTML = `<span style="color: #6b7280;">[${timestamp}]</span> ${message}`;
+            
+            debugPanel.appendChild(debugLine);
+            debugPanel.scrollTop = debugPanel.scrollHeight;
+            
+            const lines = debugPanel.querySelectorAll('div');
+            if (lines.length > 50) {
+                lines[0].remove();
+            }
+        }
+        
+        function clearDebug() {
+            const debugPanel = document.getElementById('debugPanel');
+            if (debugPanel) {
+                debugPanel.innerHTML = '<div>🗑️ Debug limpo!</div>';
+            }
+        }
+        
+        // Inicializar
+        setLevel('beginner');
+        updateLevelDisplay();
+        addDebug('🚀 Sistema de teste por nível iniciado!');
+        addDebug('🎯 Todos os níveis têm 20 cartas cada!');
+    </script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Contador de Cartas Jogadas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #374151;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .stats-panel {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            display: inline-block;
+            margin: 0 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fbbf24;
+            display: block;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .card:hover {
+            transform: scale(1.02);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .debug-panel {
+            background: #1f2937;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .highlight {
+            background: #fbbf24;
+            color: #1f2937;
+            padding: 2px 6px;
+            border-radius: 4px;
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: #374151;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .btn-play {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn-play:hover {
+            transform: scale(1.02);
+        }
+        
+        .info-box {
+            background: #1e40af;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #fbbf24;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste - Contador de Cartas Jogadas</h1>
+        
+        <div class="info-box">
+            <h3>🎯 Objetivo do Teste</h3>
+            <p>Verificar se o contador <strong>🃏 Cartas Jogadas</strong> está sendo atualizado corretamente quando uma carta é jogada pelo modal.</p>
+            <p><strong>Problema:</strong> O contador não está refletindo as mudanças.</p>
+        </div>
+        
+        <div class="stats-panel">
+            <div class="stat-item">
+                <div>🃏 Cartas Jogadas</div>
+                <div class="stat-value" id="cardsPlayed">0/20</div>
+            </div>
+            <div class="stat-item">
+                <div>⚡ Combo Streak</div>
+                <div class="stat-value" id="comboStreak">0x</div>
+            </div>
+            <div class="stat-item">
+                <div>📊 Multiplicador</div>
+                <div class="stat-value" id="currentMultiplier">1.0x</div>
+            </div>
+        </div>
+        
+        <div>
+            <button class="btn" onclick="playCardDirect()">🎲 Jogar Carta Direta</button>
+            <button class="btn" onclick="playCardViaModal()">📋 Jogar Carta via Modal</button>
+            <button class="btn" onclick="resetGame()">🔄 Resetar</button>
+            <button class="btn" onclick="testElementSearch()">🔍 Testar Busca de Elementos</button>
+            <button class="btn" onclick="clearDebug()">🗑️ Limpar Debug</button>
+        </div>
+        
+        <div class="card" onclick="showCardModal()">
+            <h3>🔍 Kit Forense Avançado</h3>
+            <p>Equipamento de alta tecnologia para evidências</p>
+            <p style="color: #fbbf24;">equipment - EPIC</p>
+        </div>
+        
+        <div class="debug-panel" id="debugPanel">
+            <div>🚀 Sistema iniciado. Testando contador de cartas jogadas...</div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="cardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🃏 Detalhes da Carta</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div id="cardDetails">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🔍</div>
+                    <h3 style="margin: 0 0 10px 0; color: #fbbf24;">Kit Forense Avançado</h3>
+                    <p style="margin: 0; color: #9ca3af;">Equipamento de alta tecnologia para evidências</p>
+                </div>
+                
+                <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Tipo:</span>
+                        <span>equipment</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Raridade:</span>
+                        <span>EPIC</span>
+                    </div>
+                </div>
+                
+                <button class="btn-play" onclick="playCardFromModal()">▶️ Jogar Carta</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let cardsPlayed = 0;
+        let comboStreak = 0;
+        
+        function showCardModal() {
+            addDebug('📋 Abrindo modal da carta...');
+            const modal = document.getElementById('cardModal');
+            modal.style.display = 'flex';
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('cardModal');
+            modal.style.display = 'none';
+        }
+        
+        function playCardDirect() {
+            addDebug('🎲 Jogando carta diretamente...');
+            cardsPlayed++;
+            comboStreak++;
+            updateCardsPlayedCounter();
+            addDebug(`✅ Carta jogada diretamente. Total: ${cardsPlayed}/20`);
+        }
+        
+        function playCardViaModal() {
+            addDebug('📋 Jogando carta via modal...');
+            closeModal();
+            
+            setTimeout(() => {
+                cardsPlayed++;
+                comboStreak++;
+                updateCardsPlayedCounter();
+                addDebug(`✅ Carta jogada via modal. Total: ${cardsPlayed}/20`);
+            }, 100);
+        }
+        
+        function playCardFromModal() {
+            addDebug('🃏 Jogando carta do modal...');
+            closeModal();
+            
+            setTimeout(() => {
+                cardsPlayed++;
+                comboStreak++;
+                updateCardsPlayedCounter();
+                addDebug(`✅ Carta jogada do modal. Total: ${cardsPlayed}/20`);
+            }, 100);
+        }
+        
+        function updateCardsPlayedCounter() {
+            addDebug(`🃏 Atualizando contador: ${cardsPlayed}/20`);
+            
+            // Forçar atualização com múltiplas tentativas
+            let cardsPlayedElement = null;
+            let attempts = 0;
+            const maxAttempts = 5;
+            
+            while (!cardsPlayedElement && attempts < maxAttempts) {
+                attempts++;
+                addDebug(`🔍 Tentativa ${attempts} de encontrar elemento cardsPlayed...`);
+                
+                // Tentativa 1: ID exato
+                cardsPlayedElement = document.getElementById('cardsPlayed');
+                
+                // Tentativa 2: Busca por texto específico
+                if (!cardsPlayedElement) {
+                    const allSpans = document.querySelectorAll('span');
+                    cardsPlayedElement = Array.from(allSpans).find(span => 
+                        span.textContent.includes('/20') && !span.textContent.includes('Evidências')
+                    );
+                }
+                
+                // Tentativa 3: Busca por contexto
+                if (!cardsPlayedElement) {
+                    const cartasJogadasText = Array.from(document.querySelectorAll('span')).find(span => 
+                        span.textContent.includes('Cartas Jogadas')
+                    );
+                    if (cartasJogadasText && cartasJogadasText.parentNode) {
+                        const siblings = Array.from(cartasJogadasText.parentNode.children);
+                        cardsPlayedElement = siblings.find(sibling => 
+                            sibling.textContent.includes('/20') && sibling !== cartasJogadasText
+                        );
+                    }
+                }
+                
+                // Se não encontrou, aguardar um pouco e tentar novamente
+                if (!cardsPlayedElement && attempts < maxAttempts) {
+                    addDebug(`⏳ Aguardando 100ms antes da próxima tentativa...`);
+                    setTimeout(() => {}, 100);
+                }
+            }
+            
+            if (cardsPlayedElement) {
+                addDebug(`✅ Elemento encontrado na tentativa ${attempts}: "${cardsPlayedElement.textContent}"`);
+                cardsPlayedElement.textContent = `${cardsPlayed}/20`;
+                addDebug(`✅ Contador atualizado: ${cardsPlayed}/20`);
+                
+                // Adicionar efeito visual
+                cardsPlayedElement.classList.add('highlight');
+                setTimeout(() => {
+                    cardsPlayedElement.classList.remove('highlight');
+                }, 500);
+                
+            } else {
+                addDebug(`❌ Elemento não encontrado após ${maxAttempts} tentativas!`);
+                
+                // Debug completo
+                addDebug('🔍 DEBUG - Todos os elementos span:');
+                const allSpans = document.querySelectorAll('span');
+                allSpans.forEach((span, index) => {
+                    addDebug(`🔍 Span ${index}: id="${span.id}" text="${span.textContent}"`);
+                });
+            }
+            
+            // Atualizar outros contadores
+            updateOtherCounters();
+        }
+        
+        function updateOtherCounters() {
+            // Atualizar combo streak
+            const comboStreakElement = document.getElementById('comboStreak');
+            if (comboStreakElement) {
+                comboStreakElement.textContent = `${comboStreak}x`;
+                addDebug(`✅ Combo streak atualizado: ${comboStreak}x`);
+            }
+            
+            // Atualizar multiplicador
+            const multiplier = 1.0 + (comboStreak * 0.1);
+            const multiplierElement = document.getElementById('currentMultiplier');
+            if (multiplierElement) {
+                multiplierElement.textContent = `${multiplier.toFixed(1)}x`;
+                addDebug(`✅ Multiplicador atualizado: ${multiplier.toFixed(1)}x`);
+            }
+        }
+        
+        function testElementSearch() {
+            addDebug('🔍 Testando busca de elementos...');
+            
+            const cardsPlayedElement = document.getElementById('cardsPlayed');
+            addDebug(`Elemento por ID: ${cardsPlayedElement ? 'Encontrado' : 'Não encontrado'}`);
+            
+            const allSpans = document.querySelectorAll('span');
+            addDebug(`Total de elementos span: ${allSpans.length}`);
+            
+            allSpans.forEach((span, index) => {
+                if (span.textContent.includes('/20') || span.textContent.includes('Cartas')) {
+                    addDebug(`🔍 Span ${index}: id="${span.id}" text="${span.textContent}"`);
+                }
+            });
+        }
+        
+        function resetGame() {
+            cardsPlayed = 0;
+            comboStreak = 0;
+            updateCardsPlayedCounter();
+            addDebug('🔄 Jogo resetado!');
+        }
+        
+        function addDebug(message) {
+            const debugPanel = document.getElementById('debugPanel');
+            if (!debugPanel) return;
+
+            const timestamp = new Date().toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const debugLine = document.createElement('div');
+            debugLine.innerHTML = `<span style="color: #6b7280;">[${timestamp}]</span> ${message}`;
+            
+            debugPanel.appendChild(debugLine);
+            debugPanel.scrollTop = debugPanel.scrollHeight;
+            
+            // Limitar linhas de debug
+            const lines = debugPanel.querySelectorAll('div');
+            if (lines.length > 50) {
+                lines[0].remove();
+            }
+        }
+        
+        function clearDebug() {
+            const debugPanel = document.getElementById('debugPanel');
+            if (debugPanel) {
+                debugPanel.innerHTML = '<div>🗑️ Debug limpo!</div>';
+            }
+        }
+        
+        // Fechar modal ao clicar fora dele
+        document.getElementById('cardModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        // Inicializar
+        addDebug('🚀 Sistema de teste iniciado!');
+        addDebug('🎮 Teste os diferentes métodos de jogar carta!');
+    </script>
+</body>
+</html>

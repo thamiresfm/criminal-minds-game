@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste do Multiplicador e Contador de Cartas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #374151;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .stats-panel {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .stat-label {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fbbf24;
+            transition: all 0.3s ease;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .card {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        .debug-panel {
+            background: #1f2937;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        @keyframes cardFadeOut {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.8); }
+        }
+        .highlight {
+            background: #fbbf24;
+            color: #1f2937;
+            padding: 2px 6px;
+            border-radius: 4px;
+            animation: pulse 0.5s ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .info-box {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste do Multiplicador e Contador de Cartas</h1>
+        
+        <div class="info-box">
+            <h3>📊 Como Funciona:</h3>
+            <ul>
+                <li><strong>Multiplicador:</strong> 1.0x + (Combo Streak × 0.1)</li>
+                <li><strong>Cartas Jogadas:</strong> Conta cada carta jogada (máximo 20)</li>
+                <li><strong>Combo Streak:</strong> Incrementa a cada carta jogada</li>
+                <li><strong>Barras de Progresso:</strong> Mostram o progresso visual</li>
+            </ul>
+        </div>
+        
+        <div class="stats-panel">
+            <div class="stat-row">
+                <div class="stat-label">📊 Multiplicador</div>
+                <div class="stat-value" id="currentMultiplier">1.0x</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="multiplierProgress" style="width: 0%"></div>
+            </div>
+            
+            <div class="stat-row">
+                <div class="stat-label">🃏 Cartas Jogadas</div>
+                <div class="stat-value" id="cardsPlayed">0/20</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="cardsProgress" style="width: 0%"></div>
+            </div>
+            
+            <div class="stat-row">
+                <div class="stat-label">🔥 Combo Streak</div>
+                <div class="stat-value" id="comboStreak">0x</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="comboProgress" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div>
+            <button class="btn" onclick="resetGame()">🔄 Resetar</button>
+            <button class="btn" onclick="testManual()">🧪 Teste Manual</button>
+            <button class="btn" onclick="clearDebug()">🗑️ Limpar Debug</button>
+        </div>
+        
+        <h2>🃏 Cartas de Teste</h2>
+        <div id="cardsContainer">
+            <!-- Cartas serão geradas aqui -->
+        </div>
+        
+        <div class="debug-panel" id="debugPanel">
+            <div>🚀 Sistema iniciado. Clique nas cartas para testar!</div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let cardsPlayed = 0;
+        let comboStreak = 0;
+        let totalEvidence = 0;
+        const targetEvidence = 100;
+        
+        // Banco de dados de cartas de teste
+        const cardDatabase = [
+            {
+                id: 'card1',
+                title: 'Carta de Teste 1',
+                type: 'test',
+                icon: '🔍',
+                description: 'Primeira carta de teste',
+                played: false
+            },
+            {
+                id: 'card2',
+                title: 'Carta de Teste 2',
+                type: 'test',
+                icon: '📜',
+                description: 'Segunda carta de teste',
+                played: false
+            },
+            {
+                id: 'card3',
+                title: 'Carta de Teste 3',
+                type: 'test',
+                icon: '🧬',
+                description: 'Terceira carta de teste',
+                played: false
+            },
+            {
+                id: 'card4',
+                title: 'Carta de Teste 4',
+                type: 'test',
+                icon: '⚡',
+                description: 'Quarta carta de teste',
+                played: false
+            },
+            {
+                id: 'card5',
+                title: 'Carta de Teste 5',
+                type: 'test',
+                icon: '🎯',
+                description: 'Quinta carta de teste',
+                played: false
+            }
+        ];
+
+        function generateCards() {
+            const container = document.getElementById('cardsContainer');
+            if (!container) return;
+            
+            const availableCards = cardDatabase.filter(card => !card.played);
+            
+            if (availableCards.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                        <h3>Todas as cartas foram jogadas!</h3>
+                        <p>Total: ${cardsPlayed} cartas jogadas</p>
+                        <p>Multiplicador final: ${(1.0 + (comboStreak * 0.1)).toFixed(1)}x</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            availableCards.forEach((cardData, index) => {
+                const cardElement = createCardElement(cardData);
+                container.appendChild(cardElement);
+                
+                setTimeout(() => {
+                    cardElement.style.opacity = '1';
+                    cardElement.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+
+        function createCardElement(cardData) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-card-id', cardData.id);
+            card.onclick = () => playCard(card);
+            
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease-out';
+            
+            card.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="font-size: 2rem;">${cardData.icon}</div>
+                    <div>
+                        <h3 style="margin: 0 0 5px 0;">${cardData.title}</h3>
+                        <p style="margin: 5px 0 0 0; font-size: 0.9rem;">${cardData.description}</p>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function playCard(cardElement) {
+            addDebug(`🃏 Jogando carta...`);
+            
+            if (cardElement.classList.contains('played')) {
+                addDebug(`❌ Carta já foi jogada`);
+                return;
+            }
+
+            const cardId = cardElement.getAttribute('data-card-id');
+            const cardData = cardDatabase.find(card => card.id === cardId);
+            
+            if (!cardData) {
+                addDebug(`❌ Carta não encontrada`);
+                return;
+            }
+
+            // === ATUALIZAÇÕES DO JOGO ===
+            
+            // 1. Marcar carta como jogada
+            cardData.played = true;
+            cardElement.classList.add('played');
+            
+            // 2. Incrementar contadores
+            cardsPlayed++;
+            comboStreak++;
+            totalEvidence += 10;
+            
+            addDebug(`📊 Contadores incrementados: cardsPlayed=${cardsPlayed}, comboStreak=${comboStreak}`);
+            
+            // 3. Atualizar todas as estatísticas
+            updateAllStats();
+            
+            // 4. Animação de remoção
+            cardElement.style.animation = 'cardFadeOut 0.5s ease-out forwards';
+            setTimeout(() => {
+                cardElement.remove();
+                generateCards();
+            }, 500);
+            
+            addDebug(`✅ Carta jogada com sucesso!`);
+        }
+
+        function updateAllStats() {
+            // === ATUALIZAR MULTIPLICADOR ===
+            const multiplier = 1.0 + (comboStreak * 0.1);
+            const multiplierElement = document.getElementById('currentMultiplier');
+            
+            if (multiplierElement) {
+                multiplierElement.textContent = `${multiplier.toFixed(1)}x`;
+                addDebug(`📊 Multiplicador atualizado: ${multiplier.toFixed(1)}x`);
+                
+                // Efeito visual
+                multiplierElement.classList.add('highlight');
+                setTimeout(() => {
+                    multiplierElement.classList.remove('highlight');
+                }, 500);
+            }
+            
+            // === ATUALIZAR CARTAS JOGADAS ===
+            const cardsPlayedElement = document.getElementById('cardsPlayed');
+            if (cardsPlayedElement) {
+                cardsPlayedElement.textContent = `${cardsPlayed}/20`;
+                addDebug(`🃏 Cartas jogadas atualizadas: ${cardsPlayed}/20`);
+                
+                // Efeito visual
+                cardsPlayedElement.classList.add('highlight');
+                setTimeout(() => {
+                    cardsPlayedElement.classList.remove('highlight');
+                }, 500);
+            }
+            
+            // === ATUALIZAR COMBO STREAK ===
+            const comboStreakElement = document.getElementById('comboStreak');
+            if (comboStreakElement) {
+                comboStreakElement.textContent = `${comboStreak}x`;
+                addDebug(`🔥 Combo streak atualizado: ${comboStreak}x`);
+            }
+            
+            // === ATUALIZAR BARRAS DE PROGRESSO ===
+            
+            // Barra de progresso das cartas
+            const cardsProgress = (cardsPlayed / 20) * 100;
+            const cardsProgressElement = document.getElementById('cardsProgress');
+            if (cardsProgressElement) {
+                cardsProgressElement.style.width = `${cardsProgress}%`;
+            }
+            
+            // Barra de progresso do combo
+            const comboProgress = Math.min((comboStreak / 10) * 100, 100);
+            const comboProgressElement = document.getElementById('comboProgress');
+            if (comboProgressElement) {
+                comboProgressElement.style.width = `${comboProgress}%`;
+            }
+            
+            // Barra de progresso do multiplicador
+            const multiplierProgress = Math.min((multiplier - 1.0) / 2.0 * 100, 100);
+            const multiplierProgressElement = document.getElementById('multiplierProgress');
+            if (multiplierProgressElement) {
+                multiplierProgressElement.style.width = `${multiplierProgress}%`;
+            }
+            
+            addDebug(`📈 Progresso: Cartas ${cardsProgress.toFixed(1)}% | Combo ${comboProgress.toFixed(1)}% | Multiplicador ${multiplierProgress.toFixed(1)}%`);
+        }
+
+        function testManual() {
+            addDebug(`🧪 Teste manual...`);
+            cardsPlayed++;
+            comboStreak++;
+            updateAllStats();
+        }
+
+        function resetGame() {
+            cardsPlayed = 0;
+            comboStreak = 0;
+            totalEvidence = 0;
+            
+            cardDatabase.forEach(card => {
+                card.played = false;
+            });
+            
+            generateCards();
+            updateAllStats();
+            addDebug(`🔄 Jogo resetado!`);
+        }
+
+        function addDebug(message) {
+            const debugPanel = document.getElementById('debugPanel');
+            if (!debugPanel) return;
+
+            const timestamp = new Date().toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const debugLine = document.createElement('div');
+            debugLine.innerHTML = `<span style="color: #6b7280;">[${timestamp}]</span> ${message}`;
+            
+            debugPanel.appendChild(debugLine);
+            debugPanel.scrollTop = debugPanel.scrollHeight;
+            
+            // Limitar linhas de debug
+            const lines = debugPanel.querySelectorAll('div');
+            if (lines.length > 50) {
+                lines[0].remove();
+            }
+        }
+
+        function clearDebug() {
+            const debugPanel = document.getElementById('debugPanel');
+            if (debugPanel) {
+                debugPanel.innerHTML = '<div>🗑️ Debug limpo!</div>';
+            }
+        }
+
+        // Inicializar
+        generateCards();
+        updateAllStats();
+        addDebug('🚀 Sistema de teste iniciado!');
+        addDebug('📊 Clique nas cartas para ver o multiplicador e contador atualizarem!');
+    </script>
+</body>
+</html>

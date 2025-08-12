@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste do Modal - Jogar Carta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #374151;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .stats-panel {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .stat-item {
+            display: inline-block;
+            margin: 0 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fbbf24;
+            display: block;
+        }
+        .card {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #374151;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .close-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        .card-details {
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #fbbf24;
+        }
+        .card-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .btn-play {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn-play:hover {
+            transform: scale(1.02);
+        }
+        .debug-panel {
+            background: #1f2937;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        @keyframes cardFadeOut {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.8); }
+        }
+        .highlight {
+            background: #fbbf24;
+            color: #1f2937;
+            padding: 2px 6px;
+            border-radius: 4px;
+            animation: pulse 0.5s ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste do Modal - Jogar Carta</h1>
+        
+        <div class="stats-panel">
+            <div class="stat-item">
+                <div>🃏 Cartas Jogadas</div>
+                <div class="stat-value" id="cardsPlayed">0/20</div>
+            </div>
+            <div class="stat-item">
+                <div>⚡ Combo Streak</div>
+                <div class="stat-value" id="comboStreak">0x</div>
+            </div>
+            <div class="stat-item">
+                <div>📊 Multiplicador</div>
+                <div class="stat-value" id="currentMultiplier">1.0x</div>
+            </div>
+        </div>
+        
+        <div>
+            <button class="btn" onclick="resetGame()">🔄 Resetar</button>
+            <button class="btn" onclick="clearDebug()">🗑️ Limpar Debug</button>
+        </div>
+        
+        <h2>🃏 Cartas de Teste (Clique para ver detalhes)</h2>
+        <div id="cardsContainer">
+            <!-- Cartas serão geradas aqui -->
+        </div>
+        
+        <div class="debug-panel" id="debugPanel">
+            <div>🚀 Sistema iniciado. Clique nas cartas para abrir o modal!</div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="cardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🃏 Detalhes da Carta</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="card-details" id="cardDetails">
+                <!-- Detalhes da carta serão inseridos aqui -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let cardsPlayed = 0;
+        let comboStreak = 0;
+        let currentCardData = null;
+        
+        // Banco de dados de cartas de teste
+        const cardDatabase = [
+            {
+                id: 'card1',
+                title: 'Kit Forense Avançado',
+                type: 'equipment',
+                rarity: 'epic',
+                icon: '🔍',
+                description: 'Equipamento de alta tecnologia para evidências',
+                played: false
+            },
+            {
+                id: 'card2',
+                title: 'Testemunha Ocular',
+                type: 'evidence',
+                rarity: 'common',
+                icon: '👁️',
+                description: 'Testemunha presencial do crime',
+                played: false
+            },
+            {
+                id: 'card3',
+                title: 'Mandado de Busca',
+                type: 'action',
+                rarity: 'common',
+                icon: '📜',
+                description: 'Permissão legal para busca',
+                played: false
+            },
+            {
+                id: 'card4',
+                title: 'DNA do Assassino',
+                type: 'evidence',
+                rarity: 'legendary',
+                icon: '🧬',
+                description: 'Evidência genética crucial',
+                played: false
+            }
+        ];
+
+        function generateCards() {
+            const container = document.getElementById('cardsContainer');
+            if (!container) return;
+            
+            const availableCards = cardDatabase.filter(card => !card.played);
+            
+            if (availableCards.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                        <h3>Todas as cartas foram jogadas!</h3>
+                        <p>Total: ${cardsPlayed} cartas jogadas</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            availableCards.forEach((cardData, index) => {
+                const cardElement = createCardElement(cardData);
+                container.appendChild(cardElement);
+                
+                setTimeout(() => {
+                    cardElement.style.opacity = '1';
+                    cardElement.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+
+        function createCardElement(cardData) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-card-id', cardData.id);
+            card.onclick = () => showCardModal(cardData);
+            
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease-out';
+            
+            card.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="font-size: 2rem;">${cardData.icon}</div>
+                    <div>
+                        <h3 style="margin: 0 0 5px 0;">${cardData.title}</h3>
+                        <p style="margin: 0; color: #fbbf24;">${cardData.type} - ${cardData.rarity.toUpperCase()}</p>
+                        <p style="margin: 5px 0 0 0; font-size: 0.9rem;">${cardData.description}</p>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function showCardModal(cardData) {
+            addDebug(`📋 Abrindo modal para: ${cardData.title}`);
+            
+            currentCardData = cardData;
+            const modal = document.getElementById('cardModal');
+            const cardDetails = document.getElementById('cardDetails');
+            
+            cardDetails.innerHTML = `
+                <div class="card-icon">${cardData.icon}</div>
+                <div class="card-title">${cardData.title}</div>
+                
+                <div class="card-info">
+                    <span>Tipo:</span>
+                    <span>${cardData.type}</span>
+                </div>
+                
+                <div class="card-info">
+                    <span>Raridade:</span>
+                    <span>${cardData.rarity.toUpperCase()}</span>
+                </div>
+                
+                <div class="card-info">
+                    <span>Descrição:</span>
+                    <span>${cardData.description}</span>
+                </div>
+                
+                ${!cardData.played ? 
+                    `<button class="btn-play" onclick="playCardFromModal('${cardData.id}')">▶️ Jogar Carta</button>` : 
+                    '<div style="text-align: center; color: #10b981; font-weight: bold; margin-top: 10px;">✅ Carta já foi jogada</div>'
+                }
+            `;
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('cardModal');
+            modal.style.display = 'none';
+            currentCardData = null;
+        }
+
+        function playCardFromModal(cardId) {
+            addDebug(`🃏 Jogando carta do modal: ${cardId}`);
+            
+            // Fechar o modal primeiro
+            closeModal();
+            
+            // Encontrar a carta no banco de dados
+            const cardData = cardDatabase.find(card => card.id === cardId);
+            if (!cardData) {
+                addDebug(`❌ Carta não encontrada no banco de dados: ${cardId}`);
+                return;
+            }
+            
+            // Verificar se a carta já foi jogada
+            if (cardData.played) {
+                addDebug(`⚠️ Carta já foi jogada: ${cardData.title}`);
+                return;
+            }
+            
+            // Marcar carta como jogada no banco de dados
+            cardData.played = true;
+            addDebug(`✅ Carta marcada como jogada: ${cardData.title}`);
+            
+            // Incrementar contadores
+            cardsPlayed++;
+            comboStreak++;
+            addDebug(`📊 Contadores atualizados: cardsPlayed=${cardsPlayed}, comboStreak=${comboStreak}`);
+            
+            // Atualizar estatísticas
+            updateStats();
+            
+            // Encontrar o elemento da carta no DOM e removê-lo visualmente
+            setTimeout(() => {
+                const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+                if (cardElement) {
+                    addDebug(`✅ Elemento da carta encontrado, removendo visualmente...`);
+                    
+                    // Aplicar animação de remoção
+                    cardElement.style.animation = 'cardFadeOut 0.5s ease-out forwards';
+                    setTimeout(() => {
+                        cardElement.remove();
+                        // Recarregar cartas disponíveis
+                        generateCards();
+                    }, 500);
+                } else {
+                    addDebug(`⚠️ Elemento da carta não encontrado no DOM, mas carta foi jogada`);
+                    // Recarregar cartas disponíveis mesmo sem encontrar o elemento
+                    generateCards();
+                }
+            }, 350);
+            
+            addDebug(`🎮 Carta jogada via modal: ${cardData.title}`);
+        }
+
+        function updateStats() {
+            // Atualizar cartas jogadas
+            const cardsPlayedElement = document.getElementById('cardsPlayed');
+            if (cardsPlayedElement) {
+                cardsPlayedElement.textContent = `${cardsPlayed}/20`;
+                cardsPlayedElement.classList.add('highlight');
+                setTimeout(() => {
+                    cardsPlayedElement.classList.remove('highlight');
+                }, 500);
+            }
+            
+            // Atualizar combo streak
+            const comboStreakElement = document.getElementById('comboStreak');
+            if (comboStreakElement) {
+                comboStreakElement.textContent = `${comboStreak}x`;
+            }
+            
+            // Atualizar multiplicador
+            const multiplier = 1.0 + (comboStreak * 0.1);
+            const multiplierElement = document.getElementById('currentMultiplier');
+            if (multiplierElement) {
+                multiplierElement.textContent = `${multiplier.toFixed(1)}x`;
+            }
+            
+            addDebug(`📈 Estatísticas atualizadas: ${cardsPlayed}/20 cartas, ${comboStreak}x combo, ${multiplier.toFixed(1)}x multiplicador`);
+        }
+
+        function resetGame() {
+            cardsPlayed = 0;
+            comboStreak = 0;
+            
+            cardDatabase.forEach(card => {
+                card.played = false;
+            });
+            
+            generateCards();
+            updateStats();
+            addDebug(`🔄 Jogo resetado!`);
+        }
+
+        function addDebug(message) {
+            const debugPanel = document.getElementById('debugPanel');
+            if (!debugPanel) return;
+
+            const timestamp = new Date().toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const debugLine = document.createElement('div');
+            debugLine.innerHTML = `<span style="color: #6b7280;">[${timestamp}]</span> ${message}`;
+            
+            debugPanel.appendChild(debugLine);
+            debugPanel.scrollTop = debugPanel.scrollHeight;
+            
+            // Limitar linhas de debug
+            const lines = debugPanel.querySelectorAll('div');
+            if (lines.length > 50) {
+                lines[0].remove();
+            }
+        }
+
+        function clearDebug() {
+            const debugPanel = document.getElementById('debugPanel');
+            if (debugPanel) {
+                debugPanel.innerHTML = '<div>🗑️ Debug limpo!</div>';
+            }
+        }
+
+        // Fechar modal ao clicar fora dele
+        document.getElementById('cardModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Inicializar
+        generateCards();
+        updateStats();
+        addDebug('🚀 Sistema de teste do modal iniciado!');
+        addDebug('📋 Clique nas cartas para abrir o modal e testar jogar carta!');
+    </script>
+</body>
+</html>

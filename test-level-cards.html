@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Cartas por Nível</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #374151;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .level-selector {
+            background: #1e40af;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .level-btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .level-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .level-btn.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .stats-panel {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            display: inline-block;
+            margin: 0 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fbbf24;
+            display: block;
+        }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .card:hover {
+            transform: scale(1.02);
+        }
+        
+        .card.played {
+            opacity: 0.5;
+            border-color: #10b981;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .info-box {
+            background: #1e40af;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #fbbf24;
+        }
+        
+        .debug-panel {
+            background: #1f2937;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .highlight {
+            background: #fbbf24;
+            color: #1f2937;
+            padding: 2px 6px;
+            border-radius: 4px;
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste - Cartas por Nível</h1>
+        
+        <div class="info-box">
+            <h3>🎯 Objetivo do Teste</h3>
+            <p>Verificar se o contador <strong>🃏 Cartas Jogadas</strong> reflete corretamente a quantidade de cartas por nível:</p>
+            <ul>
+                <li><strong>Iniciante:</strong> 20 cartas (0/20)</li>
+                <li><strong>Intermediário:</strong> 20 cartas (0/20)</li>
+                <li><strong>Difícil:</strong> 20 cartas (0/20)</li>
+            </ul>
+        </div>
+        
+        <div class="level-selector">
+            <h3>🎮 Selecionar Nível</h3>
+            <button class="level-btn active" onclick="setLevel('beginner')">🟢 Iniciante (20 cartas)</button>
+            <button class="level-btn" onclick="setLevel('intermediate')">🟡 Intermediário (20 cartas)</button>
+            <button class="level-btn" onclick="setLevel('hard')">🔴 Difícil (20 cartas)</button>
+        </div>
+        
+        <div class="stats-panel">
+            <div class="stat-item">
+                <div>🎯 Nível Atual</div>
+                <div class="stat-value" id="currentLevel">Iniciante</div>
+            </div>
+            <div class="stat-item">
+                <div>🃏 Cartas Jogadas</div>
+                <div class="stat-value" id="cardsPlayed">0/20</div>
+            </div>
+            <div class="stat-item">
+                <div>⚡ Combo Streak</div>
+                <div class="stat-value" id="comboStreak">0x</div>
+            </div>
+            <div class="stat-item">
+                <div>📊 Multiplicador</div>
+                <div class="stat-value" id="currentMultiplier">1.0x</div>
+            </div>
+        </div>
+        
+        <div>
+            <button class="btn" onclick="playRandomCard()">🎲 Jogar Carta Aleatória</button>
+            <button class="btn" onclick="resetGame()">🔄 Resetar</button>
+            <button class="btn" onclick="testCounter()">🔍 Testar Contador</button>
+            <button class="btn" onclick="clearDebug()">🗑️ Limpar Debug</button>
+        </div>
+        
+        <div class="cards-container" id="cardsContainer">
+            <!-- Cartas serão geradas aqui -->
+        </div>
+        
+        <div class="debug-panel" id="debugPanel">
+            <div>🚀 Sistema iniciado. Selecione um nível para testar!</div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let cardsPlayed = 0;
+        let comboStreak = 0;
+        let currentDifficulty = 'beginner';
+        
+        // Configurações de dificuldade
+        const difficultySettings = {
+            beginner: { 
+                cards: 20, 
+                name: 'Iniciante', 
+                color: '#10b981',
+                icon: '🟢',
+                timer: 45 * 60,
+                coinMultiplier: 1.0,
+                comboRequirement: 2,
+                description: 'Mais tempo, cartas balanceadas, recompensas normais'
+            },
+            intermediate: { 
+                cards: 20, 
+                name: 'Intermediário', 
+                color: '#f59e0b',
+                icon: '🟡',
+                timer: 45 * 60,
+                coinMultiplier: 1.5,
+                comboRequirement: 3,
+                description: 'Tempo padrão, cartas balanceadas, bônus de 50%'
+            },
+            hard: { 
+                cards: 20, 
+                name: 'Difícil', 
+                color: '#ef4444',
+                icon: '🔴',
+                timer: 45 * 60,
+                coinMultiplier: 2.0,
+                comboRequirement: 4,
+                description: 'Menos tempo, cartas balanceadas, recompensas dobradas'
+            }
+        };
+        
+        // Banco de dados de cartas
+        const cardDatabase = [
+            { id: 'card1', title: 'Kit Forense', type: 'equipment', icon: '🔍', played: false },
+            { id: 'card2', title: 'Testemunha', type: 'evidence', icon: '👁️', played: false },
+            { id: 'card3', title: 'Mandado', type: 'action', icon: '📜', played: false },
+            { id: 'card4', title: 'DNA', type: 'evidence', icon: '🧬', played: false },
+            { id: 'card5', title: 'Psicologia', type: 'action', icon: '🧠', played: false },
+            { id: 'card6', title: 'Câmeras', type: 'equipment', icon: '📹', played: false },
+            { id: 'card7', title: 'Suspeito', type: 'suspect', icon: '👤', played: false },
+            { id: 'card8', title: 'Aliado', type: 'ally', icon: '🤝', played: false },
+            { id: 'card9', title: 'Evidência', type: 'evidence', icon: '🔎', played: false },
+            { id: 'card10', title: 'Equipamento', type: 'equipment', icon: '🔧', played: false },
+            { id: 'card11', title: 'Ação', type: 'action', icon: '⚡', played: false },
+            { id: 'card12', title: 'Pista', type: 'evidence', icon: '💡', played: false }
+        ];
+        
+        function setLevel(level) {
+            currentDifficulty = level;
+            cardsPlayed = 0;
+            comboStreak = 0;
+            
+            // Atualizar botões
+            document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Resetar cartas
+            cardDatabase.forEach(card => card.played = false);
+            
+            // Atualizar display
+            updateDisplay();
+            generateCards();
+            
+            addDebug(`🎯 Nível alterado para: ${difficultySettings[level].name}`);
+        }
+        
+        function updateDisplay() {
+            const config = difficultySettings[currentDifficulty];
+            
+            // Atualizar nível atual
+            const levelElement = document.getElementById('currentLevel');
+            if (levelElement) {
+                levelElement.textContent = config.name;
+            }
+            
+            // Atualizar contador de cartas
+            const cardsElement = document.getElementById('cardsPlayed');
+            if (cardsElement) {
+                cardsElement.textContent = `${cardsPlayed}/${config.cards}`;
+                cardsElement.classList.add('highlight');
+                setTimeout(() => {
+                    cardsElement.classList.remove('highlight');
+                }, 500);
+            }
+            
+            // Atualizar combo streak
+            const comboElement = document.getElementById('comboStreak');
+            if (comboElement) {
+                comboElement.textContent = `${comboStreak}x`;
+            }
+            
+            // Atualizar multiplicador
+            const multiplierElement = document.getElementById('currentMultiplier');
+            if (multiplierElement) {
+                const multiplier = 1.0 + (comboStreak * 0.1);
+                multiplierElement.textContent = `${multiplier.toFixed(1)}x`;
+            }
+            
+            addDebug(`📊 Display atualizado: ${cardsPlayed}/${config.cards} cartas`);
+        }
+        
+        function generateCards() {
+            const container = document.getElementById('cardsContainer');
+            if (!container) return;
+            
+            const config = difficultySettings[currentDifficulty];
+            const availableCards = cardDatabase.filter(card => !card.played);
+            
+            if (availableCards.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: 1 / -1;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                        <h3>Todas as cartas foram jogadas!</h3>
+                        <p>Total: ${cardsPlayed}/${config.cards} cartas jogadas</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Selecionar cartas baseado no nível
+            const shuffledCards = [...availableCards].sort(() => Math.random() - 0.5);
+            const selectedCards = shuffledCards.slice(0, Math.min(config.cards, availableCards.length));
+            
+            selectedCards.forEach((cardData, index) => {
+                const cardElement = createCardElement(cardData);
+                container.appendChild(cardElement);
+                
+                setTimeout(() => {
+                    cardElement.style.opacity = '1';
+                    cardElement.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            addDebug(`🃏 Geradas ${selectedCards.length} cartas para nível ${config.name}`);
+        }
+        
+        function createCardElement(cardData) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-card-id', cardData.id);
+            card.onclick = () => playCard(cardData.id);
+            
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease-out';
+            
+            card.innerHTML = `
+                <div style="font-size: 2rem; margin-bottom: 10px;">${cardData.icon}</div>
+                <div style="font-weight: bold; margin-bottom: 5px;">${cardData.title}</div>
+                <div style="font-size: 0.8rem; color: #fbbf24;">${cardData.type}</div>
+            `;
+            
+            return card;
+        }
+        
+        function playCard(cardId) {
+            const cardData = cardDatabase.find(card => card.id === cardId);
+            if (!cardData || cardData.played) return;
+            
+            cardData.played = true;
+            cardsPlayed++;
+            comboStreak++;
+            
+            updateDisplay();
+            generateCards();
+            
+            addDebug(`🎮 Carta jogada: ${cardData.title} (${cardsPlayed}/${difficultySettings[currentDifficulty].cards})`);
+        }
+        
+        function playRandomCard() {
+            const availableCards = cardDatabase.filter(card => !card.played);
+            if (availableCards.length === 0) {
+                addDebug('⚠️ Não há mais cartas disponíveis');
+                return;
+            }
+            
+            const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+            playCard(randomCard.id);
+        }
+        
+        function resetGame() {
+            cardsPlayed = 0;
+            comboStreak = 0;
+            cardDatabase.forEach(card => card.played = false);
+            
+            updateDisplay();
+            generateCards();
+            
+            addDebug('🔄 Jogo resetado!');
+        }
+        
+        function testCounter() {
+            addDebug('🔍 Testando contador...');
+            
+            const cardsElement = document.getElementById('cardsPlayed');
+            const config = difficultySettings[currentDifficulty];
+            
+            if (cardsElement) {
+                addDebug(`✅ Elemento encontrado: "${cardsElement.textContent}"`);
+                addDebug(`📊 Valor esperado: ${cardsPlayed}/${config.cards}`);
+                addDebug(`📊 Valor atual: ${cardsElement.textContent}`);
+                
+                if (cardsElement.textContent === `${cardsPlayed}/${config.cards}`) {
+                    addDebug('✅ Contador está correto!');
+                } else {
+                    addDebug('❌ Contador está incorreto!');
+                }
+            } else {
+                addDebug('❌ Elemento não encontrado');
+            }
+        }
+        
+        function addDebug(message) {
+            const debugPanel = document.getElementById('debugPanel');
+            if (!debugPanel) return;
+
+            const timestamp = new Date().toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const debugLine = document.createElement('div');
+            debugLine.innerHTML = `<span style="color: #6b7280;">[${timestamp}]</span> ${message}`;
+            
+            debugPanel.appendChild(debugLine);
+            debugPanel.scrollTop = debugPanel.scrollHeight;
+            
+            const lines = debugPanel.querySelectorAll('div');
+            if (lines.length > 50) {
+                lines[0].remove();
+            }
+        }
+        
+        function clearDebug() {
+            const debugPanel = document.getElementById('debugPanel');
+            if (debugPanel) {
+                debugPanel.innerHTML = '<div>🗑️ Debug limpo!</div>';
+            }
+        }
+        
+        // Inicializar
+        updateDisplay();
+        generateCards();
+        addDebug('🚀 Sistema de teste por nível iniciado!');
+        addDebug('🎮 Teste os diferentes níveis e observe o contador!');
+    </script>
+</body>
+</html>

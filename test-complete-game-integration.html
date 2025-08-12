@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Integração Completa do Jogo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #374151;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        .card {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .chat-container {
+            background: #1f2937;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .chat-message {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        @keyframes cardFadeOut {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.8); }
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste de Integração Completa do Jogo</h1>
+        
+        <div class="game-stats">
+            <div class="stat-card">
+                <div>🃏 Cartas Jogadas</div>
+                <div class="stat-value" id="cardsPlayed">0/20</div>
+            </div>
+            <div class="stat-card">
+                <div>⚡ Combo Streak</div>
+                <div class="stat-value" id="comboStreak">0x</div>
+            </div>
+            <div class="stat-card">
+                <div>🔍 Evidências</div>
+                <div class="stat-value" id="evidenceDisplay">0/100</div>
+            </div>
+            <div class="stat-card">
+                <div>💰 Moedas</div>
+                <div class="stat-value" id="coinDisplay">500</div>
+            </div>
+            <div class="stat-card">
+                <div>📊 Multiplicador</div>
+                <div class="stat-value" id="currentMultiplier">1.0x</div>
+            </div>
+        </div>
+        
+        <div>
+            <button class="btn" onclick="resetGame()">🔄 Resetar Jogo</button>
+            <button class="btn" onclick="showAllCards()">👁️ Ver Todas as Cartas</button>
+        </div>
+        
+        <h2>🃏 Cartas de Investigação Ativas</h2>
+        <div id="cardsContainer">
+            <!-- Cartas serão geradas aqui -->
+        </div>
+        
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-message">🚀 Sistema iniciado. Clique em uma carta para jogá-la!</div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais do jogo
+        let cardsPlayed = 0;
+        let comboStreak = 0;
+        let playerCoins = 500;
+        let totalEvidence = 0;
+        const targetEvidence = 100;
+        
+        // Banco de dados de cartas
+        const cardDatabase = [
+            {
+                id: 'card1',
+                title: 'Kit Forense Avançado',
+                type: 'equipment',
+                rarity: 'epic',
+                icon: '🔍',
+                description: 'Equipamento de alta tecnologia para evidências',
+                played: false
+            },
+            {
+                id: 'card2',
+                title: 'Testemunha Ocular',
+                type: 'evidence',
+                rarity: 'common',
+                icon: '👁️',
+                description: 'Testemunha presencial do crime',
+                played: false
+            },
+            {
+                id: 'card3',
+                title: 'Mandado de Busca',
+                type: 'action',
+                rarity: 'common',
+                icon: '📜',
+                description: 'Permissão legal para busca',
+                played: false
+            },
+            {
+                id: 'card4',
+                title: 'DNA do Assassino',
+                type: 'evidence',
+                rarity: 'legendary',
+                icon: '🧬',
+                description: 'Evidência genética crucial',
+                played: false
+            }
+        ];
+
+        // Efeitos das cartas
+        const cardEffects = {
+            equipment: {
+                evidence: 15,
+                description: 'Equipamento utilizado com eficiência',
+                clue: 'Equipamento revelou detalhes importantes'
+            },
+            evidence: {
+                evidence: 20,
+                description: 'Evidência crucial coletada',
+                clue: 'Evidência conecta suspeito ao crime'
+            },
+            action: {
+                evidence: 12,
+                description: 'Ação executada com precisão',
+                clue: 'Ação revelou informações valiosas'
+            }
+        };
+
+        // Membros da equipe
+        const teamMembers = [
+            { name: 'Detetive Reid', avatar: '👑' },
+            { name: 'Agente Morgan', avatar: '🔍' },
+            { name: 'Dra. Brennan', avatar: '📊' }
+        ];
+
+        function generateCards() {
+            const container = document.getElementById('cardsContainer');
+            if (!container) return;
+            
+            // Filtrar apenas cartas não jogadas
+            const availableCards = cardDatabase.filter(card => !card.played);
+            
+            if (availableCards.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                        <h3>Todas as cartas foram jogadas!</h3>
+                        <p>Parabéns! Você utilizou todas as cartas disponíveis.</p>
+                        <button class="btn" onclick="showAllCards()">👁️ Ver Todas as Cartas</button>
+                    </div>
+                `;
+                updateStats();
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            availableCards.forEach((cardData, index) => {
+                const cardElement = createCardElement(cardData);
+                container.appendChild(cardElement);
+                
+                setTimeout(() => {
+                    cardElement.style.opacity = '1';
+                    cardElement.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            updateStats();
+        }
+
+        function createCardElement(cardData) {
+            const card = document.createElement('div');
+            card.className = `card ${cardData.rarity}`;
+            card.setAttribute('data-card-id', cardData.id);
+            card.setAttribute('data-type', cardData.type);
+            card.onclick = () => playCard(card);
+            
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease-out';
+            
+            card.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="font-size: 2rem;">${cardData.icon}</div>
+                    <div>
+                        <h3 style="margin: 0 0 5px 0;">${cardData.title}</h3>
+                        <p style="margin: 0; color: #fbbf24;">${cardData.type} - ${cardData.rarity.toUpperCase()}</p>
+                        <p style="margin: 5px 0 0 0; font-size: 0.9rem;">${cardData.description}</p>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function playCard(cardElement) {
+            console.log('🃏 Jogando carta...');
+            
+            if (cardElement.classList.contains('played')) {
+                console.log('❌ Carta já foi jogada');
+                return;
+            }
+
+            const cardId = cardElement.getAttribute('data-card-id');
+            const cardType = cardElement.getAttribute('data-type');
+            const cardData = cardDatabase.find(card => card.id === cardId);
+            
+            if (!cardData) {
+                console.error('❌ Carta não encontrada');
+                return;
+            }
+            
+            const cardEffect = cardEffects[cardType];
+            if (!cardEffect) {
+                console.error('❌ Efeito da carta não encontrado');
+                return;
+            }
+
+            // === ATUALIZAÇÕES DO JOGO ===
+            
+            // 1. Marcar carta como jogada
+            cardData.played = true;
+            cardElement.classList.add('played');
+            
+            // 2. Incrementar contadores
+            cardsPlayed++;
+            comboStreak++;
+            
+            // 3. Calcular evidências com combo
+            const baseEvidence = cardEffect.evidence;
+            const comboMultiplier = 1 + (comboStreak * 0.1);
+            const totalEvidenceGained = Math.floor(baseEvidence * comboMultiplier);
+            
+            // 4. Adicionar evidências
+            totalEvidence += totalEvidenceGained;
+            
+            // 5. Adicionar moedas
+            const baseCoins = 10;
+            const comboBonus = Math.floor(comboStreak * 2);
+            const totalCoins = baseCoins + comboBonus;
+            playerCoins += totalCoins;
+            
+            // === ATUALIZAÇÕES VISUAIS ===
+            
+            // 6. Atualizar todas as estatísticas
+            updateAllGameStats();
+            
+            // 7. Mostrar notificação
+            showNotification(`🔍 +${totalEvidenceGained} evidências | 💰 +${totalCoins} moedas | ⚡ Combo ${comboStreak}x`);
+            
+            // 8. Animação de remoção da carta
+            cardElement.style.animation = 'cardFadeOut 0.5s ease-out forwards';
+            setTimeout(() => {
+                cardElement.remove();
+                generateCards(); // Recarregar cartas disponíveis
+            }, 500);
+            
+            // === ATUALIZAÇÕES DO CHAT ===
+            
+            // 9. Adicionar mensagens ao chat
+            setTimeout(() => {
+                const chatMessages = [
+                    `🔍 Coletou ${totalEvidenceGained} evidências com ${cardEffect.description.toLowerCase()}`,
+                    `📊 Progresso: ${totalEvidence}/${targetEvidence} evidências`,
+                    `🎯 Combo ${comboStreak}x ativo! Continue assim!`,
+                    `💰 +${totalCoins} moedas ganhas!`,
+                    `🃏 Carta ${cardType} jogada com sucesso!`
+                ];
+                
+                const randomMessage = chatMessages[Math.floor(Math.random() * chatMessages.length)];
+                const randomMember = teamMembers[Math.floor(Math.random() * teamMembers.length)];
+                addChatMessage(randomMessage, randomMember.name.split(' ')[1]);
+            }, 1000);
+            
+            // 10. Verificar vitória
+            if (totalEvidence >= targetEvidence) {
+                setTimeout(() => {
+                    showNotification('🎉 VITÓRIA! Todas as evidências coletadas!');
+                    addChatMessage('🎉 INVESTIGAÇÃO CONCLUÍDA COM SUCESSO!', 'Sistema');
+                }, 1500);
+            }
+            
+            console.log(`🎮 Jogo atualizado: ${cardsPlayed} cartas, ${comboStreak}x combo, ${totalEvidence}/${targetEvidence} evidências, ${playerCoins} moedas`);
+        }
+
+        function updateAllGameStats() {
+            // Atualizar cartas jogadas
+            const cardsPlayedElement = document.getElementById('cardsPlayed');
+            if (cardsPlayedElement) {
+                cardsPlayedElement.textContent = `${cardsPlayed}/20`;
+            }
+            
+            // Atualizar combo streak
+            const comboStreakElement = document.getElementById('comboStreak');
+            if (comboStreakElement) {
+                comboStreakElement.textContent = `${comboStreak}x`;
+            }
+            
+            // Atualizar evidências
+            const evidenceDisplayElement = document.getElementById('evidenceDisplay');
+            if (evidenceDisplayElement) {
+                evidenceDisplayElement.textContent = `${totalEvidence}/${targetEvidence}`;
+            }
+            
+            // Atualizar moedas
+            const coinDisplayElement = document.getElementById('coinDisplay');
+            if (coinDisplayElement) {
+                coinDisplayElement.textContent = playerCoins;
+            }
+            
+            // Atualizar multiplicador
+            const multiplierElement = document.getElementById('currentMultiplier');
+            if (multiplierElement) {
+                const multiplier = 1.0 + (comboStreak * 0.1);
+                multiplierElement.textContent = `${multiplier.toFixed(1)}x`;
+            }
+        }
+
+        function updateStats() {
+            updateAllGameStats();
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function addChatMessage(message, author) {
+            const chatContainer = document.getElementById('chatContainer');
+            if (!chatContainer) return;
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message';
+            
+            const timestamp = new Date().toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            messageDiv.innerHTML = `
+                <strong>${author}:</strong> ${message} <small style="color: #6b7280;">${timestamp}</small>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Limitar mensagens
+            const messages = chatContainer.querySelectorAll('.chat-message');
+            if (messages.length > 20) {
+                messages[0].remove();
+            }
+        }
+
+        function showAllCards() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            `;
+            
+            const allCards = cardDatabase.map(card => {
+                const isPlayed = card.played || false;
+                return `
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 10px;
+                        background: ${isPlayed ? 'rgba(16, 185, 129, 0.2)' : 'rgba(251, 191, 36, 0.2)'};
+                        border: 1px solid ${isPlayed ? '#10b981' : '#fbbf24'};
+                        border-radius: 5px;
+                        opacity: ${isPlayed ? '0.6' : '1'};
+                    ">
+                        <div style="font-size: 1.5rem;">${card.icon}</div>
+                        <div>
+                            <h4 style="margin: 0 0 5px 0;">${card.title}</h4>
+                            <p style="margin: 0; color: #fbbf24;">${card.type} - ${card.rarity.toUpperCase()}</p>
+                            <span style="
+                                background: ${isPlayed ? '#10b981' : '#fbbf24'};
+                                color: ${isPlayed ? 'white' : '#1f2937'};
+                                padding: 2px 8px;
+                                border-radius: 10px;
+                                font-size: 0.8rem;
+                                font-weight: bold;
+                            ">${isPlayed ? '✅ Jogada' : '🃏 Disponível'}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            modal.innerHTML = `
+                <div style="
+                    background: #374151;
+                    padding: 20px;
+                    border-radius: 10px;
+                    max-width: 600px;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                ">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>👁️ Todas as Cartas</h2>
+                        <button class="btn" onclick="this.parentElement.parentElement.parentElement.remove()">❌ Fechar</button>
+                    </div>
+                    <div style="display: grid; gap: 10px;">
+                        ${allCards}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function resetGame() {
+            cardsPlayed = 0;
+            comboStreak = 0;
+            playerCoins = 500;
+            totalEvidence = 0;
+            
+            cardDatabase.forEach(card => {
+                card.played = false;
+            });
+            
+            generateCards();
+            addChatMessage('🔄 Jogo resetado! Todas as cartas disponíveis novamente.', 'Sistema');
+        }
+
+        // Inicializar
+        generateCards();
+        addChatMessage('🚀 Sistema de teste iniciado. Clique nas cartas para jogá-las!', 'Sistema');
+    </script>
+</body>
+</html>

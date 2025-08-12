@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste do Sistema de Cartas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #374151;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .card {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .card.played {
+            opacity: 0.5;
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        @keyframes cardFadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste do Sistema de Cartas</h1>
+        
+        <div>
+            <button class="btn" onclick="resetCards()">🔄 Resetar Cartas</button>
+            <button class="btn" onclick="showAllCards()">👁️ Ver Todas as Cartas</button>
+        </div>
+        
+        <h2>🃏 Cartas de Investigação Ativas</h2>
+        <div id="cardsContainer">
+            <!-- Cartas serão geradas aqui -->
+        </div>
+        
+        <div id="status">
+            <p>Cartas disponíveis: <span id="availableCount">0</span></p>
+            <p>Cartas jogadas: <span id="playedCount">0</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Banco de dados de cartas de teste
+        const cardDatabase = [
+            {
+                id: 'card1',
+                title: 'Kit Forense Avançado',
+                type: 'EQUIPAMENTO',
+                rarity: 'epic',
+                icon: '🔍',
+                description: 'Equipamento de alta tecnologia para evidências',
+                played: false
+            },
+            {
+                id: 'card2',
+                title: 'Testemunha Ocular',
+                type: 'EVIDÊNCIA',
+                rarity: 'common',
+                icon: '👁️',
+                description: 'Testemunha presencial do crime',
+                played: false
+            },
+            {
+                id: 'card3',
+                title: 'Mandado de Busca',
+                type: 'AÇÃO',
+                rarity: 'common',
+                icon: '📜',
+                description: 'Permissão legal para busca',
+                played: false
+            },
+            {
+                id: 'card4',
+                title: 'DNA do Assassino',
+                type: 'EVIDÊNCIA',
+                rarity: 'legendary',
+                icon: '🧬',
+                description: 'Evidência genética crucial',
+                played: false
+            }
+        ];
+
+        function generateCards() {
+            const container = document.getElementById('cardsContainer');
+            if (!container) return;
+            
+            // Filtrar apenas cartas não jogadas
+            const availableCards = cardDatabase.filter(card => !card.played);
+            
+            // Se não há cartas disponíveis, mostrar mensagem
+            if (availableCards.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                        <h3>Todas as cartas foram jogadas!</h3>
+                        <p>Parabéns! Você utilizou todas as cartas disponíveis nesta investigação.</p>
+                        <button class="btn" onclick="showAllCards()">👁️ Ver Todas as Cartas</button>
+                    </div>
+                `;
+                updateStatus();
+                return;
+            }
+            
+            // Limpar container
+            container.innerHTML = '';
+            
+            // Gerar HTML para cada carta disponível
+            availableCards.forEach((cardData, index) => {
+                const cardElement = createCardElement(cardData);
+                container.appendChild(cardElement);
+                
+                // Animação escalonada
+                setTimeout(() => {
+                    cardElement.style.opacity = '1';
+                    cardElement.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            updateStatus();
+        }
+
+        function createCardElement(cardData) {
+            const card = document.createElement('div');
+            card.className = `card ${cardData.rarity}`;
+            card.setAttribute('data-card-id', cardData.id);
+            card.onclick = () => playCard(card);
+            
+            // Iniciar invisível para animação
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease-out';
+            
+            card.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="font-size: 2rem;">${cardData.icon}</div>
+                    <div>
+                        <h3 style="margin: 0 0 5px 0;">${cardData.title}</h3>
+                        <p style="margin: 0; color: #fbbf24;">${cardData.type} - ${cardData.rarity.toUpperCase()}</p>
+                        <p style="margin: 5px 0 0 0; font-size: 0.9rem;">${cardData.description}</p>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function playCard(cardElement) {
+            console.log('🃏 Jogando carta...');
+            
+            const cardId = cardElement.getAttribute('data-card-id');
+            const cardData = cardDatabase.find(card => card.id === cardId);
+            
+            if (!cardData || cardData.played) {
+                console.log('❌ Carta já foi jogada ou não encontrada');
+                return;
+            }
+            
+            // Marcar carta como jogada
+            cardData.played = true;
+            
+            // Animação de jogar carta
+            cardElement.style.animation = 'cardFadeOut 0.5s ease-out forwards';
+            
+            // Remover carta após animação
+            setTimeout(() => {
+                cardElement.remove();
+                
+                // Verificar se ainda há cartas disponíveis
+                const remainingCards = document.querySelectorAll('.card:not(.played)');
+                if (remainingCards.length === 0) {
+                    // Todas as cartas foram jogadas, mostrar mensagem
+                    const container = document.getElementById('cardsContainer');
+                    if (container) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                                <h3>Todas as cartas foram jogadas!</h3>
+                                <p>Parabéns! Você utilizou todas as cartas disponíveis nesta investigação.</p>
+                                <button class="btn" onclick="showAllCards()">👁️ Ver Todas as Cartas</button>
+                            </div>
+                        `;
+                    }
+                }
+                
+                updateStatus();
+            }, 500);
+        }
+
+        function showAllCards() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            `;
+            
+            const allCards = cardDatabase.map(card => {
+                const isPlayed = card.played || false;
+                return `
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 10px;
+                        background: ${isPlayed ? 'rgba(16, 185, 129, 0.2)' : 'rgba(251, 191, 36, 0.2)'};
+                        border: 1px solid ${isPlayed ? '#10b981' : '#fbbf24'};
+                        border-radius: 5px;
+                        opacity: ${isPlayed ? '0.6' : '1'};
+                    ">
+                        <div style="font-size: 1.5rem;">${card.icon}</div>
+                        <div>
+                            <h4 style="margin: 0 0 5px 0;">${card.title}</h4>
+                            <p style="margin: 0; color: #fbbf24;">${card.type} - ${card.rarity.toUpperCase()}</p>
+                            <span style="
+                                background: ${isPlayed ? '#10b981' : '#fbbf24'};
+                                color: ${isPlayed ? 'white' : '#1f2937'};
+                                padding: 2px 8px;
+                                border-radius: 10px;
+                                font-size: 0.8rem;
+                                font-weight: bold;
+                            ">${isPlayed ? '✅ Jogada' : '🃏 Disponível'}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            modal.innerHTML = `
+                <div style="
+                    background: #374151;
+                    padding: 20px;
+                    border-radius: 10px;
+                    max-width: 600px;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                ">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>👁️ Todas as Cartas</h2>
+                        <button class="btn" onclick="this.parentElement.parentElement.parentElement.remove()">❌ Fechar</button>
+                    </div>
+                    <div style="display: grid; gap: 10px;">
+                        ${allCards}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function resetCards() {
+            cardDatabase.forEach(card => {
+                card.played = false;
+            });
+            generateCards();
+        }
+
+        function updateStatus() {
+            const availableCards = cardDatabase.filter(card => !card.played);
+            const playedCards = cardDatabase.filter(card => card.played);
+            
+            document.getElementById('availableCount').textContent = availableCards.length;
+            document.getElementById('playedCount').textContent = playedCards.length;
+        }
+
+        // Inicializar
+        generateCards();
+    </script>
+</body>
+</html>
