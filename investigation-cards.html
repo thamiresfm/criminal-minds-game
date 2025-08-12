@@ -4017,6 +4017,21 @@
                 }, 300);
                 return; // Carta já foi jogada
             }
+            
+            // Verificar se já atingiu o limite de cartas para o nível atual
+            const maxCardsForLevel = difficultySettings[currentDifficulty].cards;
+            if (cardsPlayed >= maxCardsForLevel) {
+                console.log(`🃏 Limite de cartas atingido: ${cardsPlayed}/${maxCardsForLevel}`);
+                // Feedback visual para limite atingido
+                cardElement.style.animation = 'cardShake 0.3s ease-in-out';
+                setTimeout(() => {
+                    cardElement.style.animation = '';
+                }, 300);
+                
+                // Mostrar notificação
+                showLimitNotification();
+                return; // Não permitir jogar mais cartas
+            }
 
             const cardType = cardElement.getAttribute('data-type');
             console.log(`🃏 Tipo da carta: ${cardType}`);
@@ -4209,9 +4224,9 @@
 
         // Função para atualizar o progresso visual das cartas
         function updateCardProgress() {
-            const maxCards = difficultySettings[currentDifficulty].cards;
+            const availableCards = cardDatabase.filter(card => !card.played).length;
+            const maxCards = Math.max(difficultySettings[currentDifficulty].cards, availableCards);
             const playedCards = cardDatabase.filter(card => card.played).length;
-            const availableCards = document.querySelectorAll('.card').length;
             const progressPercentage = (playedCards / maxCards) * 100;
 
             // Atualizar título da seção com progresso
@@ -4336,6 +4351,9 @@
                 cardsElement.textContent = `0/${maxCards}`;
                 console.log(`🎯 Contador inicializado: 0/${maxCards} para nível ${currentDifficulty}`);
             }
+            
+            // Inicializar barra de progresso
+            updateCardsProgressBar(maxCards);
         }
         
         // Função para atualizar contador quando o nível muda
@@ -4345,6 +4363,24 @@
             if (cardsElement) {
                 cardsElement.textContent = `${cardsPlayed}/${maxCards}`;
                 console.log(`🎯 Contador atualizado para nível ${currentDifficulty}: ${cardsPlayed}/${maxCards}`);
+            }
+            
+            // Atualizar barra de progresso
+            updateCardsProgressBar(maxCards);
+        }
+        
+        // Função para atualizar a barra de progresso das cartas
+        function updateCardsProgressBar(maxCards) {
+            const progressPercentage = (cardsPlayed / maxCards) * 100;
+            const progressElement = document.getElementById('cardsProgress');
+            
+            if (progressElement) {
+                progressElement.style.width = `${progressPercentage}%`;
+                console.log(`📊 Barra de progresso atualizada: ${cardsPlayed}/${maxCards} = ${progressPercentage.toFixed(1)}%`);
+                
+                // Adicionar efeito visual de animação
+                progressElement.style.transition = 'width 0.5s ease-out';
+                progressElement.style.backgroundColor = progressPercentage >= 100 ? '#10b981' : '#fbbf24';
             }
         }
         
@@ -4357,6 +4393,9 @@
                 cardsElement.textContent = `${cardsPlayed}/${maxCards}`;
                 console.log(`🎯 Contador dinâmico: ${cardsPlayed}/${maxCards} (disponíveis: ${availableCards})`);
             }
+            
+            // Atualizar barra de progresso dinamicamente
+            updateCardsProgressBar(maxCards);
         }
         
         // Função para forçar atualização agressiva dos contadores

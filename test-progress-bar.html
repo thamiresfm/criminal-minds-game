@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Barra de Progresso Dinâmica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #374151;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .progress-section {
+            background: #1e40af;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-item {
+            margin-bottom: 15px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(107, 114, 128, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            border-radius: 4px;
+            transition: width 0.5s ease-out;
+            width: 0%;
+        }
+        
+        .progress-fill.complete {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn.play {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .cards-display {
+            background: #1f2937;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border: 2px solid #fbbf24;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: scale(1.02);
+        }
+        
+        .card.played {
+            opacity: 0.5;
+            border-color: #10b981;
+        }
+        
+        .debug-panel {
+            background: #1f2937;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .info-box {
+            background: #1e40af;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #fbbf24;
+        }
+        
+        .level-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .level-btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .level-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .level-btn.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>🧪 Teste - Barra de Progresso Dinâmica</h1>
+            <p>Verificando se a barra de progresso se move conforme o contador de cartas</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>🎯 Objetivo do Teste</h3>
+            <p>Confirmar que a <strong>barra de progresso</strong> se move dinamicamente:</p>
+            <ul>
+                <li><strong>Contador:</strong> 0/6 → 1/6 → 2/6... → 6/6</li>
+                <li><strong>Barra:</strong> 0% → 16.7% → 33.3%... → 100%</li>
+                <li><strong>Dinâmico:</strong> Se aparecerem mais cartas, o total aumenta</li>
+            </ul>
+            <p><strong>Resultado esperado:</strong> A barra deve se mover suavemente conforme as cartas são jogadas</p>
+        </div>
+        
+        <div class="level-selector">
+            <button class="level-btn active" onclick="setLevel('beginner')">🟢 Iniciante (6)</button>
+            <button class="level-btn" onclick="setLevel('intermediate')">🟡 Intermediário (20)</button>
+            <button class="level-btn" onclick="setLevel('hard')">🔴 Difícil (25)</button>
+        </div>
+        
+        <div class="progress-section">
+            <h3>📊 Progresso das Cartas</h3>
+            
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>🃏 Cartas Jogadas</span>
+                    <span id="cardsPlayed">0/6</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="cardsProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>📈 Progresso Percentual</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="playRandomCard()">🎲 Jogar Carta</button>
+            <button class="btn" onclick="playMultipleCards()">🎯 Jogar 3 Cartas</button>
+            <button class="btn" onclick="resetGame()">🔄 Resetar</button>
+            <button class="btn" onclick="testProgress()">🔍 Testar Progresso</button>
+            <button class="btn" onclick="clearDebug()">🗑️ Limpar Debug</button>
+        </div>
+        
+        <div class="cards-display">
+            <h3>🃏 Cartas Disponíveis: <span id="available-cards">6</span></h3>
+            <div class="cards-grid" id="cardsContainer">
+                <!-- Cartas serão geradas aqui -->
+            </div>
+        </div>
+        
+        <div class="debug-panel" id="debugPanel">
+            <div>🚀 Sistema iniciado. Testando barra de progresso dinâmica...</div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let cardsPlayed = 0;
+        let currentDifficulty = 'beginner';
+        
+        // Configurações de dificuldade
+        const difficultySettings = {
+            beginner: { 
+                cards: 6, 
+                name: 'Iniciante', 
+                color: '#10b981',
+                icon: '🟢'
+            },
+            intermediate: { 
+                cards: 20, 
+                name: 'Intermediário', 
+                color: '#f59e0b',
+                icon: '🟡'
+            },
+            hard: { 
+                cards: 25, 
+                name: 'Difícil', 
+                color: '#ef4444',
+                icon: '🔴'
+            }
+        };
+        
+        // Banco de dados de cartas
+        const cardDatabase = [
+            { id: 'card1', title: 'Kit Forense', type: 'equipment', icon: '🔍', played: false },
+            { id: 'card2', title: 'Testemunha', type: 'evidence', icon: '👁️', played: false },
+            { id: 'card3', title: 'Mandado', type: 'action', icon: '📜', played: false },
+            { id: 'card4', title: 'DNA', type: 'evidence', icon: '🧬', played: false },
+            { id: 'card5', title: 'Psicologia', type: 'action', icon: '🧠', played: false },
+            { id: 'card6', title: 'Câmeras', type: 'equipment', icon: '📹', played: false },
+            { id: 'card7', title: 'Suspeito', type: 'suspect', icon: '👤', played: false },
+            { id: 'card8', title: 'Aliado', type: 'ally', icon: '🤝', played: false },
+            { id: 'card9', title: 'Evidência', type: 'evidence', icon: '🔎', played: false },
+            { id: 'card10', title: 'Equipamento', type: 'equipment', icon: '🔧', played: false }
+        ];
+        
+        function setLevel(level) {
+            currentDifficulty = level;
+            cardsPlayed = 0;
+            
+            // Atualizar botões
+            document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Resetar cartas
+            cardDatabase.forEach(card => card.played = false);
+            
+            // Atualizar display
+            updateDisplay();
+            generateCards();
+            
+            addDebug(`🎯 Nível alterado para: ${difficultySettings[level].name} (${difficultySettings[level].cards} cartas)`);
+        }
+        
+        function updateDisplay() {
+            const config = difficultySettings[currentDifficulty];
+            
+            // Atualizar contador de cartas
+            const availableCards = cardDatabase.filter(card => !card.played).length;
+            const maxCards = Math.max(config.cards, availableCards);
+            const cardsElement = document.getElementById('cardsPlayed');
+            if (cardsElement) {
+                cardsElement.textContent = `${cardsPlayed}/${maxCards}`;
+            }
+            
+            // Atualizar barra de progresso
+            updateProgressBar(maxCards);
+            
+            // Atualizar cartas disponíveis
+            document.getElementById('available-cards').textContent = availableCards;
+            
+            addDebug(`📊 Display atualizado: ${cardsPlayed}/${maxCards} cartas`);
+        }
+        
+        function updateProgressBar(maxCards) {
+            const progressPercentage = (cardsPlayed / maxCards) * 100;
+            
+            // Atualizar contador de cartas
+            const cardsElement = document.getElementById('cardsPlayed');
+            if (cardsElement) {
+                cardsElement.textContent = `${cardsPlayed}/${maxCards}`;
+            }
+            
+            // Atualizar barra de progresso das cartas
+            const progressElement = document.getElementById('cardsProgress');
+            if (progressElement) {
+                progressElement.style.width = `${progressPercentage}%`;
+                progressElement.classList.toggle('complete', progressPercentage >= 100);
+            }
+            
+            // Atualizar barra de progresso percentual
+            const percentElement = document.getElementById('progressPercent');
+            const percentBar = document.getElementById('progressBar');
+            if (percentElement) {
+                percentElement.textContent = `${progressPercentage.toFixed(1)}%`;
+            }
+            if (percentBar) {
+                percentBar.style.width = `${progressPercentage}%`;
+                percentBar.classList.toggle('complete', progressPercentage >= 100);
+            }
+            
+            addDebug(`📊 Barra de progresso: ${cardsPlayed}/${maxCards} = ${progressPercentage.toFixed(1)}%`);
+        }
+        
+        function generateCards() {
+            const container = document.getElementById('cardsContainer');
+            if (!container) return;
+            
+            const config = difficultySettings[currentDifficulty];
+            const availableCards = cardDatabase.filter(card => !card.played);
+            
+            if (availableCards.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: 1 / -1;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                        <h3>Todas as cartas foram jogadas!</h3>
+                        <p>Total: ${cardsPlayed}/${config.cards} cartas jogadas</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Mostrar cartas baseado no nível
+            const shuffledCards = [...availableCards].sort(() => Math.random() - 0.5);
+            const selectedCards = shuffledCards.slice(0, Math.min(config.cards, availableCards.length));
+            
+            selectedCards.forEach((cardData, index) => {
+                const cardElement = createCardElement(cardData);
+                container.appendChild(cardElement);
+                
+                setTimeout(() => {
+                    cardElement.style.opacity = '1';
+                    cardElement.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+            
+            addDebug(`🃏 Geradas ${selectedCards.length} cartas para nível ${config.name}`);
+        }
+        
+        function createCardElement(cardData) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-card-id', cardData.id);
+            card.onclick = () => playCard(cardData.id);
+            
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease-out';
+            
+            card.innerHTML = `
+                <div style="font-size: 1.5rem; margin-bottom: 5px;">${cardData.icon}</div>
+                <div style="font-weight: bold; font-size: 0.9rem; margin-bottom: 3px;">${cardData.title}</div>
+                <div style="font-size: 0.7rem; color: #fbbf24;">${cardData.type}</div>
+            `;
+            
+            return card;
+        }
+        
+        function playCard(cardId) {
+            const cardData = cardDatabase.find(card => card.id === cardId);
+            if (!cardData || cardData.played) return;
+            
+            cardData.played = true;
+            cardsPlayed++;
+            
+            updateDisplay();
+            generateCards();
+            
+            const config = difficultySettings[currentDifficulty];
+            addDebug(`🎮 Carta jogada: ${cardData.title} (${cardsPlayed}/${config.cards})`);
+        }
+        
+        function playRandomCard() {
+            const availableCards = cardDatabase.filter(card => !card.played);
+            if (availableCards.length === 0) {
+                addDebug('⚠️ Não há mais cartas disponíveis');
+                return;
+            }
+            
+            const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+            playCard(randomCard.id);
+        }
+        
+        function playMultipleCards() {
+            addDebug('🎯 Jogando 3 cartas...');
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    playRandomCard();
+                }, i * 300);
+            }
+        }
+        
+        function resetGame() {
+            cardsPlayed = 0;
+            cardDatabase.forEach(card => card.played = false);
+            
+            updateDisplay();
+            generateCards();
+            
+            addDebug('🔄 Jogo resetado!');
+        }
+        
+        function testProgress() {
+            addDebug('🔍 Testando progresso...');
+            
+            const config = difficultySettings[currentDifficulty];
+            const availableCards = cardDatabase.filter(card => !card.played).length;
+            const maxCards = Math.max(config.cards, availableCards);
+            const progressPercentage = (cardsPlayed / maxCards) * 100;
+            
+            addDebug(`📊 Progresso atual: ${cardsPlayed}/${maxCards} = ${progressPercentage.toFixed(1)}%`);
+            
+            const progressElement = document.getElementById('cardsProgress');
+            if (progressElement) {
+                addDebug(`✅ Barra de progresso encontrada: ${progressElement.style.width}`);
+            } else {
+                addDebug('❌ Barra de progresso não encontrada');
+            }
+        }
+        
+        function addDebug(message) {
+            const debugPanel = document.getElementById('debugPanel');
+            if (!debugPanel) return;
+
+            const timestamp = new Date().toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const debugLine = document.createElement('div');
+            debugLine.innerHTML = `<span style="color: #6b7280;">[${timestamp}]</span> ${message}`;
+            
+            debugPanel.appendChild(debugLine);
+            debugPanel.scrollTop = debugPanel.scrollHeight;
+            
+            const lines = debugPanel.querySelectorAll('div');
+            if (lines.length > 50) {
+                lines[0].remove();
+            }
+        }
+        
+        function clearDebug() {
+            const debugPanel = document.getElementById('debugPanel');
+            if (debugPanel) {
+                debugPanel.innerHTML = '<div>🗑️ Debug limpo!</div>';
+            }
+        }
+        
+        // Inicializar
+        updateDisplay();
+        generateCards();
+        addDebug('🚀 Sistema de teste de barra de progresso iniciado!');
+        addDebug('📊 A barra deve se mover conforme as cartas são jogadas!');
+    </script>
+</body>
+</html>
