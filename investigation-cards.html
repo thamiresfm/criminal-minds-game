@@ -1307,6 +1307,90 @@
             box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
         }
 
+        .btn-view-cards {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: 2px solid #8b5cf6;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-view-cards:hover {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .card-status.played {
+            color: #10b981;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .all-cards-modal {
+            max-width: 800px !important;
+            max-height: 90vh !important;
+        }
+
+        .all-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .all-cards-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .all-cards-item.played {
+            opacity: 0.6;
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .all-cards-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.5));
+        }
+
+        .all-cards-info h4 {
+            color: white;
+            margin: 0 0 0.3rem 0;
+            font-size: 1rem;
+        }
+
+        .all-cards-info p {
+            color: #fbbf24;
+            margin: 0 0 0.5rem 0;
+            font-size: 0.8rem;
+        }
+
+        .played-badge {
+            background: #10b981;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .available-badge {
+            background: #fbbf24;
+            color: #1f2937;
+            padding: 0.2rem 0.5rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
         /* RESPONSIVIDADE OTIMIZADA PARA LAYOUT VERTICAL */
         @media (max-width: 1400px) {
             .game-container {
@@ -1779,6 +1863,7 @@
                 <div class="case-title" style="color: #fbbf24; font-size: 1.6rem;">🟡 CRIMINAL MINDS: INICIANTE</div>
             </div>
             <div style="display: flex; align-items: center; gap: 1rem; margin-left: 2rem;">
+                <button class="btn btn-view-cards" onclick="showAllCards()">👁️ Ver Todas as Cartas</button>
                 <button class="btn btn-danger" onclick="makeAccusation()">ACUSAR</button>
             </div>
         </div>
@@ -2532,6 +2617,9 @@
         }
 
         function showCardDetails(cardData) {
+            // Verificar se a carta já foi jogada
+            const isPlayed = cardData.played || false;
+            
             // Criar modal com detalhes da carta
             const modal = document.createElement('div');
             modal.className = 'card-details-modal';
@@ -2549,6 +2637,7 @@
                                 <h3>${cardData.title}</h3>
                                 <p class="detail-type">${cardData.type}</p>
                                 <p class="detail-rarity">${getRarityName(cardData.rarity)}</p>
+                                ${isPlayed ? '<p class="card-status played">✅ Carta Jogada</p>' : ''}
                             </div>
                         </div>
                         <div class="card-detail-description">
@@ -2566,7 +2655,7 @@
                             </div>
                         </div>
                         <div class="card-actions">
-                            <button class="btn-play" onclick="playCard(${cardData.id})">▶️ Jogar Carta</button>
+                            ${!isPlayed ? `<button class="btn-play" onclick="playCardFromModal('${cardData.id}')">▶️ Jogar Carta</button>` : ''}
                             <button class="btn-close" onclick="closeCardDetails()">❌ Fechar</button>
                         </div>
                     </div>
@@ -2591,6 +2680,65 @@
                     modal.remove();
                 }, 300);
             }
+        }
+
+        function playCardFromModal(cardId) {
+            // Fechar o modal primeiro
+            closeCardDetails();
+            
+            // Encontrar o elemento da carta e jogá-la
+            setTimeout(() => {
+                const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+                if (cardElement) {
+                    playCard(cardElement);
+                }
+            }, 350);
+        }
+
+        function showAllCards() {
+            // Criar modal com todas as cartas
+            const modal = document.createElement('div');
+            modal.className = 'card-details-modal';
+            
+            const allCards = cardDatabase.map(card => {
+                const isPlayed = card.played || false;
+                return `
+                    <div class="all-cards-item ${isPlayed ? 'played' : ''}">
+                        <div class="all-cards-icon">${card.icon}</div>
+                        <div class="all-cards-info">
+                            <h4>${card.title}</h4>
+                            <p>${card.type} - ${getRarityName(card.rarity)}</p>
+                            ${isPlayed ? '<span class="played-badge">✅ Jogada</span>' : '<span class="available-badge">🃏 Disponível</span>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            modal.innerHTML = `
+                <div class="modal-overlay"></div>
+                <div class="modal-content all-cards-modal">
+                    <div class="modal-header">
+                        <h2>👁️ Todas as Cartas</h2>
+                        <button class="close-btn" onclick="closeCardDetails()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="all-cards-grid">
+                            ${allCards}
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-close" onclick="closeCardDetails()">❌ Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Animar entrada
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 10);
         }
 
         function getDetailedDescription(cardData) {
@@ -3795,9 +3943,18 @@
             // Marcar carta como jogada
             cardElement.classList.add('played');
             
-            // Efeito visual de "usado"
-            cardElement.style.transform = 'scale(0.95)';
-            cardElement.style.filter = 'grayscale(50%)';
+            // Tornar carta invisível
+            cardElement.style.opacity = '0';
+            cardElement.style.pointerEvents = 'none';
+            
+            // Marcar no banco de dados da carta
+            const cardId = cardElement.getAttribute('data-card-id');
+            if (cardId) {
+                const cardData = cardDatabase.find(card => card.id === cardId);
+                if (cardData) {
+                    cardData.played = true;
+                }
+            }
             
             // Incrementar contadores
             cardsPlayed++;
