@@ -2682,6 +2682,7 @@
                 icon: '🟢',
                 timer: 45 * 60, // 45 minutos
                 coinMultiplier: 1.0,
+                evidenceMultiplier: 1.0,
                 comboRequirement: 2,
                 description: 'Mais tempo, menos cartas, recompensas normais'
             },
@@ -2692,6 +2693,7 @@
                 icon: '🟡',
                 timer: 45 * 60, // 45 minutos
                 coinMultiplier: 1.5,
+                evidenceMultiplier: 1.2,
                 comboRequirement: 3,
                 description: 'Tempo padrão, cartas balanceadas, bônus de 50%'
             },
@@ -2702,6 +2704,7 @@
                 icon: '🔴',
                 timer: 45 * 60, // 45 minutos
                 coinMultiplier: 2.0,
+                evidenceMultiplier: 1.5,
                 comboRequirement: 4,
                 description: 'Menos tempo, mais cartas, recompensas dobradas'
             }
@@ -4680,16 +4683,10 @@
                 }
             }, 200);
             
-            // 2. Calcular evidências com combo
-            const baseEvidence = cardEffect.evidence;
-            const comboMultiplier = 1 + (comboStreak * 0.1); // 10% por combo
-            const totalEvidenceGained = Math.floor(baseEvidence * comboMultiplier);
-            console.log(`🃏 Evidências calculadas: base=${baseEvidence}, combo=${comboMultiplier.toFixed(2)}, total=${totalEvidenceGained}`);
-            
-            // 3. Adicionar evidências ao caso
-            totalEvidence += totalEvidenceGained;
-            currentCase.collectedEvidence += totalEvidenceGained;
-            console.log(`🃏 Evidências adicionadas: totalEvidence=${totalEvidence}, caseEvidence=${currentCase.collectedEvidence}`);
+            // 2. Atualizar sistema de evidências
+            updateEvidenceDisplay();
+            const evidenceCalculation = calculateTotalEvidence();
+            console.log(`🃏 Sistema de evidências atualizado: ${evidenceCalculation.total} total`);
             
             // 4. Adicionar pista ao caso
             if (!currentCase.clues.includes(cardEffect.clue)) {
@@ -4714,10 +4711,11 @@
             updateAllGameStats();
             
             // 9. Mostrar feedback visual da carta
-            showCardPlayedFeedback(cardElement, totalEvidenceGained, cardEffect.description);
+            const evidenceGained = evidenceCalculation.total - (totalEvidence - cardEffect.evidence);
+            showCardPlayedFeedback(cardElement, evidenceGained, cardEffect.description);
             
             // 10. Mostrar notificação de evidências e moedas
-            showEvidenceNotification(totalEvidenceGained, cardEffect.description, totalCoins, comboStreak);
+            showEvidenceNotification(evidenceGained, cardEffect.description, totalCoins, comboStreak);
             
             // 12. Efeito sonoro visual (emoji)
             const soundEffect = document.createElement('div');
@@ -4742,9 +4740,10 @@
             
             // 13. Adicionar mensagem ao chat sobre a evidência coletada
             setTimeout(() => {
+                const evidenceGained = evidenceCalculation.total - (totalEvidence - cardEffect.evidence);
                 const chatMessages = [
-                    `🔍 Coletou ${totalEvidenceGained} evidências com ${cardEffect.description.toLowerCase()}`,
-                    `📊 Progresso: ${currentCase.collectedEvidence}/${currentCase.targetEvidence} evidências`,
+                    `🔍 Coletou ${evidenceGained} evidências com ${cardEffect.description.toLowerCase()}`,
+                    `📊 Progresso: ${evidenceCalculation.total}/${currentCase.targetEvidence} evidências`,
                     `🎯 Combo ${comboStreak}x ativo! Continue assim!`,
                     `💡 Boa estratégia! Essa evidência é crucial!`,
                     `🃏 Carta ${cardType} jogada com sucesso!`,
@@ -5169,6 +5168,62 @@
             }, 100);
         }
 
+        // Função para mostrar notificação de vitória
+        function showVictoryNotification() {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #10b981, #059669);
+                color: white;
+                padding: 2rem;
+                border-radius: 15px;
+                text-align: center;
+                z-index: 10000;
+                box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+                animation: victoryPulse 2s ease-in-out;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                <h2 style="margin: 0 0 1rem 0; font-size: 1.5rem;">VITÓRIA!</h2>
+                <p style="margin: 0 0 1rem 0; font-size: 1.1rem;">Você coletou todas as evidências necessárias!</p>
+                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Total: ${currentCase.collectedEvidence}/${currentCase.targetEvidence} evidências</p>
+                <button onclick="this.parentElement.remove()" style="
+                    margin-top: 1rem;
+                    padding: 0.5rem 1rem;
+                    background: rgba(255, 255, 255, 0.2);
+                    border: none;
+                    border-radius: 8px;
+                    color: white;
+                    cursor: pointer;
+                    font-weight: bold;
+                ">Continuar</button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Adicionar animação CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes victoryPulse {
+                    0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+                    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+                    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Remover automaticamente após 5 segundos
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
         // Função para mostrar notificação de evidências e moedas
         function showEvidenceNotification(evidence, description, coins, combo) {
             const notification = document.createElement('div');
@@ -5358,6 +5413,76 @@
                 multiplier: comboMultiplier
             };
         }
+
+        // Função para calcular total de evidências baseado na dificuldade
+        function calculateTotalEvidence() {
+            const difficultyConfig = difficultySettings[currentDifficulty];
+            const baseEvidencePerCard = 10; // Evidências base por carta
+            const maxCards = difficultyConfig.cards;
+            
+            // Calcular evidências base
+            let totalBaseEvidence = cardsPlayed * baseEvidencePerCard;
+            
+            // Aplicar bônus de combo
+            const comboBonus = calculateComboBonus(totalBaseEvidence);
+            
+            // Aplicar multiplicador de dificuldade
+            const difficultyMultiplier = difficultyConfig.evidenceMultiplier || 1.0;
+            const finalEvidence = Math.floor(comboBonus.total * difficultyMultiplier);
+            
+            console.log(`📊 Total de evidências calculado: ${totalBaseEvidence} base + ${comboBonus.bonus} combo = ${finalEvidence} final`);
+            
+            return {
+                base: totalBaseEvidence,
+                combo: comboBonus.bonus,
+                total: finalEvidence,
+                multiplier: difficultyMultiplier,
+                maxCards: maxCards
+            };
+        }
+
+        // Função para atualizar display de evidências
+        function updateEvidenceDisplay() {
+            const evidenceCalculation = calculateTotalEvidence();
+            
+            // Atualizar variável global
+            totalEvidence = evidenceCalculation.total;
+            currentCase.collectedEvidence = evidenceCalculation.total;
+            
+            // Atualizar display
+            const evidenceDisplayElement = document.getElementById('evidenceDisplay');
+            if (evidenceDisplayElement) {
+                evidenceDisplayElement.textContent = `${evidenceCalculation.total}/${currentCase.targetEvidence}`;
+                console.log(`📊 Display de evidências atualizado: ${evidenceCalculation.total}/${currentCase.targetEvidence}`);
+            }
+            
+            // Atualizar barra de progresso
+            const evidenceProgress = Math.min((evidenceCalculation.total / currentCase.targetEvidence) * 100, 100);
+            const evidenceProgressElement = document.getElementById('evidenceProgress');
+            if (evidenceProgressElement) {
+                evidenceProgressElement.style.width = `${evidenceProgress}%`;
+                
+                // Mudar cor baseado no progresso
+                if (evidenceProgress >= 100) {
+                    evidenceProgressElement.style.background = 'linear-gradient(90deg, #10b981, #059669)';
+                } else if (evidenceProgress >= 75) {
+                    evidenceProgressElement.style.background = 'linear-gradient(90deg, #f59e0b, #d97706)';
+                } else if (evidenceProgress >= 50) {
+                    evidenceProgressElement.style.background = 'linear-gradient(90deg, #3b82f6, #2563eb)';
+                } else {
+                    evidenceProgressElement.style.background = 'linear-gradient(90deg, #6b7280, #4b5563)';
+                }
+                
+                console.log(`📊 Barra de progresso de evidências atualizada: ${evidenceProgress}%`);
+            }
+            
+            // Verificar se atingiu o objetivo
+            if (evidenceCalculation.total >= currentCase.targetEvidence) {
+                showVictoryNotification();
+            }
+            
+            return evidenceCalculation;
+        }
         
         // Função para calcular bônus de moedas baseado no combo
         function calculateComboCoins() {
@@ -5415,14 +5540,8 @@
                 console.error('📊 Elemento comboStreak não encontrado');
             }
             
-            // Atualizar evidências
-            const evidenceDisplayElement = document.getElementById('evidenceDisplay');
-            if (evidenceDisplayElement) {
-                evidenceDisplayElement.textContent = `${currentCase.collectedEvidence}/${currentCase.targetEvidence}`;
-                console.log(`📊 Evidências atualizadas: ${currentCase.collectedEvidence}/${currentCase.targetEvidence}`);
-            } else {
-                console.error('📊 Elemento evidenceDisplay não encontrado');
-            }
+            // Atualizar evidências usando o novo sistema
+            updateEvidenceDisplay();
             
             // Calcular multiplicador baseado na dificuldade
             const difficultyMultiplier = 1.0 + (comboStreak * 0.1);
@@ -5438,8 +5557,6 @@
             const maxCards = difficultySettings[currentDifficulty].cards;
             const cardsProgress = (cardsPlayed / maxCards) * 100;
             const comboProgress = Math.min((comboStreak / 10) * 100, 100);
-            const evidenceProgress = (currentCase.collectedEvidence / currentCase.targetEvidence) * 100;
-            
             const cardsProgressElement = document.getElementById('cardsProgress');
             if (cardsProgressElement) {
                 cardsProgressElement.style.width = `${cardsProgress}%`;
@@ -5454,14 +5571,6 @@
                 console.log(`📊 Barra de progresso de combo atualizada: ${comboProgress}%`);
             } else {
                 console.error('📊 Elemento comboProgress não encontrado');
-            }
-            
-            const evidenceProgressElement = document.getElementById('evidenceProgress');
-            if (evidenceProgressElement) {
-                evidenceProgressElement.style.width = `${evidenceProgress}%`;
-                console.log(`📊 Barra de progresso de evidências atualizada: ${evidenceProgress}%`);
-            } else {
-                console.error('📊 Elemento evidenceProgress não encontrado');
             }
             
             // Atualizar título do caso com progresso
