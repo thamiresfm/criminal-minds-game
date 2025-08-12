@@ -1403,6 +1403,120 @@
             font-size: 0.7rem;
             font-weight: bold;
         }
+        
+        /* Estilos para interação com detalhes das cartas */
+        .all-cards-item:hover {
+            background: rgba(251, 191, 36, 0.2);
+            border-color: rgba(251, 191, 36, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        }
+        
+        .all-cards-action {
+            margin-left: auto;
+        }
+        
+        .view-details-btn {
+            color: #fbbf24;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        
+        .all-cards-item:hover .view-details-btn {
+            opacity: 1;
+        }
+        
+        /* Estilos para o modal de detalhes */
+        .card-details-content {
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .card-details-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .card-details-icon {
+            font-size: 3rem;
+            margin-right: 1rem;
+        }
+        
+        .card-details-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: #f9fafb;
+        }
+        
+        .card-type {
+            color: #9ca3af;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .card-status {
+            color: #10b981;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .card-details-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-details-section h4 {
+            color: #fbbf24;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        .investigation-clues {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .investigation-clues li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #374151;
+            color: #d1d5db;
+        }
+        
+        .investigation-clues li:last-child {
+            border-bottom: none;
+        }
+        
+        .card-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: #374151;
+            border-radius: 6px;
+        }
+        
+        .stat-label {
+            color: #9ca3af;
+        }
+        
+        .stat-value {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .card-details-actions {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #374151;
+        }
 
         /* RESPONSIVIDADE OTIMIZADA PARA LAYOUT VERTICAL */
         @media (max-width: 1400px) {
@@ -1877,7 +1991,7 @@
             </div>
             <div style="display: flex; align-items: center; gap: 1rem; margin-left: 2rem;">
                 <button class="btn btn-view-cards" onclick="showAllCards()">👁️ Ver Todas as Cartas</button>
-                <button class="btn btn-secondary" onclick="reloadAvailableCards()">🔄 Recarregar</button>
+
                 <button class="btn btn-danger" onclick="makeAccusation()">ACUSAR</button>
             </div>
         </div>
@@ -2591,10 +2705,10 @@
             // Se não há cartas disponíveis, mostrar mensagem
             if (availableCards.length === 0) {
                 container.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                    <div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: 1 / -1;">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
-                        <h3>Todas as cartas foram jogadas!</h3>
-                        <p>Parabéns! Você utilizou todas as cartas disponíveis nesta investigação.</p>
+                        <h3 style="text-align: center; margin-bottom: 1rem;">Todas as cartas foram jogadas!</h3>
+                        <p style="text-align: center; margin-bottom: 1.5rem;">Parabéns! Você utilizou todas as cartas disponíveis nesta investigação.</p>
                         <button class="btn btn-primary" onclick="showAllCards()">👁️ Ver Todas as Cartas</button>
                     </div>
                 `;
@@ -2744,7 +2858,13 @@
             
             // Incrementar contadores
             cardsPlayed++;
-            comboStreak++;
+            
+            // Gerenciar Combo Streak
+            manageComboStreak('increment');
+            
+            // Registrar tempo da última carta jogada
+            window.lastCardPlayTime = Date.now();
+            
             console.log(`📊 Contadores atualizados: cardsPlayed=${cardsPlayed}, comboStreak=${comboStreak}`);
             
             // Atualizar contador de cartas jogadas imediatamente
@@ -2795,12 +2915,15 @@
             const allCards = cardDatabase.map(card => {
                 const isPlayed = card.played || false;
                 return `
-                    <div class="all-cards-item ${isPlayed ? 'played' : ''}">
+                    <div class="all-cards-item ${isPlayed ? 'played' : ''}" onclick="showCardDetails('${card.id}')" style="cursor: pointer;">
                         <div class="all-cards-icon">${card.icon}</div>
                         <div class="all-cards-info">
                             <h4>${card.title}</h4>
                             <p>${card.type} - ${getRarityName(card.rarity)}</p>
                             ${isPlayed ? '<span class="played-badge">✅ Jogada</span>' : '<span class="available-badge">🃏 Disponível</span>'}
+                        </div>
+                        <div class="all-cards-action">
+                            <span class="view-details-btn">👁️ Ver Detalhes</span>
                         </div>
                     </div>
                 `;
@@ -2818,7 +2941,6 @@
                             ${allCards}
                         </div>
                         <div class="card-actions">
-                            <button class="btn btn-primary" onclick="reloadAvailableCards(); closeCardDetails();">🔄 Recarregar Cartas</button>
                             <button class="btn-close" onclick="closeCardDetails()">❌ Fechar</button>
                         </div>
                     </div>
@@ -2851,6 +2973,92 @@
             };
             
             return descriptions[cardData.id] || cardData.description;
+        }
+
+        // Função para mostrar detalhes de uma carta específica
+        function showCardDetails(cardId) {
+            console.log(`🔍 Mostrando detalhes da carta: ${cardId}`);
+            
+            const cardData = cardDatabase.find(card => card.id === cardId);
+            if (!cardData) {
+                console.error(`❌ Carta não encontrada: ${cardId}`);
+                return;
+            }
+            
+            // Fechar modal atual se existir
+            closeCardDetails();
+            
+            // Criar modal de detalhes
+            const modal = document.createElement('div');
+            modal.className = 'card-details-modal';
+            
+            const detailedDescription = getDetailedDescription(cardData);
+            const investigationClues = getInvestigationClues(cardData);
+            const isPlayed = cardData.played || false;
+            
+            modal.innerHTML = `
+                <div class="modal-overlay"></div>
+                <div class="modal-content card-details-content">
+                    <div class="modal-header">
+                        <h2>${cardData.icon} ${cardData.title}</h2>
+                        <button class="close-btn" onclick="closeCardDetails()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card-details-header">
+                            <div class="card-details-icon">${cardData.icon}</div>
+                            <div class="card-details-info">
+                                <h3>${cardData.title}</h3>
+                                <p class="card-type">${cardData.type} - ${getRarityName(cardData.rarity)}</p>
+                                <p class="card-status">${isPlayed ? '✅ Jogada' : '🃏 Disponível'}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card-details-section">
+                            <h4>📝 Descrição Detalhada</h4>
+                            <p>${detailedDescription}</p>
+                        </div>
+                        
+                        <div class="card-details-section">
+                            <h4>🔍 Pistas de Investigação</h4>
+                            <ul class="investigation-clues">
+                                ${investigationClues.map(clue => `<li>${clue}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div class="card-details-section">
+                            <h4>📊 Estatísticas</h4>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Evidências:</span>
+                                    <span class="stat-value">${cardData.evidence || 0}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Raridade:</span>
+                                    <span class="stat-value">${getRarityName(cardData.rarity)}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Tipo:</span>
+                                    <span class="stat-value">${cardData.type}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${!isPlayed ? `
+                        <div class="card-details-actions">
+                            <button class="btn btn-primary" onclick="playCardFromModal('${cardId}')">🃏 Jogar Carta</button>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Animar entrada
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 10);
         }
 
         function getInvestigationClues(cardData) {
@@ -4075,10 +4283,10 @@
                         const container = document.getElementById('cardsContainer');
                         if (container) {
                             container.innerHTML = `
-                                <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                                <div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: 1 / -1;">
                                     <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
-                                    <h3>Todas as cartas foram jogadas!</h3>
-                                    <p>Parabéns! Você utilizou todas as cartas disponíveis nesta investigação.</p>
+                                    <h3 style="text-align: center; margin-bottom: 1rem;">Todas as cartas foram jogadas!</h3>
+                                    <p style="text-align: center; margin-bottom: 1.5rem;">Parabéns! Você utilizou todas as cartas disponíveis nesta investigação.</p>
                                     <button class="btn btn-primary" onclick="showAllCards()">👁️ Ver Todas as Cartas</button>
                                 </div>
                             `;
@@ -4091,7 +4299,13 @@
             
             // 1. Incrementar contadores
             cardsPlayed++;
-            comboStreak++;
+            
+            // Gerenciar Combo Streak
+            manageComboStreak('increment');
+            
+            // Registrar tempo da última carta jogada
+            window.lastCardPlayTime = Date.now();
+            
             console.log(`🃏 Contadores atualizados: cardsPlayed=${cardsPlayed}, comboStreak=${comboStreak}`);
             
             // Atualizar contador de cartas jogadas imediatamente
@@ -4644,6 +4858,195 @@
             }, 4000);
         }
 
+        // ===== SISTEMA DE COMBO STREAK =====
+        
+        // Função para gerenciar o Combo Streak
+        function manageComboStreak(action = 'increment') {
+            console.log(`🔥 Gerenciando Combo Streak: ${action}`);
+            
+            switch (action) {
+                case 'increment':
+                    comboStreak++;
+                    console.log(`🔥 Combo incrementado: ${comboStreak}x`);
+                    
+                    // Verificar conquistas de combo
+                    if (comboStreak === 3) {
+                        showNotification('🔥 Combo 3x! Bônus de evidências ativo!', 'success');
+                    } else if (comboStreak === 5) {
+                        showNotification('⚡ Combo 5x! Multiplicador máximo!', 'success');
+                    } else if (comboStreak === 10) {
+                        showNotification('🎯 Combo 10x! LENDÁRIO!', 'legendary');
+                        // Desbloquear conquista
+                        if (!achievements.comboMaster.completed) {
+                            achievements.comboMaster.completed = true;
+                            achievements.comboMaster.progress = 100;
+                            showAchievementNotification('Combo Master', 'Alcançou um combo de 10x!');
+                        }
+                    }
+                    break;
+                    
+                case 'reset':
+                    const previousCombo = comboStreak;
+                    comboStreak = 0;
+                    console.log(`🔥 Combo resetado: ${previousCombo}x → 0x`);
+                    
+                    if (previousCombo >= 3) {
+                        showNotification('💔 Combo perdido! Volte a jogar cartas consecutivamente.', 'warning');
+                    }
+                    break;
+                    
+                case 'maintain':
+                    console.log(`🔥 Combo mantido: ${comboStreak}x`);
+                    break;
+            }
+            
+            // Atualizar display do combo
+            updateComboDisplay();
+            
+            // Atualizar multiplicador
+            updateMultiplier();
+            
+            // Atualizar barra de progresso do combo
+            updateComboProgressBar();
+            
+            return comboStreak;
+        }
+        
+        // Função para atualizar o display do combo
+        function updateComboDisplay() {
+            const comboElement = document.getElementById('comboStreak');
+            if (comboElement) {
+                comboElement.textContent = `${comboStreak}x`;
+                
+                // Aplicar cores baseadas no nível do combo
+                if (comboStreak >= 10) {
+                    comboElement.style.color = '#fbbf24'; // Dourado
+                    comboElement.style.textShadow = '0 0 10px #fbbf24';
+                } else if (comboStreak >= 7) {
+                    comboElement.style.color = '#ef4444'; // Vermelho
+                    comboElement.style.textShadow = '0 0 8px #ef4444';
+                } else if (comboStreak >= 5) {
+                    comboElement.style.color = '#8b5cf6'; // Roxo
+                    comboElement.style.textShadow = '0 0 6px #8b5cf6';
+                } else if (comboStreak >= 3) {
+                    comboElement.style.color = '#f59e0b'; // Laranja
+                    comboElement.style.textShadow = '0 0 4px #f59e0b';
+                } else {
+                    comboElement.style.color = '#6b7280'; // Cinza
+                    comboElement.style.textShadow = 'none';
+                }
+                
+                console.log(`🔥 Display do combo atualizado: ${comboStreak}x`);
+            } else {
+                console.error('🔥 Elemento comboStreak não encontrado');
+            }
+        }
+        
+        // Função para atualizar o multiplicador baseado no combo
+        function updateMultiplier() {
+            const multiplier = 1.0 + (comboStreak * 0.1); // 10% por combo
+            const multiplierElement = document.getElementById('currentMultiplier');
+            
+            if (multiplierElement) {
+                multiplierElement.textContent = `${multiplier.toFixed(1)}x`;
+                
+                // Aplicar cores baseadas no multiplicador
+                if (multiplier >= 2.0) {
+                    multiplierElement.style.color = '#fbbf24'; // Dourado
+                } else if (multiplier >= 1.5) {
+                    multiplierElement.style.color = '#ef4444'; // Vermelho
+                } else if (multiplier >= 1.3) {
+                    multiplierElement.style.color = '#8b5cf6'; // Roxo
+                } else {
+                    multiplierElement.style.color = '#6b7280'; // Cinza
+                }
+                
+                console.log(`📈 Multiplicador atualizado: ${multiplier.toFixed(1)}x`);
+            } else {
+                console.error('📈 Elemento currentMultiplier não encontrado');
+            }
+            
+            return multiplier;
+        }
+        
+        // Função para atualizar a barra de progresso do combo
+        function updateComboProgressBar() {
+            const maxCombo = 10; // Combo máximo
+            const progressPercentage = Math.min((comboStreak / maxCombo) * 100, 100);
+            const progressElement = document.getElementById('comboProgress');
+            
+            if (progressElement) {
+                progressElement.style.width = `${progressPercentage}%`;
+                
+                // Aplicar cores baseadas no progresso
+                if (progressPercentage >= 100) {
+                    progressElement.style.backgroundColor = '#fbbf24'; // Dourado
+                } else if (progressPercentage >= 70) {
+                    progressElement.style.backgroundColor = '#ef4444'; // Vermelho
+                } else if (progressPercentage >= 50) {
+                    progressElement.style.backgroundColor = '#8b5cf6'; // Roxo
+                } else if (progressPercentage >= 30) {
+                    progressElement.style.backgroundColor = '#f59e0b'; // Laranja
+                } else {
+                    progressElement.style.backgroundColor = '#10b981'; // Verde
+                }
+                
+                console.log(`📊 Barra de progresso do combo atualizada: ${progressPercentage.toFixed(1)}%`);
+            } else {
+                console.error('📊 Elemento comboProgress não encontrado');
+            }
+        }
+        
+        // Função para calcular bônus de evidências baseado no combo
+        function calculateComboBonus(baseEvidence) {
+            const comboMultiplier = 1 + (comboStreak * 0.1); // 10% por combo
+            const totalEvidence = Math.floor(baseEvidence * comboMultiplier);
+            const bonusEvidence = totalEvidence - baseEvidence;
+            
+            console.log(`🔥 Bônus de combo: ${baseEvidence} + ${bonusEvidence} = ${totalEvidence} evidências`);
+            
+            return {
+                base: baseEvidence,
+                bonus: bonusEvidence,
+                total: totalEvidence,
+                multiplier: comboMultiplier
+            };
+        }
+        
+        // Função para calcular bônus de moedas baseado no combo
+        function calculateComboCoins() {
+            const baseCoins = 5; // Moedas base por carta
+            const comboBonus = Math.floor(comboStreak * 2); // +2 moedas por combo
+            const totalCoins = baseCoins + comboBonus;
+            
+            console.log(`💰 Bônus de moedas por combo: ${baseCoins} + ${comboBonus} = ${totalCoins} moedas`);
+            
+            return {
+                base: baseCoins,
+                bonus: comboBonus,
+                total: totalCoins
+            };
+        }
+        
+        // Função para verificar se o combo deve ser resetado
+        function shouldResetCombo() {
+            // Resetar combo se:
+            // 1. Passou muito tempo desde a última carta jogada (5 segundos)
+            // 2. Houve um erro ao jogar carta
+            // 3. O jogador clicou em "Ver Todas as Cartas"
+            
+            const lastCardTime = window.lastCardPlayTime || 0;
+            const currentTime = Date.now();
+            const timeSinceLastCard = currentTime - lastCardTime;
+            
+            if (timeSinceLastCard > 5000) { // 5 segundos
+                console.log('🔥 Combo resetado por timeout (5s)');
+                return true;
+            }
+            
+            return false;
+        }
+        
         // Função para atualizar estatísticas
         function updateStats() {
             console.log('📊 Atualizando estatísticas...');
@@ -4685,7 +5088,8 @@
             }
             
             // Atualizar barras de progresso
-            const cardsProgress = (cardsPlayed / 20) * 100;
+            const maxCards = difficultySettings[currentDifficulty].cards;
+            const cardsProgress = (cardsPlayed / maxCards) * 100;
             const comboProgress = Math.min((comboStreak / 10) * 100, 100);
             const evidenceProgress = (currentCase.collectedEvidence / currentCase.targetEvidence) * 100;
             

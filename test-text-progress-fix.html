@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Correções de Texto e Progresso</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #374151;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .progress-section {
+            background: #1e40af;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-item {
+            margin-bottom: 15px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(107, 114, 128, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            border-radius: 4px;
+            transition: width 0.5s ease-out;
+            width: 0%;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .cards-display {
+            background: #1f2937;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border: 2px solid #fbbf24;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: scale(1.02);
+        }
+        
+        .card.played {
+            opacity: 0.5;
+            border-color: #10b981;
+        }
+        
+        .info-box {
+            background: #1e40af;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #fbbf24;
+        }
+        
+        .test-results {
+            background: #1f2937;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .success {
+            color: #10b981;
+        }
+        
+        .error {
+            color: #ef4444;
+        }
+        
+        .warning {
+            color: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>🧪 Teste - Correções de Texto e Progresso</h1>
+            <p>Verificando se o texto está centralizado e a barra de progresso funciona corretamente</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>🎯 Problemas Identificados e Correções</h3>
+            <ul>
+                <li><strong>Texto centralizado:</strong> "Todas as cartas foram jogadas!" deve ficar centralizado</li>
+                <li><strong>Barra de progresso:</strong> Deve se mover conforme o total de cartas do nível</li>
+                <li><strong>Grid layout:</strong> Mensagem deve ocupar toda a largura do grid</li>
+            </ul>
+        </div>
+        
+        <div class="progress-section">
+            <h3>📊 Progresso das Cartas</h3>
+            
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>🃏 Cartas Jogadas</span>
+                    <span id="cardsPlayed">0/6</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="cardsProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>📈 Progresso Percentual</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="playRandomCard()">🎲 Jogar Carta</button>
+            <button class="btn" onclick="playAllCards()">🎯 Jogar Todas (6)</button>
+            <button class="btn" onclick="resetGame()">🔄 Resetar</button>
+            <button class="btn" onclick="testTextAlignment()">🔍 Testar Alinhamento</button>
+            <button class="btn" onclick="testProgressBar()">📊 Testar Progresso</button>
+        </div>
+        
+        <div class="cards-display">
+            <h3>🃏 Cartas Disponíveis: <span id="available-cards">6</span></h3>
+            <div class="cards-grid" id="cardsContainer">
+                <!-- Cartas serão geradas aqui -->
+            </div>
+        </div>
+        
+        <div class="test-results" id="testResults">
+            <h4>📋 Resultados dos Testes:</h4>
+            <div id="testOutput">Aguardando testes...</div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let cardsPlayed = 0;
+        let currentDifficulty = 'beginner';
+        
+        // Configurações de dificuldade
+        const difficultySettings = {
+            beginner: { 
+                cards: 6, 
+                name: 'Iniciante', 
+                color: '#10b981',
+                icon: '🟢'
+            }
+        };
+        
+        // Banco de dados de cartas
+        const cardDatabase = [
+            { id: 'card1', title: 'Kit Forense', type: 'equipment', icon: '🔍', played: false },
+            { id: 'card2', title: 'Testemunha', type: 'evidence', icon: '👁️', played: false },
+            { id: 'card3', title: 'Mandado', type: 'action', icon: '📜', played: false },
+            { id: 'card4', title: 'DNA', type: 'evidence', icon: '🧬', played: false },
+            { id: 'card5', title: 'Psicologia', type: 'action', icon: '🧠', played: false },
+            { id: 'card6', title: 'Câmeras', type: 'equipment', icon: '📹', played: false }
+        ];
+        
+        function updateDisplay() {
+            const config = difficultySettings[currentDifficulty];
+            
+            // Atualizar contador de cartas
+            const cardsElement = document.getElementById('cardsPlayed');
+            if (cardsElement) {
+                cardsElement.textContent = `${cardsPlayed}/${config.cards}`;
+            }
+            
+            // Atualizar barra de progresso
+            updateProgressBar(config.cards);
+            
+            // Atualizar cartas disponíveis
+            const availableCards = cardDatabase.filter(card => !card.played).length;
+            document.getElementById('available-cards').textContent = availableCards;
+        }
+        
+        function updateProgressBar(maxCards) {
+            const progressPercentage = (cardsPlayed / maxCards) * 100;
+            
+            // Atualizar barra de progresso das cartas
+            const progressElement = document.getElementById('cardsProgress');
+            if (progressElement) {
+                progressElement.style.width = `${progressPercentage}%`;
+            }
+            
+            // Atualizar barra de progresso percentual
+            const percentElement = document.getElementById('progressPercent');
+            const percentBar = document.getElementById('progressBar');
+            if (percentElement) {
+                percentElement.textContent = `${progressPercentage.toFixed(1)}%`;
+            }
+            if (percentBar) {
+                percentBar.style.width = `${progressPercentage}%`;
+            }
+        }
+        
+        function generateCards() {
+            const container = document.getElementById('cardsContainer');
+            if (!container) return;
+            
+            const config = difficultySettings[currentDifficulty];
+            const availableCards = cardDatabase.filter(card => !card.played);
+            
+            if (availableCards.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: 1 / -1;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                        <h3 style="text-align: center; margin-bottom: 1rem;">Todas as cartas foram jogadas!</h3>
+                        <p style="text-align: center; margin-bottom: 1.5rem;">Parabéns! Você utilizou todas as cartas disponíveis nesta investigação.</p>
+                        <button class="btn" onclick="resetGame()">🔄 Jogar Novamente</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Mostrar cartas disponíveis
+            availableCards.forEach((cardData, index) => {
+                const cardElement = createCardElement(cardData);
+                container.appendChild(cardElement);
+                
+                setTimeout(() => {
+                    cardElement.style.opacity = '1';
+                    cardElement.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        }
+        
+        function createCardElement(cardData) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-card-id', cardData.id);
+            card.onclick = () => playCard(cardData.id);
+            
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease-out';
+            
+            card.innerHTML = `
+                <div style="font-size: 1.5rem; margin-bottom: 5px;">${cardData.icon}</div>
+                <div style="font-weight: bold; font-size: 0.9rem; margin-bottom: 3px;">${cardData.title}</div>
+                <div style="font-size: 0.7rem; color: #fbbf24;">${cardData.type}</div>
+            `;
+            
+            return card;
+        }
+        
+        function playCard(cardId) {
+            const cardData = cardDatabase.find(card => card.id === cardId);
+            if (!cardData || cardData.played) return;
+            
+            cardData.played = true;
+            cardsPlayed++;
+            
+            updateDisplay();
+            generateCards();
+        }
+        
+        function playRandomCard() {
+            const availableCards = cardDatabase.filter(card => !card.played);
+            if (availableCards.length === 0) {
+                addTestResult('⚠️ Não há mais cartas disponíveis', 'warning');
+                return;
+            }
+            
+            const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+            playCard(randomCard.id);
+        }
+        
+        function playAllCards() {
+            const availableCards = cardDatabase.filter(card => !card.played);
+            availableCards.forEach((card, index) => {
+                setTimeout(() => {
+                    playCard(card.id);
+                }, index * 200);
+            });
+        }
+        
+        function resetGame() {
+            cardsPlayed = 0;
+            cardDatabase.forEach(card => card.played = false);
+            
+            updateDisplay();
+            generateCards();
+            
+            addTestResult('🔄 Jogo resetado!', 'success');
+        }
+        
+        function testTextAlignment() {
+            const container = document.getElementById('cardsContainer');
+            const messageDiv = container.querySelector('div[style*="text-align: center"]');
+            
+            if (messageDiv) {
+                const h3 = messageDiv.querySelector('h3');
+                const p = messageDiv.querySelector('p');
+                
+                const h3Style = window.getComputedStyle(h3);
+                const pStyle = window.getComputedStyle(p);
+                
+                const h3Centered = h3Style.textAlign === 'center';
+                const pCentered = pStyle.textAlign === 'center';
+                
+                if (h3Centered && pCentered) {
+                    addTestResult('✅ Texto está centralizado corretamente', 'success');
+                } else {
+                    addTestResult('❌ Texto não está centralizado', 'error');
+                }
+            } else {
+                addTestResult('⚠️ Mensagem de "todas as cartas" não encontrada', 'warning');
+            }
+        }
+        
+        function testProgressBar() {
+            const config = difficultySettings[currentDifficulty];
+            const expectedProgress = (cardsPlayed / config.cards) * 100;
+            
+            const progressElement = document.getElementById('cardsProgress');
+            const actualWidth = parseFloat(progressElement.style.width) || 0;
+            
+            if (Math.abs(actualWidth - expectedProgress) < 1) {
+                addTestResult(`✅ Barra de progresso correta: ${actualWidth.toFixed(1)}%`, 'success');
+            } else {
+                addTestResult(`❌ Barra de progresso incorreta: esperado ${expectedProgress.toFixed(1)}%, atual ${actualWidth.toFixed(1)}%`, 'error');
+            }
+        }
+        
+        function addTestResult(message, type) {
+            const output = document.getElementById('testOutput');
+            const timestamp = new Date().toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = type;
+            resultDiv.innerHTML = `<span style="color: #6b7280;">[${timestamp}]</span> ${message}`;
+            
+            output.appendChild(resultDiv);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        // Inicializar
+        updateDisplay();
+        generateCards();
+        addTestResult('🚀 Sistema de teste iniciado!', 'success');
+    </script>
+</body>
+</html>

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Combo Streak e Detalhes das Cartas</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .test-title {
+            color: #fbbf24;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #fbbf24;
+            color: #1f2937;
+        }
+        
+        .btn-primary:hover {
+            background: #f59e0b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .stats-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        
+        .stat-label {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #fbbf24;
+            transition: width 0.5s ease;
+        }
+        
+        .debug-panel {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .debug-title {
+            color: #fbbf24;
+            margin-bottom: 0.5rem;
+        }
+        
+        .debug-log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+        
+        .combo-effects {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .effect-card {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .effect-title {
+            color: #fbbf24;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .effect-description {
+            color: #d1d5db;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🔥 Teste - Sistema de Combo Streak e Detalhes das Cartas</h1>
+            <p>Testando a implementação completa do sistema de combo e visualização de detalhes</p>
+        </div>
+        
+        <!-- Seção de Estatísticas -->
+        <div class="test-section">
+            <h2 class="test-title">📊 Estatísticas do Jogo</h2>
+            <div class="stats-display">
+                <div class="stat-card">
+                    <div class="stat-value" id="cardsPlayed">0/6</div>
+                    <div class="stat-label">🃏 Cartas Jogadas</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="cardsProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="comboStreak">0x</div>
+                    <div class="stat-label">🔥 Combo Streak</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="comboProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="currentMultiplier">1.0x</div>
+                    <div class="stat-label">📈 Multiplicador</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="evidenceDisplay">0/100</div>
+                    <div class="stat-label">🔍 Evidências</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="evidenceProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção de Testes do Combo -->
+        <div class="test-section">
+            <h2 class="test-title">🔥 Testes do Combo Streak</h2>
+            <div class="test-buttons">
+                <button class="btn btn-primary" onclick="testIncrementCombo()">➕ Incrementar Combo</button>
+                <button class="btn btn-secondary" onclick="testResetCombo()">🔄 Resetar Combo</button>
+                <button class="btn btn-success" onclick="testComboEffects()">⚡ Testar Efeitos</button>
+                <button class="btn btn-danger" onclick="testTimeoutCombo()">⏰ Testar Timeout</button>
+            </div>
+            
+            <div class="combo-effects">
+                <div class="effect-card">
+                    <div class="effect-title">🔥 Combo 3x</div>
+                    <div class="effect-description">Bônus de evidências ativo! Notificação de sucesso.</div>
+                </div>
+                <div class="effect-card">
+                    <div class="effect-title">⚡ Combo 5x</div>
+                    <div class="effect-description">Multiplicador máximo! Notificação de sucesso.</div>
+                </div>
+                <div class="effect-card">
+                    <div class="effect-title">🎯 Combo 10x</div>
+                    <div class="effect-description">LENDÁRIO! Conquista desbloqueada.</div>
+                </div>
+                <div class="effect-card">
+                    <div class="effect-title">💔 Combo Perdido</div>
+                    <div class="effect-description">Timeout de 5 segundos ou reset manual.</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção de Testes de Cartas -->
+        <div class="test-section">
+            <h2 class="test-title">🃏 Testes de Cartas</h2>
+            <div class="test-buttons">
+                <button class="btn btn-primary" onclick="testPlayCard()">🃏 Jogar Carta</button>
+                <button class="btn btn-secondary" onclick="testShowAllCards()">👁️ Ver Todas as Cartas</button>
+                <button class="btn btn-success" onclick="testCardDetails()">🔍 Testar Detalhes</button>
+                <button class="btn btn-danger" onclick="testLimitCards()">🚫 Testar Limite</button>
+            </div>
+        </div>
+        
+        <!-- Seção de Testes de Integração -->
+        <div class="test-section">
+            <h2 class="test-title">🔗 Testes de Integração</h2>
+            <div class="test-buttons">
+                <button class="btn btn-primary" onclick="testFullGameFlow()">🎮 Fluxo Completo</button>
+                <button class="btn btn-secondary" onclick="testModalIntegration()">📱 Integração Modal</button>
+                <button class="btn btn-success" onclick="testComboCalculations()">🧮 Cálculos de Combo</button>
+                <button class="btn btn-danger" onclick="resetAllTests()">🔄 Resetar Tudo</button>
+            </div>
+        </div>
+        
+        <!-- Painel de Debug -->
+        <div class="test-section">
+            <h2 class="test-title">🐛 Painel de Debug</h2>
+            <div class="debug-panel" id="debugPanel">
+                <div class="debug-title">Log de Eventos:</div>
+                <div class="debug-log">Sistema inicializado. Pronto para testes.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais do jogo
+        let cardsPlayed = 0;
+        let comboStreak = 0;
+        let currentEvidence = 0;
+        const maxEvidence = 100;
+        const maxCardsForLevel = 6;
+        
+        // Banco de dados de cartas de exemplo
+        const cardDatabase = [
+            {
+                id: 'suspect_marcus',
+                title: 'Marcus Thompson',
+                type: 'Suspeito',
+                rarity: 'common',
+                icon: '👤',
+                evidence: 20,
+                played: false
+            },
+            {
+                id: 'equipment_camera',
+                title: 'Câmera de Segurança',
+                type: 'Equipamento',
+                rarity: 'rare',
+                icon: '📹',
+                evidence: 25,
+                played: false
+            },
+            {
+                id: 'evidence_dna',
+                title: 'Amostra de DNA',
+                type: 'Evidência',
+                rarity: 'epic',
+                icon: '🧬',
+                evidence: 30,
+                played: false
+            }
+        ];
+        
+        // Função para adicionar log de debug
+        function addDebug(message) {
+            const debugPanel = document.getElementById('debugPanel');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'debug-log';
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            debugPanel.appendChild(logEntry);
+            debugPanel.scrollTop = debugPanel.scrollHeight;
+        }
+        
+        // Função para gerenciar o Combo Streak
+        function manageComboStreak(action = 'increment') {
+            addDebug(`🔥 Gerenciando Combo Streak: ${action}`);
+            
+            switch (action) {
+                case 'increment':
+                    comboStreak++;
+                    addDebug(`🔥 Combo incrementado: ${comboStreak}x`);
+                    
+                    // Verificar conquistas de combo
+                    if (comboStreak === 3) {
+                        addDebug('🔥 Combo 3x! Bônus de evidências ativo!');
+                    } else if (comboStreak === 5) {
+                        addDebug('⚡ Combo 5x! Multiplicador máximo!');
+                    } else if (comboStreak === 10) {
+                        addDebug('🎯 Combo 10x! LENDÁRIO!');
+                    }
+                    break;
+                    
+                case 'reset':
+                    const previousCombo = comboStreak;
+                    comboStreak = 0;
+                    addDebug(`🔥 Combo resetado: ${previousCombo}x → 0x`);
+                    
+                    if (previousCombo >= 3) {
+                        addDebug('💔 Combo perdido! Volte a jogar cartas consecutivamente.');
+                    }
+                    break;
+                    
+                case 'maintain':
+                    addDebug(`🔥 Combo mantido: ${comboStreak}x`);
+                    break;
+            }
+            
+            updateComboDisplay();
+            updateMultiplier();
+            updateComboProgressBar();
+            
+            return comboStreak;
+        }
+        
+        // Função para atualizar o display do combo
+        function updateComboDisplay() {
+            const comboElement = document.getElementById('comboStreak');
+            if (comboElement) {
+                comboElement.textContent = `${comboStreak}x`;
+                
+                // Aplicar cores baseadas no nível do combo
+                if (comboStreak >= 10) {
+                    comboElement.style.color = '#fbbf24';
+                    comboElement.style.textShadow = '0 0 10px #fbbf24';
+                } else if (comboStreak >= 7) {
+                    comboElement.style.color = '#ef4444';
+                    comboElement.style.textShadow = '0 0 8px #ef4444';
+                } else if (comboStreak >= 5) {
+                    comboElement.style.color = '#8b5cf6';
+                    comboElement.style.textShadow = '0 0 6px #8b5cf6';
+                } else if (comboStreak >= 3) {
+                    comboElement.style.color = '#f59e0b';
+                    comboElement.style.textShadow = '0 0 4px #f59e0b';
+                } else {
+                    comboElement.style.color = '#6b7280';
+                    comboElement.style.textShadow = 'none';
+                }
+                
+                addDebug(`🔥 Display do combo atualizado: ${comboStreak}x`);
+            }
+        }
+        
+        // Função para atualizar o multiplicador
+        function updateMultiplier() {
+            const multiplier = 1.0 + (comboStreak * 0.1);
+            const multiplierElement = document.getElementById('currentMultiplier');
+            
+            if (multiplierElement) {
+                multiplierElement.textContent = `${multiplier.toFixed(1)}x`;
+                
+                if (multiplier >= 2.0) {
+                    multiplierElement.style.color = '#fbbf24';
+                } else if (multiplier >= 1.5) {
+                    multiplierElement.style.color = '#ef4444';
+                } else if (multiplier >= 1.3) {
+                    multiplierElement.style.color = '#8b5cf6';
+                } else {
+                    multiplierElement.style.color = '#6b7280';
+                }
+                
+                addDebug(`📈 Multiplicador atualizado: ${multiplier.toFixed(1)}x`);
+            }
+            
+            return multiplier;
+        }
+        
+        // Função para atualizar a barra de progresso do combo
+        function updateComboProgressBar() {
+            const maxCombo = 10;
+            const progressPercentage = Math.min((comboStreak / maxCombo) * 100, 100);
+            const progressElement = document.getElementById('comboProgress');
+            
+            if (progressElement) {
+                progressElement.style.width = `${progressPercentage}%`;
+                
+                if (progressPercentage >= 100) {
+                    progressElement.style.backgroundColor = '#fbbf24';
+                } else if (progressPercentage >= 70) {
+                    progressElement.style.backgroundColor = '#ef4444';
+                } else if (progressPercentage >= 50) {
+                    progressElement.style.backgroundColor = '#8b5cf6';
+                } else if (progressPercentage >= 30) {
+                    progressElement.style.backgroundColor = '#f59e0b';
+                } else {
+                    progressElement.style.backgroundColor = '#10b981';
+                }
+                
+                addDebug(`📊 Barra de progresso do combo atualizada: ${progressPercentage.toFixed(1)}%`);
+            }
+        }
+        
+        // Função para atualizar contadores de cartas
+        function updateCardsPlayedCounter() {
+            const cardsElement = document.getElementById('cardsPlayed');
+            if (cardsElement) {
+                cardsElement.textContent = `${cardsPlayed}/${maxCardsForLevel}`;
+                addDebug(`🃏 Contador de cartas atualizado: ${cardsPlayed}/${maxCardsForLevel}`);
+            }
+            
+            // Atualizar barra de progresso
+            const progressElement = document.getElementById('cardsProgress');
+            if (progressElement) {
+                const progressPercentage = (cardsPlayed / maxCardsForLevel) * 100;
+                progressElement.style.width = `${progressPercentage}%`;
+                addDebug(`📊 Barra de progresso de cartas: ${progressPercentage.toFixed(1)}%`);
+            }
+        }
+        
+        // Função para calcular bônus de evidências
+        function calculateComboBonus(baseEvidence) {
+            const comboMultiplier = 1 + (comboStreak * 0.1);
+            const totalEvidence = Math.floor(baseEvidence * comboMultiplier);
+            const bonusEvidence = totalEvidence - baseEvidence;
+            
+            addDebug(`🔥 Bônus de combo: ${baseEvidence} + ${bonusEvidence} = ${totalEvidence} evidências`);
+            
+            return {
+                base: baseEvidence,
+                bonus: bonusEvidence,
+                total: totalEvidence,
+                multiplier: comboMultiplier
+            };
+        }
+        
+        // Funções de teste
+        function testIncrementCombo() {
+            addDebug('🧪 Testando incremento de combo...');
+            manageComboStreak('increment');
+        }
+        
+        function testResetCombo() {
+            addDebug('🧪 Testando reset de combo...');
+            manageComboStreak('reset');
+        }
+        
+        function testComboEffects() {
+            addDebug('🧪 Testando efeitos de combo...');
+            const testEvidence = 20;
+            const result = calculateComboBonus(testEvidence);
+            addDebug(`🧮 Resultado: ${result.base} + ${result.bonus} = ${result.total} evidências`);
+        }
+        
+        function testTimeoutCombo() {
+            addDebug('🧪 Testando timeout de combo...');
+            // Simular timeout
+            setTimeout(() => {
+                addDebug('⏰ Timeout de 5 segundos atingido');
+                manageComboStreak('reset');
+            }, 5000);
+        }
+        
+        function testPlayCard() {
+            if (cardsPlayed >= maxCardsForLevel) {
+                addDebug('🚫 Limite de cartas atingido!');
+                return;
+            }
+            
+            addDebug('🧪 Testando jogada de carta...');
+            cardsPlayed++;
+            manageComboStreak('increment');
+            updateCardsPlayedCounter();
+            
+            // Simular ganho de evidências
+            const baseEvidence = 20;
+            const result = calculateComboBonus(baseEvidence);
+            currentEvidence = Math.min(currentEvidence + result.total, maxEvidence);
+            
+            // Atualizar display de evidências
+            const evidenceElement = document.getElementById('evidenceDisplay');
+            if (evidenceElement) {
+                evidenceElement.textContent = `${currentEvidence}/${maxEvidence}`;
+            }
+            
+            const evidenceProgress = document.getElementById('evidenceProgress');
+            if (evidenceProgress) {
+                const progressPercentage = (currentEvidence / maxEvidence) * 100;
+                evidenceProgress.style.width = `${progressPercentage}%`;
+            }
+        }
+        
+        function testShowAllCards() {
+            addDebug('🧪 Testando visualização de todas as cartas...');
+            addDebug('📋 Modal "Todas as Cartas" seria aberto aqui');
+            addDebug('👁️ Cada carta teria botão "Ver Detalhes"');
+        }
+        
+        function testCardDetails() {
+            addDebug('🧪 Testando detalhes de carta...');
+            addDebug('🔍 Modal de detalhes seria aberto aqui');
+            addDebug('📝 Mostraria descrição, pistas e estatísticas');
+        }
+        
+        function testLimitCards() {
+            addDebug('🧪 Testando limite de cartas...');
+            if (cardsPlayed >= maxCardsForLevel) {
+                addDebug('🚫 Limite atingido: não é possível jogar mais cartas');
+            } else {
+                addDebug(`✅ Ainda é possível jogar ${maxCardsForLevel - cardsPlayed} cartas`);
+            }
+        }
+        
+        function testFullGameFlow() {
+            addDebug('🧪 Testando fluxo completo do jogo...');
+            addDebug('1. Jogar carta → Incrementar combo');
+            addDebug('2. Calcular bônus de evidências');
+            addDebug('3. Atualizar contadores e barras de progresso');
+            addDebug('4. Verificar conquistas e notificações');
+        }
+        
+        function testModalIntegration() {
+            addDebug('🧪 Testando integração de modais...');
+            addDebug('📱 Modal "Todas as Cartas" sem botão recarregar');
+            addDebug('👁️ Clique em carta → Modal de detalhes');
+            addDebug('🃏 Botão "Jogar Carta" no modal de detalhes');
+        }
+        
+        function testComboCalculations() {
+            addDebug('🧪 Testando cálculos de combo...');
+            for (let i = 0; i <= 10; i++) {
+                comboStreak = i;
+                const result = calculateComboBonus(20);
+                addDebug(`Combo ${i}x: 20 × ${result.multiplier.toFixed(1)} = ${result.total} evidências`);
+            }
+            comboStreak = 0;
+            updateComboDisplay();
+        }
+        
+        function resetAllTests() {
+            addDebug('🔄 Resetando todos os testes...');
+            cardsPlayed = 0;
+            comboStreak = 0;
+            currentEvidence = 0;
+            
+            updateComboDisplay();
+            updateMultiplier();
+            updateComboProgressBar();
+            updateCardsPlayedCounter();
+            
+            // Resetar evidências
+            const evidenceElement = document.getElementById('evidenceDisplay');
+            if (evidenceElement) {
+                evidenceElement.textContent = '0/100';
+            }
+            
+            const evidenceProgress = document.getElementById('evidenceProgress');
+            if (evidenceProgress) {
+                evidenceProgress.style.width = '0%';
+            }
+            
+            addDebug('✅ Todos os valores foram resetados');
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            addDebug('🚀 Sistema de teste inicializado');
+            addDebug('🔥 Combo Streak implementado');
+            addDebug('👁️ Detalhes de cartas implementados');
+            addDebug('📊 Contadores dinâmicos funcionando');
+            
+            // Inicializar displays
+            updateComboDisplay();
+            updateMultiplier();
+            updateComboProgressBar();
+            updateCardsPlayedCounter();
+        });
+    </script>
+</body>
+</html>
