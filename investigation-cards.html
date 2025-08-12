@@ -2997,50 +2997,6 @@
                 modal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(1)';
             }, 10);
         }
-                    <div class="modal-header">
-                        <h2>🔍 Detalhes da Carta</h2>
-                        <button class="close-btn" onclick="closeCardDetails()">×</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="card-detail-main">
-                            <div class="detail-icon">${cardData.icon}</div>
-                            <div class="detail-info">
-                                <h3>${cardData.title}</h3>
-                                <p class="detail-type">${cardData.type}</p>
-                                <p class="detail-rarity">${getRarityName(cardData.rarity)}</p>
-                                ${isPlayed ? '<p class="card-status played">✅ Carta Jogada</p>' : ''}
-                            </div>
-                        </div>
-                        <div class="card-detail-description">
-                            <h4>📝 Descrição Detalhada:</h4>
-                            <p>${getDetailedDescription(cardData)}</p>
-                        </div>
-                        <div class="card-detail-clues">
-                            <h4>🔍 Pistas para Investigação:</h4>
-                            <ul>${getInvestigationClues(cardData).map(clue => `<li>${clue}</li>`).join('')}</ul>
-                        </div>
-                        <div class="card-detail-stats">
-                            <h4>📊 Estatísticas:</h4>
-                            <div class="stats-grid">
-                                ${cardData.stats.map(stat => `<div class="stat-item">${stat}</div>`).join('')}
-                            </div>
-                        </div>
-                        <div class="card-actions">
-                            ${!isPlayed ? `<button class="btn-play" onclick="playCardFromModal('${cardData.id}')">▶️ Jogar Carta</button>` : ''}
-                            <button class="btn-close" onclick="closeCardDetails()">❌ Fechar</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            // Animar entrada
-            setTimeout(() => {
-                modal.style.opacity = '1';
-                modal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(1)';
-            }, 10);
-        }
 
         // Função auxiliar para mostrar detalhes por ID
         function showCardDetailsById(cardId) {
@@ -3958,6 +3914,21 @@
 
         function showCollection() {
             document.getElementById('collectionModal').style.display = 'block';
+        }
+
+        function makeAccusation() {
+            const confirmAccusation = confirm('⚖️ Tem certeza que deseja fazer sua acusação final?\n\n🃏 Suas cartas jogadas determinarão o resultado.\n\n✅ Clique OK para fazer a acusação\n❌ Clique Cancelar para continuar investigando');
+            
+            if (confirmAccusation) {
+                // Calcular resultado baseado nas cartas jogadas
+                const success = Math.random() > 0.5; // Simulação simples (50% chance)
+                
+                // Bônus final baseado no desempenho
+                calculateFinalRewards();
+                
+                // Mostrar resultado final
+                showGameEndModal(success ? 'win' : 'lose');
+            }
         }
 
 
