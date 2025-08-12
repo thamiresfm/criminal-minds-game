@@ -1149,6 +1149,10 @@
             transform: scale(0.8);
             transition: transform 0.3s ease;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            margin: auto;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
         }
 
         .modal-header {
@@ -2575,7 +2579,7 @@
             // Animar entrada
             setTimeout(() => {
                 modal.style.opacity = '1';
-                modal.querySelector('.modal-content').style.transform = 'scale(1)';
+                modal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(1)';
             }, 10);
         }
 
@@ -2583,7 +2587,7 @@
             const modal = document.querySelector('.card-details-modal');
             if (modal) {
                 modal.style.opacity = '0';
-                modal.querySelector('.modal-content').style.transform = 'scale(0.8)';
+                modal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(0.8)';
                 setTimeout(() => {
                     modal.remove();
                 }, 300);
