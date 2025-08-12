@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Clique na Carta e Detalhes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .test-title {
+            color: #fbbf24;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #fbbf24;
+            color: #1f2937;
+        }
+        
+        .btn-primary:hover {
+            background: #f59e0b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .debug-panel {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .debug-title {
+            color: #fbbf24;
+            margin-bottom: 0.5rem;
+        }
+        
+        .debug-log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+        
+        .error-log {
+            background: rgba(239, 68, 68, 0.2);
+            border-left: 3px solid #ef4444;
+        }
+        
+        .success-log {
+            background: rgba(16, 185, 129, 0.2);
+            border-left: 3px solid #10b981;
+        }
+        
+        /* Estilos das cartas */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            margin: 0;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+            border: 2px solid rgba(251, 191, 36, 0.4);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(251, 191, 36, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            padding: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-15px) rotateX(8deg) rotateY(8deg) scale(1.05);
+            box-shadow: 0 25px 50px rgba(251, 191, 36, 0.3), 0 0 30px rgba(251, 191, 36, 0.2);
+            border-color: rgba(251, 191, 36, 0.8);
+        }
+        
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .card-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-type {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .card-rarity {
+            color: #fbbf24;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            background: rgba(251, 191, 36, 0.1);
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            margin: 1rem 0;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
+        }
+        
+        .card-title {
+            color: #f9fafb;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        
+        .card-description {
+            color: #d1d5db;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+        
+        .card-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat {
+            color: #fbbf24;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .card-action {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card:hover .card-action {
+            opacity: 1;
+        }
+        
+        .view-details-hint {
+            color: #fbbf24;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+        }
+        
+        /* Estilos do modal */
+        .card-details-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .modal-content {
+            position: relative;
+            background: linear-gradient(135deg, #1f2937, #111827);
+            border: 2px solid #fbbf24;
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: translate(-50%, -50%) scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .modal-header h2 {
+            color: #fbbf24;
+            margin: 0;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-btn:hover {
+            color: #fbbf24;
+        }
+        
+        .card-details-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .card-details-icon {
+            font-size: 3rem;
+            margin-right: 1rem;
+        }
+        
+        .card-details-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: #f9fafb;
+        }
+        
+        .card-type {
+            color: #9ca3af;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .card-status {
+            color: #10b981;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .card-details-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-details-section h4 {
+            color: #fbbf24;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        .investigation-clues {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .investigation-clues li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #374151;
+            color: #d1d5db;
+        }
+        
+        .investigation-clues li:last-child {
+            border-bottom: none;
+        }
+        
+        .card-effects {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .effect-item {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            color: #d1d5db;
+        }
+        
+        .effect-item:hover {
+            background: rgba(251, 191, 36, 0.2);
+            border-color: rgba(251, 191, 36, 0.5);
+        }
+        
+        .card-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: #374151;
+            border-radius: 6px;
+        }
+        
+        .stat-label {
+            color: #9ca3af;
+        }
+        
+        .stat-value {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .card-details-actions {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #374151;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🃏 Teste - Clique na Carta e Detalhes</h1>
+            <p>Testando a funcionalidade de clicar na carta e abrir detalhes</p>
+        </div>
+        
+        <!-- Seção de Testes -->
+        <div class="test-section">
+            <h2 class="test-title">🧪 Testes de Funcionalidade</h2>
+            <div class="test-buttons">
+                <button class="btn btn-primary" onclick="testCardClick()">🃏 Testar Clique na Carta</button>
+                <button class="btn btn-secondary" onclick="testModalDetails()">🔍 Testar Modal de Detalhes</button>
+                <button class="btn btn-success" onclick="testCardEffects()">⚡ Testar Efeitos da Carta</button>
+                <button class="btn btn-danger" onclick="testResponsiveLayout()">📱 Testar Layout Responsivo</button>
+            </div>
+        </div>
+        
+        <!-- Seção de Cartas -->
+        <div class="test-section">
+            <h2 class="test-title">🃏 Cartas de Teste</h2>
+            <div class="cards-container" id="cardsContainer">
+                <!-- Cartas serão geradas aqui -->
+            </div>
+        </div>
+        
+        <!-- Painel de Debug -->
+        <div class="test-section">
+            <h2 class="test-title">🐛 Painel de Debug</h2>
+            <div class="debug-panel" id="debugPanel">
+                <div class="debug-title">Log de Eventos:</div>
+                <div class="debug-log">Sistema de teste inicializado. Clique nas cartas para testar.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Banco de dados de cartas de teste
+        const cardDatabase = [
+            {
+                id: 'suspect_marcus',
+                title: 'Marcus Thompson',
+                type: 'Suspeito',
+                rarity: 'epic',
+                icon: '👤',
+                description: 'Ex-empregado da vítima com acesso ao local do crime.',
+                evidence: 78,
+                stats: ['⚡ 78', '🎯 85'],
+                played: false
+            },
+            {
+                id: 'equipment_camera',
+                title: 'Câmera de Segurança',
+                type: 'Equipamento',
+                rarity: 'rare',
+                icon: '📹',
+                description: 'Câmera que capturou imagens do momento do crime.',
+                evidence: 65,
+                stats: ['⚡ 65', '🎯 70'],
+                played: false
+            },
+            {
+                id: 'evidence_dna',
+                title: 'Amostra de DNA',
+                type: 'Evidência',
+                rarity: 'legendary',
+                icon: '🧬',
+                description: 'DNA encontrado na cena do crime.',
+                evidence: 95,
+                stats: ['⚡ 95', '🎯 100'],
+                played: false
+            },
+            {
+                id: 'action_interrogation',
+                title: 'Interrogatório Intensivo',
+                type: 'Ação',
+                rarity: 'rare',
+                icon: '🔍',
+                description: 'Técnica de interrogatório para revelar inconsistências.',
+                evidence: 60,
+                stats: ['⚡ 60', '🎯 75'],
+                played: false
+            },
+            {
+                id: 'ally_officer',
+                title: 'Oficial de Apoio',
+                type: 'Aliado',
+                rarity: 'common',
+                icon: '👮',
+                description: 'Oficial experiente que pode auxiliar na investigação.',
+                evidence: 45,
+                stats: ['⚡ 45', '🎯 55'],
+                played: false
+            },
+            {
+                id: 'evidence_ballistic',
+                title: 'Relatório Balístico',
+                type: 'Evidência',
+                rarity: 'epic',
+                icon: '🎯',
+                description: 'Relatório detalhado das armas e munições.',
+                evidence: 80,
+                stats: ['⚡ 80', '🎯 95'],
+                played: false
+            }
+        ];
+        
+        // Função para adicionar log de debug
+        function addDebug(message, type = 'info') {
+            const debugPanel = document.getElementById('debugPanel');
+            const logEntry = document.createElement('div');
+            logEntry.className = `debug-log ${type}-log`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            debugPanel.appendChild(logEntry);
+            debugPanel.scrollTop = debugPanel.scrollHeight;
+        }
+        
+        // Função para obter nome da raridade
+        function getRarityName(rarity) {
+            const names = {
+                'common': 'COMUM',
+                'rare': 'RARA',
+                'epic': 'ÉPICA',
+                'legendary': 'LENDÁRIA'
+            };
+            return names[rarity] || rarity.toUpperCase();
+        }
+        
+        // Função para obter descrição detalhada
+        function getDetailedDescription(cardData) {
+            const descriptions = {
+                'suspect_marcus': 'Marcus Thompson, 34 anos, ex-empregado da vítima. Tinha acesso ao local do crime e estava presente no dia do assassinato. Possui histórico de conflitos com a vítima por questões financeiras.',
+                'equipment_camera': 'Câmera de segurança de alta resolução que capturou imagens do momento do crime. A gravação mostra uma figura suspeita no local durante a janela de tempo do assassinato.',
+                'evidence_dna': 'Amostra de DNA encontrada na cena do crime. Análise genética pode identificar definitivamente o autor do crime.',
+                'action_interrogation': 'Técnica de interrogatório intensivo que pode revelar inconsistências nas declarações dos suspeitos. Útil para identificar mentiras e obter confissões.',
+                'ally_officer': 'Oficial de apoio experiente que pode auxiliar na investigação. Possui conhecimento local e recursos adicionais para o caso.',
+                'evidence_ballistic': 'Relatório balístico detalhado das armas e munições encontradas. Pode conectar armas específicas ao crime.'
+            };
+            
+            return descriptions[cardData.id] || cardData.description;
+        }
+        
+        // Função para obter pistas de investigação
+        function getInvestigationClues(cardData) {
+            const clues = {
+                'suspect_marcus': [
+                    'Marcus estava desempregado e com problemas financeiros',
+                    'Tinha acesso às chaves do local do crime',
+                    'Sua alibi para o horário do crime é inconsistente',
+                    'Possui histórico de violência doméstica',
+                    'Foi visto discutindo com a vítima no dia anterior'
+                ],
+                'equipment_camera': [
+                    'A gravação mostra uma figura masculina no local',
+                    'O suspeito usava roupas escuras',
+                    'A pessoa tinha aproximadamente 1,75m de altura',
+                    'Movimentos sugerem conhecimento do local',
+                    'Horário da gravação: 23:47 - 00:15'
+                ],
+                'evidence_dna': [
+                    'DNA masculino encontrado na vítima',
+                    'Sangue do suspeito na cena',
+                    'Cabelos encontrados no local',
+                    'Saliva em copo na cena',
+                    'Comparação com banco de dados'
+                ],
+                'action_interrogation': [
+                    'Pode revelar inconsistências nas declarações',
+                    'Técnicas de pressão psicológica',
+                    'Análise de linguagem corporal',
+                    'Detecção de mentiras',
+                    'Pode levar a confissões'
+                ],
+                'ally_officer': [
+                    'Conhecimento da área local',
+                    'Acesso a registros policiais',
+                    'Contatos com informantes',
+                    'Experiência em patrulhamento',
+                    'Recursos adicionais de investigação'
+                ],
+                'evidence_ballistic': [
+                    'Arma calibre .38 encontrada',
+                    'Munições compatíveis com ferimentos',
+                    'Trajetória dos projéteis analisada',
+                    'Comparação com armas registradas',
+                    'Evidência de tiro à queima-roupa'
+                ]
+            };
+            
+            return clues[cardData.id] || [
+                'Fornece informações úteis para a investigação',
+                'Ajuda a identificar pistas importantes',
+                'Contribui para o progresso do caso',
+                'Revela detalhes relevantes'
+            ];
+        }
+        
+        // Função para obter efeitos da carta
+        function getCardEffects(cardData) {
+            const effects = {
+                'suspect_marcus': [
+                    '🔍 Revela informações sobre o suspeito',
+                    '📊 Fornece evidências de motivação',
+                    '🎯 Ajuda a identificar padrões comportamentais',
+                    '⚡ Acelera a investigação'
+                ],
+                'equipment_camera': [
+                    '📹 Captura evidências visuais',
+                    '⏰ Registra horários importantes',
+                    '🎯 Identifica movimentos suspeitos',
+                    '📊 Fornece dados de localização'
+                ],
+                'evidence_dna': [
+                    '🧬 Identifica definitivamente o autor',
+                    '🔗 Conecta suspeitos à cena',
+                    '📊 Fornece evidência irrefutável',
+                    '⚖️ Suporte para acusação'
+                ],
+                'action_interrogation': [
+                    '🗣️ Revela inconsistências nas declarações',
+                    '😰 Detecta sinais de nervosismo',
+                    '🎭 Identifica mentiras',
+                    '💡 Obtém informações cruciais'
+                ],
+                'ally_officer': [
+                    '👮 Fornece conhecimento local',
+                    '📋 Acesso a registros policiais',
+                    '🤝 Contatos com informantes',
+                    '🚔 Recursos adicionais de investigação'
+                ],
+                'evidence_ballistic': [
+                    '🔫 Conecta armas ao crime',
+                    '📊 Analisa trajetórias de projéteis',
+                    '🔍 Identifica tipo de arma',
+                    '⚖️ Evidência técnica sólida'
+                ]
+            };
+            
+            return effects[cardData.id] || [
+                '📊 Fornece informações úteis',
+                '🔍 Ajuda na investigação',
+                '⚡ Acelera o progresso',
+                '💡 Revela pistas importantes'
+            ];
+        }
+        
+        // Função para criar elemento de carta
+        function createCardElement(cardData) {
+            const card = document.createElement('div');
+            card.className = `card ${cardData.rarity}`;
+            card.setAttribute('data-card-id', cardData.id);
+            
+            // Adicionar evento de clique para abrir detalhes
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showCardDetails(cardData);
+            });
+            
+            // Criar estrutura da carta
+            card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-header">
+                        <span class="card-type">${cardData.type}</span>
+                        <span class="card-rarity rarity-${cardData.rarity}">${getRarityName(cardData.rarity)}</span>
+                    </div>
+                    <div class="card-icon">${cardData.icon}</div>
+                    <div class="card-title">${cardData.title}</div>
+                    <div class="card-description">${cardData.description}</div>
+                    <div class="card-stats">
+                        ${cardData.stats ? cardData.stats.map(stat => `<div class="stat">${stat}</div>`).join('') : ''}
+                    </div>
+                    <div class="card-action">
+                        <span class="view-details-hint">👁️ Ver Detalhes</span>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // Função para mostrar detalhes da carta
+        function showCardDetails(cardData) {
+            addDebug(`🔍 Abrindo detalhes da carta: ${cardData.title}`, 'success');
+            
+            // Verificar se a carta já foi jogada
+            const isPlayed = cardData.played || false;
+            
+            // Fechar modal atual se existir
+            closeCardDetails();
+            
+            // Criar modal com detalhes da carta
+            const modal = document.createElement('div');
+            modal.className = 'card-details-modal';
+            
+            // Obter informações detalhadas da carta
+            const detailedDescription = getDetailedDescription(cardData);
+            const investigationClues = getInvestigationClues(cardData);
+            const cardEffects = getCardEffects(cardData);
+            
+            modal.innerHTML = `
+                <div class="modal-overlay" onclick="closeCardDetails()"></div>
+                <div class="modal-content card-details-content">
+                    <div class="modal-header">
+                        <h2>${cardData.icon} ${cardData.title}</h2>
+                        <button class="close-btn" onclick="closeCardDetails()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card-details-header">
+                            <div class="card-details-icon">${cardData.icon}</div>
+                            <div class="card-details-info">
+                                <h3>${cardData.title}</h3>
+                                <p class="card-type">${cardData.type} - ${getRarityName(cardData.rarity)}</p>
+                                <p class="card-status">${isPlayed ? '✅ Jogada' : '🃏 Disponível'}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card-details-section">
+                            <h4>📝 Descrição Detalhada</h4>
+                            <p>${detailedDescription}</p>
+                        </div>
+                        
+                        <div class="card-details-section">
+                            <h4>🔍 Pistas de Investigação</h4>
+                            <ul class="investigation-clues">
+                                ${investigationClues.map(clue => `<li>${clue}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div class="card-details-section">
+                            <h4>⚡ Efeitos da Carta</h4>
+                            <div class="card-effects">
+                                ${cardEffects.map(effect => `<div class="effect-item">${effect}</div>`).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="card-details-section">
+                            <h4>📊 Estatísticas</h4>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Evidências:</span>
+                                    <span class="stat-value">${cardData.evidence || 0}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Raridade:</span>
+                                    <span class="stat-value">${getRarityName(cardData.rarity)}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Tipo:</span>
+                                    <span class="stat-value">${cardData.type}</span>
+                                </div>
+                                ${cardData.stats ? `
+                                <div class="stat-item">
+                                    <span class="stat-label">Atributos:</span>
+                                    <span class="stat-value">${cardData.stats.join(', ')}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        ${!isPlayed ? `
+                        <div class="card-details-actions">
+                            <button class="btn btn-primary" onclick="playCardFromModal('${cardData.id}')">🃏 Jogar Carta</button>
+                            <button class="btn btn-secondary" onclick="closeCardDetails()">❌ Fechar</button>
+                        </div>
+                        ` : `
+                        <div class="card-details-actions">
+                            <button class="btn btn-secondary" onclick="closeCardDetails()">❌ Fechar</button>
+                        </div>
+                        `}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Animar entrada
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 10);
+            
+            addDebug(`✅ Modal de detalhes aberto para: ${cardData.title}`, 'success');
+        }
+        
+        // Função para fechar modal
+        function closeCardDetails() {
+            const modal = document.querySelector('.card-details-modal');
+            if (modal) {
+                modal.style.opacity = '0';
+                modal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(0.8)';
+                setTimeout(() => {
+                    modal.remove();
+                }, 300);
+                addDebug('❌ Modal de detalhes fechado', 'info');
+            }
+        }
+        
+        // Função para jogar carta do modal
+        function playCardFromModal(cardId) {
+            addDebug(`🃏 Jogando carta do modal: ${cardId}`, 'success');
+            closeCardDetails();
+            
+            // Marcar carta como jogada
+            const cardData = cardDatabase.find(card => card.id === cardId);
+            if (cardData) {
+                cardData.played = true;
+                addDebug(`✅ Carta marcada como jogada: ${cardData.title}`, 'success');
+                
+                // Atualizar visual da carta
+                const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+                if (cardElement) {
+                    cardElement.classList.add('played');
+                    cardElement.style.opacity = '0.6';
+                    addDebug(`🎨 Visual da carta atualizado`, 'success');
+                }
+            }
+        }
+        
+        // Função para gerar cartas
+        function generateCards() {
+            const container = document.getElementById('cardsContainer');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            cardDatabase.forEach((cardData, index) => {
+                const cardElement = createCardElement(cardData);
+                container.appendChild(cardElement);
+                
+                // Animação escalonada
+                setTimeout(() => {
+                    cardElement.style.opacity = '1';
+                    cardElement.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            addDebug(`🎯 Geradas ${cardDatabase.length} cartas de teste`, 'success');
+        }
+        
+        // Funções de teste
+        function testCardClick() {
+            addDebug('🧪 Testando clique na carta...', 'info');
+            addDebug('🃏 Clique em qualquer carta para abrir os detalhes', 'info');
+        }
+        
+        function testModalDetails() {
+            addDebug('🧪 Testando modal de detalhes...', 'info');
+            showCardDetails(cardDatabase[0]);
+        }
+        
+        function testCardEffects() {
+            addDebug('🧪 Testando efeitos da carta...', 'info');
+            const effects = getCardEffects(cardDatabase[0]);
+            effects.forEach(effect => {
+                addDebug(`⚡ ${effect}`, 'success');
+            });
+        }
+        
+        function testResponsiveLayout() {
+            addDebug('🧪 Testando layout responsivo...', 'info');
+            addDebug('📱 Redimensione a janela para testar a responsividade', 'info');
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            addDebug('🚀 Sistema de teste inicializado', 'success');
+            addDebug('🃏 Funcionalidade de clique na carta implementada', 'success');
+            addDebug('🔍 Modal de detalhes funcionando', 'success');
+            addDebug('⚡ Efeitos da carta implementados', 'success');
+            
+            // Gerar cartas
+            generateCards();
+        });
+    </script>
+</body>
+</html>

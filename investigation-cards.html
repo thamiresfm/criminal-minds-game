@@ -1517,6 +1517,157 @@
             padding-top: 1rem;
             border-top: 1px solid #374151;
         }
+        
+        /* Melhorias no layout das cartas */
+        .card-action {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card:hover .card-action {
+            opacity: 1;
+        }
+        
+        .view-details-hint {
+            color: #fbbf24;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+        }
+        
+        /* Melhorias no modal de detalhes */
+        .card-details-content {
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #1f2937, #111827);
+            border: 2px solid #fbbf24;
+            border-radius: 15px;
+        }
+        
+        .card-effects {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .effect-item {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            color: #d1d5db;
+        }
+        
+        .effect-item:hover {
+            background: rgba(251, 191, 36, 0.2);
+            border-color: rgba(251, 191, 36, 0.5);
+        }
+        
+        /* Melhorias na responsividade das cartas */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            margin: 0;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+            border: 2px solid rgba(251, 191, 36, 0.4);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(251, 191, 36, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            padding: 1.5rem;
+        }
+        
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .card-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-type {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .card-rarity {
+            color: #fbbf24;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            background: rgba(251, 191, 36, 0.1);
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            margin: 1rem 0;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
+        }
+        
+        .card-title {
+            color: #f9fafb;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        
+        .card-description {
+            color: #d1d5db;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+        
+        .card-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat {
+            color: #fbbf24;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
 
         /* RESPONSIVIDADE OTIMIZADA PARA LAYOUT VERTICAL */
         @media (max-width: 1400px) {
@@ -2742,13 +2893,21 @@
         function createCardElement(cardData) {
             const card = document.createElement('div');
             card.className = `card ${cardData.rarity}`;
-            card.onclick = () => showCardDetails(cardData);
+            card.setAttribute('data-card-id', cardData.id);
+            
+            // Adicionar evento de clique para abrir detalhes
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showCardDetails(cardData);
+            });
             
             // Iniciar invisível para animação
             card.style.opacity = '0';
             card.style.transform = 'translateY(20px)';
             card.style.transition = 'all 0.5s ease-out';
             
+            // Criar estrutura da carta com layout melhorado
             card.innerHTML = `
                 <div class="card-inner">
                     <div class="card-header">
@@ -2759,7 +2918,10 @@
                     <div class="card-title">${cardData.title}</div>
                     <div class="card-description">${cardData.description}</div>
                     <div class="card-stats">
-                        ${cardData.stats.map(stat => `<div class="stat">${stat}</div>`).join('')}
+                        ${cardData.stats ? cardData.stats.map(stat => `<div class="stat">${stat}</div>`).join('') : ''}
+                    </div>
+                    <div class="card-action">
+                        <span class="view-details-hint">👁️ Ver Detalhes</span>
                     </div>
                 </div>
             `;
@@ -2768,15 +2930,105 @@
         }
 
         function showCardDetails(cardData) {
+            console.log(`🔍 Abrindo detalhes da carta: ${cardData.title}`);
+            
             // Verificar se a carta já foi jogada
             const isPlayed = cardData.played || false;
+            
+            // Fechar modal atual se existir
+            closeCardDetails();
             
             // Criar modal com detalhes da carta
             const modal = document.createElement('div');
             modal.className = 'card-details-modal';
+            
+            // Obter informações detalhadas da carta
+            const detailedDescription = getDetailedDescription(cardData);
+            const investigationClues = getInvestigationClues(cardData);
+            const cardEffects = getCardEffects(cardData);
+            
             modal.innerHTML = `
-                <div class="modal-overlay"></div>
-                <div class="modal-content">
+                <div class="modal-overlay" onclick="closeCardDetails()"></div>
+                <div class="modal-content card-details-content">
+                    <div class="modal-header">
+                        <h2>${cardData.icon} ${cardData.title}</h2>
+                        <button class="close-btn" onclick="closeCardDetails()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card-details-header">
+                            <div class="card-details-icon">${cardData.icon}</div>
+                            <div class="card-details-info">
+                                <h3>${cardData.title}</h3>
+                                <p class="card-type">${cardData.type} - ${getRarityName(cardData.rarity)}</p>
+                                <p class="card-status">${isPlayed ? '✅ Jogada' : '🃏 Disponível'}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card-details-section">
+                            <h4>📝 Descrição Detalhada</h4>
+                            <p>${detailedDescription}</p>
+                        </div>
+                        
+                        <div class="card-details-section">
+                            <h4>🔍 Pistas de Investigação</h4>
+                            <ul class="investigation-clues">
+                                ${investigationClues.map(clue => `<li>${clue}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div class="card-details-section">
+                            <h4>⚡ Efeitos da Carta</h4>
+                            <div class="card-effects">
+                                ${cardEffects.map(effect => `<div class="effect-item">${effect}</div>`).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="card-details-section">
+                            <h4>📊 Estatísticas</h4>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Evidências:</span>
+                                    <span class="stat-value">${cardData.evidence || 0}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Raridade:</span>
+                                    <span class="stat-value">${getRarityName(cardData.rarity)}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Tipo:</span>
+                                    <span class="stat-value">${cardData.type}</span>
+                                </div>
+                                ${cardData.stats ? `
+                                <div class="stat-item">
+                                    <span class="stat-label">Atributos:</span>
+                                    <span class="stat-value">${cardData.stats.join(', ')}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        ${!isPlayed ? `
+                        <div class="card-details-actions">
+                            <button class="btn btn-primary" onclick="playCardFromModal('${cardData.id}')">🃏 Jogar Carta</button>
+                            <button class="btn btn-secondary" onclick="closeCardDetails()">❌ Fechar</button>
+                        </div>
+                        ` : `
+                        <div class="card-details-actions">
+                            <button class="btn btn-secondary" onclick="closeCardDetails()">❌ Fechar</button>
+                        </div>
+                        `}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Animar entrada
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 10);
+        }
                     <div class="modal-header">
                         <h2>🔍 Detalhes da Carta</h2>
                         <button class="close-btn" onclick="closeCardDetails()">×</button>
@@ -3059,6 +3311,91 @@
                 modal.style.opacity = '1';
                 modal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(1)';
             }, 10);
+        }
+
+        // Função para obter efeitos da carta
+        function getCardEffects(cardData) {
+            const effects = {
+                'suspect_marcus': [
+                    '🔍 Revela informações sobre o suspeito',
+                    '📊 Fornece evidências de motivação',
+                    '🎯 Ajuda a identificar padrões comportamentais',
+                    '⚡ Acelera a investigação'
+                ],
+                'equipment_camera': [
+                    '📹 Captura evidências visuais',
+                    '⏰ Registra horários importantes',
+                    '🎯 Identifica movimentos suspeitos',
+                    '📊 Fornece dados de localização'
+                ],
+                'equipment_forensic': [
+                    '🧬 Analisa evidências de DNA',
+                    '🔍 Coleta impressões digitais',
+                    '⚗️ Processa amostras biológicas',
+                    '📊 Gera relatórios técnicos'
+                ],
+                'action_interrogation': [
+                    '🗣️ Revela inconsistências nas declarações',
+                    '😰 Detecta sinais de nervosismo',
+                    '🎭 Identifica mentiras',
+                    '💡 Obtém informações cruciais'
+                ],
+                'action_warrant': [
+                    '🏠 Permite busca em locais específicos',
+                    '📱 Acesso a dispositivos eletrônicos',
+                    '📄 Revela documentos comprometedores',
+                    '🔍 Encontra evidências escondidas'
+                ],
+                'evidence_dna': [
+                    '🧬 Identifica definitivamente o autor',
+                    '🔗 Conecta suspeitos à cena',
+                    '📊 Fornece evidência irrefutável',
+                    '⚖️ Suporte para acusação'
+                ],
+                'ally_officer': [
+                    '👮 Fornece conhecimento local',
+                    '📋 Acesso a registros policiais',
+                    '🤝 Contatos com informantes',
+                    '🚔 Recursos adicionais de investigação'
+                ],
+                'evidence_ballistic': [
+                    '🔫 Conecta armas ao crime',
+                    '📊 Analisa trajetórias de projéteis',
+                    '🔍 Identifica tipo de arma',
+                    '⚖️ Evidência técnica sólida'
+                ],
+                'action_psychological': [
+                    '🧠 Analisa perfil psicológico',
+                    '🎯 Identifica motivações',
+                    '📊 Revela padrões comportamentais',
+                    '💡 Orienta estratégia de investigação'
+                ],
+                'equipment_microscope': [
+                    '🔬 Analisa evidências microscópicas',
+                    '🔍 Revela detalhes imperceptíveis',
+                    '📊 Fornece dados técnicos precisos',
+                    '⚗️ Processa amostras complexas'
+                ],
+                'evidence_fingerprint': [
+                    '👆 Identifica quem esteve no local',
+                    '🔗 Conecta suspeitos à cena',
+                    '📊 Evidência de presença física',
+                    '⚖️ Suporte para acusação'
+                ],
+                'ally_detective': [
+                    '🕵️ Experiência em casos similares',
+                    '💡 Intuição investigativa apurada',
+                    '📊 Análise de padrões criminais',
+                    '🎯 Estratégias de investigação'
+                ]
+            };
+            
+            return effects[cardData.id] || [
+                '📊 Fornece informações úteis',
+                '🔍 Ajuda na investigação',
+                '⚡ Acelera o progresso',
+                '💡 Revela pistas importantes'
+            ];
         }
 
         function getInvestigationClues(cardData) {
@@ -4871,17 +5208,13 @@
                     
                     // Verificar conquistas de combo
                     if (comboStreak === 3) {
-                        showNotification('🔥 Combo 3x! Bônus de evidências ativo!', 'success');
+                        showNotification('🔥 Combo 3x! Bônus de evidências ativo!');
                     } else if (comboStreak === 5) {
-                        showNotification('⚡ Combo 5x! Multiplicador máximo!', 'success');
+                        showNotification('⚡ Combo 5x! Multiplicador máximo!');
                     } else if (comboStreak === 10) {
-                        showNotification('🎯 Combo 10x! LENDÁRIO!', 'legendary');
+                        showNotification('🎯 Combo 10x! LENDÁRIO!');
                         // Desbloquear conquista
-                        if (!achievements.comboMaster.completed) {
-                            achievements.comboMaster.completed = true;
-                            achievements.comboMaster.progress = 100;
-                            showAchievementNotification('Combo Master', 'Alcançou um combo de 10x!');
-                        }
+                        unlockAchievement('comboMaster');
                     }
                     break;
                     
@@ -4891,7 +5224,7 @@
                     console.log(`🔥 Combo resetado: ${previousCombo}x → 0x`);
                     
                     if (previousCombo >= 3) {
-                        showNotification('💔 Combo perdido! Volte a jogar cartas consecutivamente.', 'warning');
+                        showNotification('💔 Combo perdido! Volte a jogar cartas consecutivamente.');
                     }
                     break;
                     
@@ -5054,8 +5387,9 @@
             // Atualizar cartas jogadas
             const cardsPlayedElement = document.getElementById('cardsPlayed');
             if (cardsPlayedElement) {
-                cardsPlayedElement.textContent = `${cardsPlayed}/20`;
-                console.log(`📊 Cartas jogadas atualizadas: ${cardsPlayed}/20`);
+                const maxCards = difficultySettings[currentDifficulty].cards;
+                cardsPlayedElement.textContent = `${cardsPlayed}/${maxCards}`;
+                console.log(`📊 Cartas jogadas atualizadas: ${cardsPlayed}/${maxCards}`);
             } else {
                 console.error('📊 Elemento cardsPlayed não encontrado');
             }
