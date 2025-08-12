@@ -130,12 +130,10 @@ class SimpleGameTimer {
             display.textContent = timeString;
         }
         
-
-        
-        // Atualizar também o elemento original do jogo se existir
-        const gameTimer = document.getElementById('gameTimer');
-        if (gameTimer) {
-            gameTimer.textContent = `⏱️ ${timeString}`;
+        // Atualizar o timer no header
+        const headerTimer = document.querySelector('.timer-display');
+        if (headerTimer) {
+            headerTimer.textContent = `⏱️ ${timeString}`;
         }
 
         // Atualizar o elemento "Tempo Restante" nas estatísticas
@@ -206,11 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Iniciar automaticamente após 2 segundos
+    // Iniciar automaticamente após 1 segundo
     setTimeout(() => {
         console.log('🚀 Iniciando timer automaticamente...');
         window.simpleGameTimer.start();
-    }, 2000);
+    }, 1000);
 });
 
 // Adicionar CSS para animação (apenas se não existir)
