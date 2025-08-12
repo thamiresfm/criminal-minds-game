@@ -1112,6 +1112,198 @@
             max-height: calc(100vh - 120px) !important;
         }
 
+        /* MODAL DE DETALHES DAS CARTAS */
+        .card-details-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+            border: 3px solid rgba(251, 191, 36, 0.6);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .modal-header h2 {
+            color: #fbbf24;
+            margin: 0;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #fbbf24;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(251, 191, 36, 0.2);
+            transform: scale(1.1);
+        }
+
+        .card-detail-main {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .detail-icon {
+            font-size: 3rem;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
+        }
+
+        .detail-info h3 {
+            color: white;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.3rem;
+        }
+
+        .detail-type, .detail-rarity {
+            color: #fbbf24;
+            margin: 0.2rem 0;
+            font-size: 0.9rem;
+        }
+
+        .card-detail-description, .card-detail-clues, .card-detail-stats {
+            margin-bottom: 1.5rem;
+        }
+
+        .card-detail-description h4, .card-detail-clues h4, .card-detail-stats h4 {
+            color: #fbbf24;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .card-detail-description p {
+            color: #e5e7eb;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .card-detail-clues ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .card-detail-clues li {
+            color: #e5e7eb;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .card-detail-clues li:before {
+            content: '🔍';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .stat-item {
+            background: rgba(251, 191, 36, 0.1);
+            padding: 0.8rem;
+            border-radius: 10px;
+            text-align: center;
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn-play, .btn-close {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-play {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-play:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-close {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-close:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
         /* RESPONSIVIDADE OTIMIZADA PARA LAYOUT VERTICAL */
         @media (max-width: 1400px) {
             .game-container {
@@ -2311,7 +2503,7 @@
         function createCardElement(cardData) {
             const card = document.createElement('div');
             card.className = `card ${cardData.rarity}`;
-            card.onclick = () => playCard(cardData.id);
+            card.onclick = () => showCardDetails(cardData);
             
             // Iniciar invisível para animação
             card.style.opacity = '0';
@@ -2334,6 +2526,178 @@
             `;
             
             return card;
+        }
+
+        function showCardDetails(cardData) {
+            // Criar modal com detalhes da carta
+            const modal = document.createElement('div');
+            modal.className = 'card-details-modal';
+            modal.innerHTML = `
+                <div class="modal-overlay"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>🔍 Detalhes da Carta</h2>
+                        <button class="close-btn" onclick="closeCardDetails()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card-detail-main">
+                            <div class="detail-icon">${cardData.icon}</div>
+                            <div class="detail-info">
+                                <h3>${cardData.title}</h3>
+                                <p class="detail-type">${cardData.type}</p>
+                                <p class="detail-rarity">${getRarityName(cardData.rarity)}</p>
+                            </div>
+                        </div>
+                        <div class="card-detail-description">
+                            <h4>📝 Descrição Detalhada:</h4>
+                            <p>${getDetailedDescription(cardData)}</p>
+                        </div>
+                        <div class="card-detail-clues">
+                            <h4>🔍 Pistas para Investigação:</h4>
+                            <ul>${getInvestigationClues(cardData).map(clue => `<li>${clue}</li>`).join('')}</ul>
+                        </div>
+                        <div class="card-detail-stats">
+                            <h4>📊 Estatísticas:</h4>
+                            <div class="stats-grid">
+                                ${cardData.stats.map(stat => `<div class="stat-item">${stat}</div>`).join('')}
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-play" onclick="playCard(${cardData.id})">▶️ Jogar Carta</button>
+                            <button class="btn-close" onclick="closeCardDetails()">❌ Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Animar entrada
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modal.querySelector('.modal-content').style.transform = 'scale(1)';
+            }, 10);
+        }
+
+        function closeCardDetails() {
+            const modal = document.querySelector('.card-details-modal');
+            if (modal) {
+                modal.style.opacity = '0';
+                modal.querySelector('.modal-content').style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    modal.remove();
+                }, 300);
+            }
+        }
+
+        function getDetailedDescription(cardData) {
+            const descriptions = {
+                'suspect_marcus': 'Marcus Thompson, 34 anos, ex-empregado da vítima. Tinha acesso ao local do crime e estava presente no dia do assassinato. Possui histórico de conflitos com a vítima por questões financeiras.',
+                'equipment_camera': 'Câmera de segurança de alta resolução que capturou imagens do momento do crime. A gravação mostra uma figura suspeita no local durante a janela de tempo do assassinato.',
+                'equipment_forensic': 'Kit forense avançado com equipamentos para análise de DNA, impressões digitais e evidências microscópicas. Permite coleta e análise detalhada de evidências físicas.',
+                'action_interrogation': 'Técnica de interrogatório intensivo que pode revelar inconsistências nas declarações dos suspeitos. Útil para identificar mentiras e obter confissões.',
+                'action_warrant': 'Mandado de busca que permite investigar locais específicos relacionados ao caso. Pode revelar evidências escondidas ou documentos comprometedores.',
+                'evidence_dna': 'Amostra de DNA encontrada na cena do crime. Análise genética pode identificar definitivamente o autor do crime.',
+                'ally_officer': 'Oficial de apoio experiente que pode auxiliar na investigação. Possui conhecimento local e recursos adicionais para o caso.',
+                'evidence_ballistic': 'Relatório balístico detalhado das armas e munições encontradas. Pode conectar armas específicas ao crime.',
+                'action_psychological': 'Análise psicológica dos suspeitos e vítima. Pode revelar motivos, padrões comportamentais e indicar o perfil do assassino.',
+                'equipment_microscope': 'Microscópio eletrônico para análise de evidências microscópicas. Pode revelar detalhes imperceptíveis a olho nu.',
+                'evidence_fingerprint': 'Impressões digitais coletadas na cena do crime. Pode identificar definitivamente quem esteve no local.',
+                'ally_detective': 'Detetive experiente especializado em homicídios. Possui intuição apurada e experiência em casos similares.'
+            };
+            
+            return descriptions[cardData.id] || cardData.description;
+        }
+
+        function getInvestigationClues(cardData) {
+            const clues = {
+                'suspect_marcus': [
+                    'Marcus estava desempregado e com problemas financeiros',
+                    'Tinha acesso às chaves do local do crime',
+                    'Sua alibi para o horário do crime é inconsistente',
+                    'Possui histórico de violência doméstica',
+                    'Foi visto discutindo com a vítima no dia anterior'
+                ],
+                'equipment_camera': [
+                    'A gravação mostra uma figura masculina no local',
+                    'O suspeito usava roupas escuras',
+                    'A pessoa tinha aproximadamente 1,75m de altura',
+                    'Movimentos sugerem conhecimento do local',
+                    'Horário da gravação: 23:47 - 00:15'
+                ],
+                'equipment_forensic': [
+                    'Permite análise de DNA encontrado na cena',
+                    'Pode identificar impressões digitais',
+                    'Revela evidências de luta física',
+                    'Análise de manchas de sangue',
+                    'Detecção de resíduos de pólvora'
+                ],
+                'action_interrogation': [
+                    'Pode revelar inconsistências nas declarações',
+                    'Técnicas de pressão psicológica',
+                    'Análise de linguagem corporal',
+                    'Detecção de mentiras',
+                    'Pode levar a confissões'
+                ],
+                'action_warrant': [
+                    'Permite busca na casa do suspeito',
+                    'Pode revelar armas escondidas',
+                    'Acesso a documentos pessoais',
+                    'Busca em local de trabalho',
+                    'Análise de computadores e celulares'
+                ],
+                'evidence_dna': [
+                    'DNA masculino encontrado na vítima',
+                    'Sangue do suspeito na cena',
+                    'Cabelos encontrados no local',
+                    'Saliva em copo na cena',
+                    'Comparação com banco de dados'
+                ],
+                'ally_officer': [
+                    'Conhecimento da área local',
+                    'Acesso a registros policiais',
+                    'Contatos com informantes',
+                    'Experiência em patrulhamento',
+                    'Recursos adicionais de investigação'
+                ],
+                'evidence_ballistic': [
+                    'Arma calibre .38 encontrada',
+                    'Munições compatíveis com ferimentos',
+                    'Trajetória dos projéteis',
+                    'Distância do tiro',
+                    'Comparação com outras armas'
+                ],
+                'action_psychological': [
+                    'Análise do perfil do assassino',
+                    'Motivos possíveis para o crime',
+                    'Padrões comportamentais',
+                    'Histórico psicológico dos suspeitos',
+                    'Indicadores de psicopatia'
+                ],
+                'equipment_microscope': [
+                    'Análise de fibras de tecido',
+                    'Detecção de resíduos químicos',
+                    'Análise de manchas microscópicas',
+                    'Identificação de materiais',
+                    'Evidências de contato físico'
+                ],
+                'evidence_fingerprint': [
+                    'Impressões digitais na arma',
+                    'Digitais em superfícies da cena',
+                    'Comparação com suspeitos',
+                    'Identificação de visitantes',
+                    'Padrões de movimento na cena'
+                ],
+                'ally_detective': [
+                    'Experiência em casos similares',
+                    'Intuição investigativa apurada',
+                    'Conhecimento de padrões criminais',
+                    'Técnicas avançadas de interrogatório',
+                    'Rede de contatos profissionais'
+                ]
+            };
+            
+            return clues[cardData.id] || ['Informações detalhadas em análise...'];
         }
 
         function getRarityName(rarity) {
