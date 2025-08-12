@@ -85,19 +85,20 @@
         }
 
         .main-area {
-            background: linear-gradient(135deg, rgba(15, 15, 35, 0.98), rgba(26, 26, 46, 0.98));
-            border: 2px solid rgba(251, 191, 36, 0.4);
-            border-radius: 18px;
-            padding: 2rem;
-            backdrop-filter: blur(20px);
+            background: linear-gradient(135deg, rgba(15, 15, 35, 0.95), rgba(26, 26, 46, 0.95));
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(15px);
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(251, 191, 36, 0.1);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(251, 191, 36, 0.1);
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
             min-height: calc(100vh - 140px);
             position: relative;
+            width: 100%;
         }
 
         /* EFEITO DE DESTAQUE PARA A SEÇÃO DE CARTAS */
@@ -119,20 +120,22 @@
         }
 
         .section-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 2rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
             color: #fbbf24;
-            border-bottom: 3px solid rgba(251, 191, 36, 0.5);
-            padding-bottom: 1rem;
-            text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+            border-bottom: 2px solid rgba(251, 191, 36, 0.4);
+            padding-bottom: 0.8rem;
+            text-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
             flex-shrink: 0;
             text-align: center;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            border: 1px solid rgba(251, 191, 36, 0.3);
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(245, 158, 11, 0.08));
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            width: 100%;
+            max-width: 600px;
         }
 
         /* OCULTAR SEÇÃO MINHA MÃO - VERSÃO EXPANDIDA */
@@ -161,20 +164,20 @@
         /* SISTEMA DE CARTAS - GRID MELHORADO */
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(3, 280px);
-            grid-template-rows: repeat(2, 280px);
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
             justify-content: center;
-            align-content: center;
-            width: fit-content;
-            max-width: 1000px;
+            align-content: start;
+            width: 100%;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
-            background: rgba(15, 15, 35, 0.4);
-            border-radius: 25px;
-            border: 3px solid rgba(251, 191, 36, 0.4);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(251, 191, 36, 0.1);
-            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            background: rgba(15, 15, 35, 0.3);
+            border-radius: 20px;
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(251, 191, 36, 0.1);
+            backdrop-filter: blur(8px);
+            min-height: 400px;
         }
         
         /* Grid específico para iniciante (6 cartas = 2x3) */
@@ -1529,8 +1532,18 @@
             transition: opacity 0.3s ease;
         }
         
+        .card:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: rgba(251, 191, 36, 0.6);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 20px rgba(251, 191, 36, 0.2);
+        }
+        
         .card:hover .card-action {
             opacity: 1;
+        }
+        
+        .card:active {
+            transform: translateY(-2px) scale(1.01);
         }
         
         .view-details-hint {
@@ -1584,22 +1597,22 @@
         .card {
             position: relative;
             width: 100%;
-            height: 320px;
+            height: 280px;
             margin: 0;
-            border-radius: 18px;
+            border-radius: 15px;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
             perspective: 1000px;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
-            border: 2px solid rgba(251, 191, 36, 0.4);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(251, 191, 36, 0.1);
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(251, 191, 36, 0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
             overflow: hidden;
-            padding: 1.5rem;
+            padding: 1.2rem;
         }
         
         .card-inner {
@@ -1636,43 +1649,64 @@
         }
         
         .card-icon {
-            font-size: 3rem;
-            margin: 1rem 0;
-            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
+            font-size: 2.5rem;
+            margin: 0.8rem 0;
+            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.4));
         }
         
         .card-title {
             color: #f9fafb;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
-            margin-bottom: 0.5rem;
-            line-height: 1.3;
+            margin-bottom: 0.4rem;
+            line-height: 1.2;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .card-description {
             color: #d1d5db;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            line-height: 1.3;
+            margin-bottom: 0.8rem;
             flex-grow: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .card-stats {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+            justify-content: center;
+            flex-wrap: wrap;
         }
         
         .stat {
             color: #fbbf24;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: bold;
+            background: rgba(251, 191, 36, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(251, 191, 36, 0.2);
         }
 
         /* RESPONSIVIDADE OTIMIZADA PARA LAYOUT VERTICAL */
         @media (max-width: 1400px) {
             .game-container {
                 grid-template-columns: 280px 1fr 280px !important;
+            }
+            
+            .cards-container {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1.2rem;
+                padding: 1.2rem;
             }
         }
         
@@ -1693,6 +1727,31 @@
             
             .main-area {
                 max-height: none !important;
+                padding: 1.5rem !important;
+            }
+            
+            .cards-container {
+                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+                gap: 1rem;
+                padding: 1rem;
+                max-width: 100%;
+            }
+            
+            .card {
+                height: 260px;
+                padding: 1rem;
+            }
+            
+            .card-icon {
+                font-size: 2.2rem;
+            }
+            
+            .card-title {
+                font-size: 0.9rem;
+            }
+            
+            .card-description {
+                font-size: 0.75rem;
             }
             
             .chat-input-container {
@@ -1726,12 +1785,40 @@
         }
 
         @media (max-width: 480px) {
-
-            
-
-            
             .game-container {
                 padding: 0.5rem !important;
+            }
+            
+            .cards-container {
+                padding: 0.5rem;
+                gap: 0.6rem;
+            }
+            
+            .card {
+                height: 220px;
+                padding: 0.6rem;
+            }
+            
+            .card-icon {
+                font-size: 1.8rem;
+            }
+            
+            .card-title {
+                font-size: 0.8rem;
+            }
+            
+            .card-description {
+                font-size: 0.65rem;
+                -webkit-line-clamp: 2;
+            }
+            
+            .card-stats {
+                gap: 0.4rem;
+            }
+            
+            .stat {
+                font-size: 0.65rem;
+                padding: 0.1rem 0.3rem;
             }
         }
         
@@ -3074,6 +3161,16 @@
             }, 10);
         }
 
+        // Função auxiliar para mostrar detalhes por ID
+        function showCardDetailsById(cardId) {
+            const cardData = cardDatabase.find(card => card.id === cardId);
+            if (cardData) {
+                showCardDetails(cardData);
+            } else {
+                console.error(`❌ Carta não encontrada: ${cardId}`);
+            }
+        }
+
         function closeCardDetails() {
             const modal = document.querySelector('.card-details-modal');
             if (modal) {
@@ -3167,7 +3264,7 @@
             const allCards = cardDatabase.map(card => {
                 const isPlayed = card.played || false;
                 return `
-                    <div class="all-cards-item ${isPlayed ? 'played' : ''}" onclick="showCardDetails('${card.id}')" style="cursor: pointer;">
+                    <div class="all-cards-item ${isPlayed ? 'played' : ''}" onclick="showCardDetailsById('${card.id}')" style="cursor: pointer;">
                         <div class="all-cards-icon">${card.icon}</div>
                         <div class="all-cards-info">
                             <h4>${card.title}</h4>
@@ -3227,91 +3324,7 @@
             return descriptions[cardData.id] || cardData.description;
         }
 
-        // Função para mostrar detalhes de uma carta específica
-        function showCardDetails(cardId) {
-            console.log(`🔍 Mostrando detalhes da carta: ${cardId}`);
-            
-            const cardData = cardDatabase.find(card => card.id === cardId);
-            if (!cardData) {
-                console.error(`❌ Carta não encontrada: ${cardId}`);
-                return;
-            }
-            
-            // Fechar modal atual se existir
-            closeCardDetails();
-            
-            // Criar modal de detalhes
-            const modal = document.createElement('div');
-            modal.className = 'card-details-modal';
-            
-            const detailedDescription = getDetailedDescription(cardData);
-            const investigationClues = getInvestigationClues(cardData);
-            const isPlayed = cardData.played || false;
-            
-            modal.innerHTML = `
-                <div class="modal-overlay"></div>
-                <div class="modal-content card-details-content">
-                    <div class="modal-header">
-                        <h2>${cardData.icon} ${cardData.title}</h2>
-                        <button class="close-btn" onclick="closeCardDetails()">×</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="card-details-header">
-                            <div class="card-details-icon">${cardData.icon}</div>
-                            <div class="card-details-info">
-                                <h3>${cardData.title}</h3>
-                                <p class="card-type">${cardData.type} - ${getRarityName(cardData.rarity)}</p>
-                                <p class="card-status">${isPlayed ? '✅ Jogada' : '🃏 Disponível'}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="card-details-section">
-                            <h4>📝 Descrição Detalhada</h4>
-                            <p>${detailedDescription}</p>
-                        </div>
-                        
-                        <div class="card-details-section">
-                            <h4>🔍 Pistas de Investigação</h4>
-                            <ul class="investigation-clues">
-                                ${investigationClues.map(clue => `<li>${clue}</li>`).join('')}
-                            </ul>
-                        </div>
-                        
-                        <div class="card-details-section">
-                            <h4>📊 Estatísticas</h4>
-                            <div class="card-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Evidências:</span>
-                                    <span class="stat-value">${cardData.evidence || 0}</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Raridade:</span>
-                                    <span class="stat-value">${getRarityName(cardData.rarity)}</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Tipo:</span>
-                                    <span class="stat-value">${cardData.type}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        ${!isPlayed ? `
-                        <div class="card-details-actions">
-                            <button class="btn btn-primary" onclick="playCardFromModal('${cardId}')">🃏 Jogar Carta</button>
-                        </div>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            // Animar entrada
-            setTimeout(() => {
-                modal.style.opacity = '1';
-                modal.querySelector('.modal-content').style.transform = 'translate(-50%, -50%) scale(1)';
-            }, 10);
-        }
+
 
         // Função para obter efeitos da carta
         function getCardEffects(cardData) {
