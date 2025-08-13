@@ -173,28 +173,158 @@
         /* Grid específico para iniciante (6 cartas = 2x3) */
         .cards-container.beginner {
             grid-template-rows: repeat(2, 280px) !important;
-            gap: 8rem 1.5rem !important;
+            gap: 7rem 1.5rem !important;
             max-width: 1600px !important;
-            padding: 2rem 0 !important;
+            padding: 0.60rem 0 !important;
             align-content: center;
         }
         
         /* Grid específico para intermediário (9 cartas = 3x3) */
         .cards-container.intermediate {
             grid-template-rows: repeat(3, 280px) !important;
-            gap: 8rem 1.5rem !important;
+            gap: 7rem 1.5rem !important;
             max-width: 1600px !important;
-            padding: 2rem 0 !important;
+            padding: 0.60rem 0 !important;
             align-content: center;
         }
         
         /* Grid específico para difícil (12 cartas = 4x3) */
         .cards-container.hard {
             grid-template-rows: repeat(4, 280px) !important;
-            gap: 8rem 1.5rem !important;
+            gap: 7rem 1.5rem !important;
             max-width: 1600px !important;
-            padding: 2rem 0 !important;
+            padding: 0.60rem 0 !important;
             align-content: center;
+        }
+        
+        /* Estilos para cartas extras */
+        .extra-cards-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(15, 15, 35, 0.98), rgba(26, 26, 46, 0.98));
+            border: 2px solid rgba(251, 191, 36, 0.4);
+            border-radius: 18px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(251, 191, 36, 0.1);
+        }
+        
+        .extra-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .extra-card {
+            background: linear-gradient(135deg, rgba(15, 15, 35, 0.9), rgba(26, 26, 46, 0.9));
+            border: 2px solid rgba(251, 191, 36, 0.6);
+            border-radius: 15px;
+            padding: 1.2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .extra-card::before {
+            content: '📦';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+        
+        .extra-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(251, 191, 36, 0.2);
+            border-color: rgba(251, 191, 36, 0.8);
+        }
+        
+        .extra-card .card-icon {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .extra-card .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: #fbbf24;
+        }
+        
+        .extra-card .card-description {
+            font-size: 0.85rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+        
+        .extra-card .card-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            justify-content: center;
+        }
+        
+        .extra-card .stat {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+        
+        .extra-card .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.3rem;
+            font-size: 0.8rem;
+        }
+        
+        .extra-card .stat-label {
+            color: #94a3b8;
+        }
+        
+        .extra-card .stat-value {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+        
+        .extra-card .card-actions {
+            text-align: center;
+        }
+        
+        .extra-card .btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1a1a2e;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+        
+        .extra-card .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(251, 191, 36, 0.4);
+        }
+        
+        .no-extra-cards {
+            text-align: center;
+            color: #94a3b8;
+            font-style: italic;
+            padding: 2rem;
         }
         
         /* Media queries para responsividade */
@@ -1396,7 +1526,7 @@
             font-size: 0.7rem;
             font-weight: bold;
         }
-        
+
         /* Estilos para interação com detalhes das cartas */
         .all-cards-item:hover {
             background: rgba(251, 191, 36, 0.2);
@@ -2315,6 +2445,16 @@
                     <div class="card-stat">Testemunho</div>
                 </div>
             </div>
+            
+            <!-- Seção de Cartas Extras -->
+            <div class="extra-cards-section" id="extraCardsSection" style="display: none;">
+                <div class="section-title">
+                    📦 Cartas Extras (Compradas)
+                </div>
+                <div class="extra-cards-container" id="extraCardsContainer">
+                    <!-- Cartas extras serão inseridas aqui dinamicamente -->
+                </div>
+            </div>
         </div>
 
         <div class="sidebar">
@@ -3105,7 +3245,7 @@
                                 <div class="stat-item evidence-highlight">
                                     <span class="stat-label">🔍 Evidências:</span>
                                     <span class="stat-value evidence-value">${cardData.evidence} pontos</span>
-                                </div>
+                        </div>
                                 ` : ''}
                                 <div class="stat-item">
                                     <span class="stat-label">Raridade:</span>
@@ -4007,6 +4147,9 @@
             }
         }
 
+        // Sistema de cartas extras (compradas)
+        let extraCards = [];
+        
         // Loja de cartas
         function buyPack(packType) {
             const packs = {
@@ -4018,171 +4161,181 @@
             const pack = packs[packType];
             
             if (spendCoins(pack.cost, `Pacote ${packType}`)) {
-                // Adicionar cartas extras ao banco de dados
-                const newCards = generateExtraCards(pack.cards, pack.rares);
-                cardDatabase.push(...newCards);
+                // Gerar cartas extras baseadas no tipo de pacote
+                const newExtraCards = generateExtraCards(pack.cards, pack.rares, packType);
+                extraCards = extraCards.concat(newExtraCards);
                 
-                // Atualizar contadores
-                updateDynamicCardsCounter();
-                updateCardsPlayedCounter();
-                
-                // Regenerar cartas na tela
-                generateCards();
-                
-                showNotification(`📦 Pacote ${packType} comprado! ${pack.cards} cartas extras adicionadas!`);
+                showNotification(`📦 Pacote ${packType} comprado! ${pack.cards} cartas extras obtidas!`);
                 addChatMessage(`💰 Comprei pacote ${packType}! ${pack.cards} novas cartas extras`, 'self');
                 
-                console.log(`📦 Pacote ${packType} comprado: ${pack.cards} cartas extras adicionadas ao banco`);
-                console.log(`📊 Total de cartas no banco: ${cardDatabase.length}`);
+                // Atualizar contadores e display
+                updateCardsCounter();
+                updateExtraCardsDisplay();
                 
                 // Simular abertura de pacote com possível moeda bônus
                 if (packType === 'legendary' && Math.random() < 0.3) {
                     rewardCoins(50, "Carta rara encontrada no pacote!");
                 }
+                
+                console.log(`📦 Cartas extras adicionadas: ${newExtraCards.length}. Total: ${extraCards.length}`);
             } else {
                 showNotification(`❌ Moedas insuficientes! Você tem ${playerCoins}, precisa de ${pack.cost}.`);
             }
         }
         
-        // Função para gerar cartas extras
-        function generateExtraCards(count, rares) {
+        // Gerar cartas extras baseadas no tipo de pacote
+        function generateExtraCards(amount, rares, packType) {
             const extraCards = [];
-            const cardTypes = ['Evidência', 'Suspeito', 'Equipamento', 'Ação', 'Aliado'];
+            const cardTypes = ['Evidência', 'Suspeito', 'Ação', 'Equipamento', 'Aliado'];
             const rarities = ['common', 'rare', 'epic', 'legendary'];
             
-            for (let i = 0; i < count; i++) {
-                const cardType = cardTypes[Math.floor(Math.random() * cardTypes.length)];
-                const rarity = i < rares ? rarities[Math.floor(Math.random() * rarities.length)] : 'common';
+            for (let i = 0; i < amount; i++) {
+                const isRare = i < rares;
+                const rarity = isRare ? rarities[Math.floor(Math.random() * 2) + 2] : rarities[Math.floor(Math.random() * 2)];
+                const type = cardTypes[Math.floor(Math.random() * cardTypes.length)];
                 
-                const extraCard = createExtraCard(cardType, rarity, i + 1);
+                const extraCard = {
+                    id: `extra-${packType}-${Date.now()}-${i}`,
+                    type: type,
+                    rarity: rarity,
+                    icon: getRandomIcon(type),
+                    title: generateExtraCardTitle(type, rarity),
+                    description: generateExtraCardDescription(type, rarity),
+                    stats: generateExtraCardStats(rarity),
+                    evidence: type === 'Evidência' ? Math.floor(Math.random() * 50) + 30 : 0,
+                    isExtra: true, // Marca como carta extra
+                    packType: packType // Tipo do pacote que gerou
+                };
+                
                 extraCards.push(extraCard);
             }
             
             return extraCards;
         }
         
-        // Função para criar uma carta extra
-        function createExtraCard(type, rarity, index) {
-            const cardId = `extra-${type.toLowerCase()}-${Date.now()}-${index}`;
+        // Funções auxiliares para gerar cartas extras
+        function getRandomIcon(type) {
             const icons = {
-                'Evidência': ['🔍', '📸', '🧬', '🔪', '🩸', '📱', '📹', '👁️'],
-                'Suspeito': ['👨‍💼', '👩‍💼', '👨‍🔬', '👩‍🔬', '👨‍⚕️', '👩‍⚕️'],
-                'Equipamento': ['🔬', '📹', '💻', '📱', '🔍', '📊'],
-                'Ação': ['⚡', '🔍', '📋', '🎯', '🧠', '⚖️'],
-                'Aliado': ['👮‍♂️', '👮‍♀️', '🕵️‍♂️', '🕵️‍♀️', '👨‍⚖️', '👩‍⚖️']
+                'Evidência': ['🔍', '🧬', '📱', '📹', '🎯', '📊', '🔎', '💡'],
+                'Suspeito': ['👨‍💼', '👩‍💼', '👨‍🔬', '👩‍🔬', '👨‍⚕️', '👩‍⚕️', '👨‍🏫', '👩‍🏫'],
+                'Ação': ['🔍', '⚡', '🎯', '💪', '🧠', '🔐', '📞', '🚔'],
+                'Equipamento': ['🔬', '📱', '💻', '🔋', '📡', '🎧', '🔦', '📷'],
+                'Aliado': ['👮‍♂️', '👮‍♀️', '🕵️‍♂️', '🕵️‍♀️', '👨‍⚖️', '👩‍⚖️', '👨‍🔬', '👩‍🔬']
             };
-            
-            const icon = icons[type][Math.floor(Math.random() * icons[type].length)];
-            const title = generateExtraCardTitle(type, rarity);
-            const evidence = calculateExtraCardEvidence(type, rarity);
-            
-            return {
-                id: cardId,
-                type: type,
-                rarity: rarity,
-                icon: icon,
-                title: title,
-                description: `Carta extra obtida através de pacote. ${type} de raridade ${rarity}.`,
-                stats: generateExtraCardStats(type, rarity),
-                evidence: evidence,
-                played: false,
-                isExtra: true // Marca como carta extra
-            };
+            return icons[type][Math.floor(Math.random() * icons[type].length)];
         }
         
-        // Função para gerar título da carta extra
         function generateExtraCardTitle(type, rarity) {
             const titles = {
-                'Evidência': {
-                    'common': ['Evidência Básica', 'Pista Simples', 'Indício Comum'],
-                    'rare': ['Evidência Rara', 'Pista Especial', 'Indício Único'],
-                    'epic': ['Evidência Épica', 'Pista Crucial', 'Indício Vital'],
-                    'legendary': ['Evidência Lendária', 'Pista Definitiva', 'Indício Final']
-                },
-                'Suspeito': {
-                    'common': ['Suspeito Comum', 'Pessoa de Interesse', 'Testemunha'],
-                    'rare': ['Suspeito Raro', 'Alvo Especial', 'Testemunha Chave'],
-                    'epic': ['Suspeito Épico', 'Alvo Principal', 'Testemunha Vital'],
-                    'legendary': ['Suspeito Lendário', 'Alvo Definitivo', 'Testemunha Final']
-                },
-                'Equipamento': {
-                    'common': ['Equipamento Básico', 'Ferramenta Simples', 'Dispositivo Comum'],
-                    'rare': ['Equipamento Raro', 'Ferramenta Especial', 'Dispositivo Único'],
-                    'epic': ['Equipamento Épico', 'Ferramenta Avançada', 'Dispositivo Vital'],
-                    'legendary': ['Equipamento Lendário', 'Ferramenta Definitiva', 'Dispositivo Final']
-                },
-                'Ação': {
-                    'common': ['Ação Básica', 'Procedimento Simples', 'Técnica Comum'],
-                    'rare': ['Ação Rara', 'Procedimento Especial', 'Técnica Única'],
-                    'epic': ['Ação Épica', 'Procedimento Avançado', 'Técnica Vital'],
-                    'legendary': ['Ação Lendária', 'Procedimento Definitivo', 'Técnica Final']
-                },
-                'Aliado': {
-                    'common': ['Aliado Básico', 'Apoio Simples', 'Colaborador Comum'],
-                    'rare': ['Aliado Raro', 'Apoio Especial', 'Colaborador Único'],
-                    'epic': ['Aliado Épico', 'Apoio Avançado', 'Colaborador Vital'],
-                    'legendary': ['Aliado Lendário', 'Apoio Definitivo', 'Colaborador Final']
-                }
+                'Evidência': ['Evidência Crucial', 'Prova Definitiva', 'Indício Importante', 'Pista Reveladora'],
+                'Suspeito': ['Suspeito Principal', 'Alvo Secundário', 'Testemunha Chave', 'Cúmplice Suspeito'],
+                'Ação': ['Ação Decisiva', 'Movimento Estratégico', 'Intervenção Crucial', 'Operação Especial'],
+                'Equipamento': ['Equipamento Avançado', 'Ferramenta Especializada', 'Tecnologia de Ponta', 'Dispositivo Único'],
+                'Aliado': ['Aliado Confiável', 'Especialista Qualificado', 'Parceiro Estratégico', 'Consultor Experiente']
             };
-            
-            const typeTitles = titles[type][rarity];
-            return typeTitles[Math.floor(Math.random() * typeTitles.length)];
+            const baseTitle = titles[type][Math.floor(Math.random() * titles[type].length)];
+            return `${baseTitle} ${rarity === 'legendary' ? 'Lendário' : rarity === 'epic' ? 'Épico' : rarity === 'rare' ? 'Raro' : 'Comum'}`;
         }
         
-        // Função para calcular evidências da carta extra
-        function calculateExtraCardEvidence(type, rarity) {
-            let baseEvidence = 10;
-            
-            // Bônus por tipo
-            switch(type) {
-                case 'Evidência': baseEvidence = 25; break;
-                case 'Suspeito': baseEvidence = 20; break;
-                case 'Equipamento': baseEvidence = 15; break;
-                case 'Ação': baseEvidence = 12; break;
-                case 'Aliado': baseEvidence = 10; break;
-            }
-            
-            // Bônus por raridade
-            switch(rarity) {
-                case 'legendary': baseEvidence *= 1.5; break;
-                case 'epic': baseEvidence *= 1.3; break;
-                case 'rare': baseEvidence *= 1.2; break;
-                case 'common': baseEvidence *= 1.0; break;
-            }
-            
-            return Math.floor(baseEvidence);
+        function generateExtraCardDescription(type, rarity) {
+            const descriptions = {
+                'Evidência': 'Evidência adicional que pode ser crucial para resolver o caso.',
+                'Suspeito': 'Novo suspeito identificado durante a investigação.',
+                'Ação': 'Ação adicional que pode ser tomada para avançar na investigação.',
+                'Equipamento': 'Equipamento adicional que pode ser útil na investigação.',
+                'Aliado': 'Aliado adicional que pode oferecer suporte na investigação.'
+            };
+            return descriptions[type];
         }
         
-        // Função para gerar estatísticas da carta extra
-        function generateExtraCardStats(type, rarity) {
-            const basePower = 30 + (Math.floor(Math.random() * 40));
-            const baseAccuracy = 40 + (Math.floor(Math.random() * 40));
+        function generateExtraCardStats(rarity) {
+            const baseStats = {
+                'common': [30, 40, 'Básico'],
+                'rare': [50, 60, 'Avançado'],
+                'epic': [70, 80, 'Especial'],
+                'legendary': [90, 95, 'Único']
+            };
+            const stats = baseStats[rarity];
+            return [`⚡ ${stats[0]}`, `🎯 ${stats[1]}`, `💎 ${stats[2]}`];
+        }
+        
+        // Atualizar display das cartas extras
+        function updateExtraCardsDisplay() {
+            const extraCardsSection = document.getElementById('extraCardsSection');
+            const extraCardsContainer = document.getElementById('extraCardsContainer');
             
-            let power = basePower;
-            let accuracy = baseAccuracy;
+            if (!extraCardsSection || !extraCardsContainer) return;
             
-            // Bônus por raridade
-            switch(rarity) {
-                case 'legendary': 
-                    power *= 1.5; 
-                    accuracy *= 1.5; 
-                    break;
-                case 'epic': 
-                    power *= 1.3; 
-                    accuracy *= 1.3; 
-                    break;
-                case 'rare': 
-                    power *= 1.2; 
-                    accuracy *= 1.2; 
-                    break;
+            // Mostrar/ocultar seção baseado na quantidade de cartas extras
+            if (extraCards.length === 0) {
+                extraCardsSection.style.display = 'none';
+                return;
+            } else {
+                extraCardsSection.style.display = 'block';
             }
             
-            const special = type === 'Evidência' ? '🔍 Extra' : 
-                           type === 'Suspeito' ? '👤 Suspeito' :
-                           type === 'Equipamento' ? '🔧 Equipamento' :
-                           type === 'Ação' ? '⚡ Ação' : '🛡️ Aliado';
+            extraCardsContainer.innerHTML = '';
             
-            return [`⚡ ${Math.floor(power)}`, `🎯 ${Math.floor(accuracy)}`, special];
+            extraCards.forEach(card => {
+                const cardElement = createExtraCardElement(card);
+                extraCardsContainer.appendChild(cardElement);
+            });
+            
+            console.log(`📦 Seção de cartas extras atualizada: ${extraCards.length} cartas`);
+        }
+        
+        // Criar elemento de carta extra
+        function createExtraCardElement(card) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card extra-card';
+            cardDiv.setAttribute('data-card-id', card.id);
+            cardDiv.onclick = () => showCardDetails(card);
+            
+            cardDiv.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-icon">${card.icon}</div>
+                    <div class="card-title">${card.title}</div>
+                    <div class="card-description">${card.description}</div>
+                    <div class="card-stats">
+                        ${card.stats.map(stat => `<div class="stat">${stat}</div>`).join('')}
+                        ${card.evidence ? `<div class="stat-item">
+                            <span class="stat-label">🔍 Evidências:</span>
+                            <span class="stat-value evidence-value">${card.evidence} pontos</span>
+                        </div>` : ''}
+                        <div class="stat-item">
+                            <span class="stat-label">📦 Origem:</span>
+                            <span class="stat-value">${card.packType}</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-primary" onclick="playExtraCard('${card.id}')">Jogar Carta</button>
+                    </div>
+                </div>
+            `;
+            
+            return cardDiv;
+        }
+        
+        // Jogar carta extra
+        function playExtraCard(cardId) {
+            const card = extraCards.find(c => c.id === cardId);
+            if (!card) return;
+            
+            // Adicionar carta extra ao jogo
+            cardDatabase.push(card);
+            card.played = false; // Marcar como não jogada para poder jogar
+            
+            // Remover da lista de cartas extras
+            extraCards = extraCards.filter(c => c.id !== cardId);
+            
+            // Atualizar displays
+            updateExtraCardsDisplay();
+            updateCardsCounter();
+            
+            showNotification(`🎯 Carta extra "${card.title}" adicionada ao jogo!`);
+            addChatMessage(`🎯 Adicionei carta extra "${card.title}" ao jogo`, 'self');
+            
+            console.log(`🎯 Carta extra ${card.title} adicionada ao jogo. Cartas extras restantes: ${extraCards.length}`);
         }
 
 
@@ -4922,7 +5075,7 @@
                     showGameEndModal('victory');
                 }, 1500);
             }
-            
+
             // 16. Log final para debug
             console.log(`🎮 Jogo atualizado: ${cardsPlayed} cartas jogadas, ${comboStreak}x combo, ${currentCase.collectedEvidence}/${currentCase.targetEvidence} evidências, ${playerCoins} moedas`);
             
@@ -5101,36 +5254,18 @@
         // Função para detectar dinamicamente o total de cartas disponíveis
         function updateDynamicCardsCounter() {
             const availableCards = cardDatabase.filter(card => !card.played).length;
-            const totalCards = cardDatabase.length;
-            const baseCards = difficultySettings[currentDifficulty].cards;
-            const extraCards = totalCards - baseCards;
-            
-            // O total deve ser o maior entre: base da dificuldade, cartas disponíveis, ou total de cartas
-            const maxCards = Math.max(baseCards, availableCards, totalCards);
+            const extraCardsCount = extraCards.length;
+            const baseMaxCards = difficultySettings[currentDifficulty].cards;
+            const totalMaxCards = baseMaxCards + extraCardsCount;
             
             const cardsElement = document.getElementById('cardsPlayed');
             if (cardsElement) {
-                cardsElement.textContent = `${cardsPlayed}/${maxCards}`;
-                
-                // Adicionar indicador visual para cartas extras
-                if (extraCards > 0) {
-                    cardsElement.title = `📦 ${extraCards} cartas extras adicionadas via pacotes`;
-                    cardsElement.style.color = '#10b981'; // Verde para indicar cartas extras
-                } else {
-                    cardsElement.title = `Cartas jogadas / Total disponível`;
-                    cardsElement.style.color = '#fbbf24'; // Dourado padrão
-                }
-                
-                console.log(`🎯 Contador dinâmico: ${cardsPlayed}/${maxCards} (base: ${baseCards}, extras: ${extraCards}, disponíveis: ${availableCards}, total: ${totalCards})`);
+                cardsElement.textContent = `${cardsPlayed}/${totalMaxCards}`;
+                console.log(`🎯 Contador dinâmico: ${cardsPlayed}/${totalMaxCards} (base: ${baseMaxCards}, extras: ${extraCardsCount}, disponíveis: ${availableCards})`);
             }
             
             // Atualizar barra de progresso dinamicamente
-            updateCardsProgressBar(maxCards);
-            
-            // Mostrar notificação se há cartas extras
-            if (extraCards > 0) {
-                console.log(`📦 Cartas extras detectadas: ${extraCards} cartas adicionais no banco`);
-            }
+            updateCardsProgressBar(totalMaxCards);
         }
         
         // Função para forçar atualização agressiva dos contadores
@@ -5748,7 +5883,7 @@
             
             return false;
         }
-        
+
         // Função para atualizar estatísticas
         function updateStats() {
             console.log('📊 Atualizando estatísticas...');
