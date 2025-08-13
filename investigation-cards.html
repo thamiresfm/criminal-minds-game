@@ -327,6 +327,105 @@
             padding: 2rem;
         }
         
+        /* Custom Scrollbar Discreto */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 15, 35, 0.3);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.4);
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(251, 191, 36, 0.6);
+        }
+        
+        ::-webkit-scrollbar-corner {
+            background: rgba(15, 15, 35, 0.3);
+        }
+        
+        /* Firefox Scrollbar */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(251, 191, 36, 0.4) rgba(15, 15, 35, 0.3);
+        }
+        
+        /* Scrollbar para elementos específicos */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(15, 15, 35, 0.2);
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.3);
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(251, 191, 36, 0.5);
+        }
+        
+        /* Scrollbar para modais */
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(15, 15, 35, 0.2);
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.3);
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(251, 191, 36, 0.5);
+        }
+        
+        /* Scrollbar para containers de cartas */
+        .cards-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .cards-container::-webkit-scrollbar-track {
+            background: rgba(15, 15, 35, 0.2);
+        }
+        
+        .cards-container::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.3);
+        }
+        
+        .cards-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(251, 191, 36, 0.5);
+        }
+        
+        /* Scrollbar para chat */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-container::-webkit-scrollbar-track {
+            background: rgba(15, 15, 35, 0.2);
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.3);
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(251, 191, 36, 0.5);
+        }
+        
         /* Media queries para responsividade */
         @media (max-width: 1200px) {
             .cards-container {
