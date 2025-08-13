@@ -1574,8 +1574,8 @@
         /* Melhorias na responsividade das cartas */
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
             padding: 2rem;
             max-width: 1200px;
             margin: 0 auto;
@@ -1584,8 +1584,7 @@
         .card {
             position: relative;
             width: 100%;
-            min-height: 380px;
-            height: auto;
+            height: 380px;
             margin: 0;
             border-radius: 18px;
             cursor: pointer;
@@ -1599,8 +1598,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            overflow: visible;
-            padding: 1.5rem;
+            overflow: hidden;
+            padding: 1.2rem;
         }
         
         .card-inner {
@@ -1611,6 +1610,7 @@
             justify-content: space-between;
             align-items: center;
             text-align: center;
+            overflow: hidden;
         }
         
         .card-header {
@@ -1637,25 +1637,26 @@
         }
         
         .card-icon {
-            font-size: 3rem;
-            margin: 1.5rem 0;
+            font-size: 2.5rem;
+            margin: 1rem 0;
             filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
             flex-shrink: 0;
         }
         
         .card-title {
             color: #f9fafb;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: bold;
-            margin-bottom: 1rem;
-            line-height: 1.4;
-            min-height: 2.8rem;
+            margin-bottom: 0.8rem;
+            line-height: 1.3;
+            height: 2.6rem;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             word-wrap: break-word;
             hyphens: auto;
+            overflow: hidden;
         }
         
         .card-description {
@@ -1668,19 +1669,19 @@
         
         .card-stats {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
             flex-wrap: wrap;
             justify-content: center;
         }
         
         .stat {
             color: #fbbf24;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: bold;
-            padding: 0.3rem 0.6rem;
+            padding: 0.25rem 0.5rem;
             background: rgba(251, 191, 36, 0.1);
-            border-radius: 8px;
+            border-radius: 6px;
             white-space: nowrap;
         }
 
