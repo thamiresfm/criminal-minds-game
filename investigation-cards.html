@@ -4771,6 +4771,11 @@
             // 16. Log final para debug
             console.log(`🎮 Jogo atualizado: ${cardsPlayed} cartas jogadas, ${comboStreak}x combo, ${currentCase.collectedEvidence}/${currentCase.targetEvidence} evidências, ${playerCoins} moedas`);
             
+            // Forçar atualização de evidências
+            setTimeout(() => {
+                updateEvidenceDisplay();
+                console.log(`🔍 Forçando atualização de evidências após jogar carta`);
+            }, 100);
         }
 
         // Função para atualizar o progresso visual das cartas
@@ -5414,12 +5419,17 @@
             let totalBaseEvidence = 0;
             const playedCards = cardDatabase.filter(card => card.played);
             
+            console.log(`🔍 DEBUG: Total de cartas no banco: ${cardDatabase.length}`);
+            console.log(`🔍 DEBUG: Cartas jogadas: ${playedCards.length}`);
+            console.log(`🔍 DEBUG: Cartas jogadas:`, playedCards.map(card => `${card.title} (${card.evidence || 'sem evidência'})`));
+            
             playedCards.forEach(card => {
                 let evidencePerCard = 0;
                 
                 // Se a carta tem valor específico de evidência, usar ele
                 if (card.evidence) {
                     evidencePerCard = card.evidence;
+                    console.log(`🔍 Carta ${card.title}: ${evidencePerCard} evidências (valor específico)`);
                 } else {
                     // Fallback para cartas sem valor específico
                     evidencePerCard = 10; // Base por carta
@@ -5460,10 +5470,11 @@
                             evidencePerCard *= 1.0;
                             break;
                     }
+                    
+                    console.log(`🔍 Carta ${card.title}: ${evidencePerCard} evidências (calculado)`);
                 }
                 
                 totalBaseEvidence += Math.floor(evidencePerCard);
-                console.log(`🔍 Carta ${card.title}: ${evidencePerCard} evidências`);
             });
             
             // Aplicar bônus de combo
