@@ -2624,7 +2624,10 @@
             // Carregar moedas salvas ou começar com valor inicial
             const savedCoins = localStorage.getItem('criminalMinds_playerCoins');
             const initialCoins = savedCoins ? parseInt(savedCoins) : 500; // Valor inicial mais generoso
-            return Math.max(initialCoins, 50); // Garantir mínimo de 50 moedas
+            const finalCoins = Math.max(initialCoins, 50); // Garantir mínimo de 50 moedas
+            
+            console.log(`💰 Carregando moedas: saved=${savedCoins}, initial=${initialCoins}, final=${finalCoins}`);
+            return finalCoins;
         }
         
         function savePlayerCoins() {
@@ -2633,8 +2636,11 @@
         }
         
         function updateCoinDisplay() {
+            console.log(`💰 updateCoinDisplay() chamada com playerCoins=${playerCoins}`);
+            
             const coinElement = document.getElementById('coin-display') || document.querySelector('div[style*="Moedas"] strong');
             if (coinElement) {
+                const oldValue = coinElement.textContent;
                 coinElement.textContent = playerCoins;
                 coinElement.style.color = playerCoins < 100 ? '#ff6b6b' : '#fbbf24';
                 
@@ -2644,9 +2650,17 @@
                     coinElement.style.transform = 'scale(1)';
                 }, 200);
                 
-                console.log(`💰 Display de moedas atualizado: ${playerCoins}`);
+                console.log(`💰 Display de moedas atualizado: ${oldValue} → ${playerCoins}`);
             } else {
                 console.error('💰 Elemento coin-display não encontrado');
+                console.error('💰 Tentando encontrar elemento com querySelector...');
+                const alternativeElement = document.querySelector('strong[id="coin-display"]');
+                if (alternativeElement) {
+                    console.log('💰 Elemento encontrado com querySelector alternativo');
+                    alternativeElement.textContent = playerCoins;
+                } else {
+                    console.error('💰 Elemento não encontrado mesmo com querySelector alternativo');
+                }
             }
             savePlayerCoins();
         }
@@ -6376,6 +6390,7 @@
             // Inicializar estatísticas
             updateStats();
             updateTimeDisplay();
+            updateCoinDisplay(); // Atualizar display de moedas com valor real
             console.log('📊 Estatísticas inicializadas');
             
             // Inicializar chat da equipe
