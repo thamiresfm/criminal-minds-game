@@ -45,7 +45,6 @@ interface DynamicGameStore {
   // Resultados
   calculateResults: () => void;
   endGame: () => void;
-  syncDiscoveredClues: () => void;
   
   // Utilitários
   getCurrentPlayer: () => DynamicPlayer | null;
@@ -199,26 +198,15 @@ const useDynamicGameStore = create<DynamicGameStore>()(
                 // Adicionar pista ao jogador se não tiver
                 if (!player.discoveredClues.includes(clueId)) {
                   player.discoveredClues.push(clueId);
-                  console.log(`✅ ${player.name} descobriu pessoalmente: ${clue.name}`);
                 }
                 
-                // Adicionar pista ao jogo se não foi descoberta globalmente
+                // Adicionar pista ao jogo se não foi descoberta
                 if (!state.currentGame.discoveredClues.includes(clueId)) {
                   state.currentGame.discoveredClues.push(clueId);
                   state.currentGame.statistics.cluesFound++;
-                  console.log(`🌍 Evidência adicionada ao pool global: ${clue.name} (Total: ${state.currentGame.statistics.cluesFound})`);
-                  
-                  // Sincronizar com todos os jogadores (colaborativo)
-                  // Todos os jogadores se beneficiam das evidências descobertas
-                  state.currentGame.players.forEach(p => {
-                    if (!p.discoveredClues.includes(clueId)) {
-                      p.discoveredClues.push(clueId);
-                      console.log(`🔄 Sincronizando evidência para ${p.name}`);
-                    }
-                  });
                 }
                 
-                console.log(`🔍 Evidência "${clue.name}" descoberta - Total no jogo: ${state.currentGame.statistics.cluesFound}`);
+                console.log(`🔍 ${player.name} descobriu: ${clue.name}`);
               }
             });
           },
@@ -325,9 +313,6 @@ const useDynamicGameStore = create<DynamicGameStore>()(
             set((state) => {
               if (!state.currentGame) return;
               
-              // Sincronizar evidências antes de calcular pontos
-              get().syncDiscoveredClues();
-              
               let correctAccusations = 0;
               let wrongAccusations = 0;
               
@@ -346,21 +331,12 @@ const useDynamicGameStore = create<DynamicGameStore>()(
                 
                 // Calcular pontuação
                 const timeUsed = state.currentGame!.timeLimit - state.currentGame!.timeRemaining;
-                
-                // Correção: Usar o número total de evidências descobertas no jogo
-                // em vez de apenas as do jogador individual
-                const cluesFoundCount = state.currentGame!.statistics.cluesFound || 
-                                       state.currentGame!.discoveredClues.length || 
-                                       player.discoveredClues.length;
-                
                 player.score = GameEngine.calculatePlayerScore(
                   isCorrect,
-                  cluesFoundCount,
+                  player.discoveredClues.length,
                   timeUsed,
                   state.currentGame!.timeLimit
                 );
-                
-                console.log(`📊 Pontuação de ${player.name}: ${player.score} (${cluesFoundCount} evidências encontradas)`);
               });
               
               // Atualizar estatísticas
@@ -383,30 +359,6 @@ const useDynamicGameStore = create<DynamicGameStore>()(
               state.currentGame.phase = 'result';
               
               console.log('🏁 Jogo finalizado');
-            });
-          },
-          
-          // Sincronizar evidências descobertas
-          syncDiscoveredClues: () => {
-            set((state) => {
-              if (!state.currentGame) return;
-              
-              // Garantir que statistics.cluesFound reflita o número real de evidências descobertas
-              const actualCluesFound = state.currentGame.discoveredClues.length;
-              if (state.currentGame.statistics.cluesFound !== actualCluesFound) {
-                state.currentGame.statistics.cluesFound = actualCluesFound;
-                console.log(`🔄 Sincronização: statistics.cluesFound atualizado para ${actualCluesFound}`);
-              }
-              
-              // Garantir que todos os jogadores tenham acesso às evidências descobertas
-              state.currentGame.players.forEach(player => {
-                state.currentGame!.discoveredClues.forEach(clueId => {
-                  if (!player.discoveredClues.includes(clueId)) {
-                    player.discoveredClues.push(clueId);
-                    console.log(`🔄 Sincronizando evidência ${clueId} para ${player.name}`);
-                  }
-                });
-              });
             });
           },
           
