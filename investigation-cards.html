@@ -5403,46 +5403,55 @@
             const playedCards = cardDatabase.filter(card => card.played);
             
             playedCards.forEach(card => {
-                let evidencePerCard = 10; // Base por carta
+                let evidencePerCard = 0;
                 
-                // Bônus por tipo de carta
-                switch(card.type) {
-                    case 'EVIDÊNCIA':
-                        evidencePerCard = 25; // Cartas de evidência dão mais pontos
-                        break;
-                    case 'SUSPEITO':
-                        evidencePerCard = 20; // Suspeitos dão pontos médios
-                        break;
-                    case 'EQUIPAMENTO':
-                        evidencePerCard = 15; // Equipamentos dão pontos moderados
-                        break;
-                    case 'AÇÃO':
-                        evidencePerCard = 12; // Ações dão pontos básicos
-                        break;
-                    case 'ALIADO':
-                        evidencePerCard = 10; // Aliados dão pontos básicos
-                        break;
-                    default:
-                        evidencePerCard = 10;
-                }
-                
-                // Bônus por raridade
-                switch(card.rarity) {
-                    case 'LENDÁRIA':
-                        evidencePerCard *= 1.5;
-                        break;
-                    case 'ÉPICA':
-                        evidencePerCard *= 1.3;
-                        break;
-                    case 'RARA':
-                        evidencePerCard *= 1.2;
-                        break;
-                    case 'COMUM':
-                        evidencePerCard *= 1.0;
-                        break;
+                // Se a carta tem valor específico de evidência, usar ele
+                if (card.evidence) {
+                    evidencePerCard = card.evidence;
+                } else {
+                    // Fallback para cartas sem valor específico
+                    evidencePerCard = 10; // Base por carta
+                    
+                    // Bônus por tipo de carta
+                    switch(card.type) {
+                        case 'Evidência':
+                            evidencePerCard = 25; // Cartas de evidência dão mais pontos
+                            break;
+                        case 'Suspeito':
+                            evidencePerCard = 20; // Suspeitos dão pontos médios
+                            break;
+                        case 'Equipamento':
+                            evidencePerCard = 15; // Equipamentos dão pontos moderados
+                            break;
+                        case 'Ação':
+                            evidencePerCard = 12; // Ações dão pontos básicos
+                            break;
+                        case 'Aliado':
+                            evidencePerCard = 10; // Aliados dão pontos básicos
+                            break;
+                        default:
+                            evidencePerCard = 10;
+                    }
+                    
+                    // Bônus por raridade
+                    switch(card.rarity) {
+                        case 'legendary':
+                            evidencePerCard *= 1.5;
+                            break;
+                        case 'epic':
+                            evidencePerCard *= 1.3;
+                            break;
+                        case 'rare':
+                            evidencePerCard *= 1.2;
+                            break;
+                        case 'common':
+                            evidencePerCard *= 1.0;
+                            break;
+                    }
                 }
                 
                 totalBaseEvidence += Math.floor(evidencePerCard);
+                console.log(`🔍 Carta ${card.title}: ${evidencePerCard} evidências`);
             });
             
             // Aplicar bônus de combo
