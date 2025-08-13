@@ -1529,15 +1529,35 @@
             transition: opacity 0.3s ease;
         }
         
+        .card-action {
+            width: 100%;
+            text-align: center;
+            margin-top: auto;
+            padding-top: 0.5rem;
+        }
+        
         .card:hover .card-action {
             opacity: 1;
         }
         
         .view-details-hint {
             color: #fbbf24;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: bold;
             text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+            background: rgba(251, 191, 36, 0.1);
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            margin-top: 0.5rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover .view-details-hint {
+            background: rgba(251, 191, 36, 0.2);
+            border-color: rgba(251, 191, 36, 0.5);
+            transform: scale(1.05);
         }
         
         /* Melhorias no modal de detalhes */
@@ -1608,7 +1628,7 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
             text-align: center;
             overflow: hidden;
@@ -2910,7 +2930,7 @@
                     <div class="card-stats">
                         ${cardData.stats ? cardData.stats.map(stat => `<div class="stat">${stat}</div>`).join('') : ''}
                     </div>
-                    <div class="card-action">
+                    <div class="card-action" style="margin-top: auto; padding-top: 0.5rem;">
                         <span class="view-details-hint">👁️ Ver Detalhes</span>
                     </div>
                 </div>
