@@ -1583,6 +1583,32 @@
             border-color: rgba(251, 191, 36, 0.5);
         }
         
+        /* Destaque para evidências */
+        .evidence-highlight {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1)) !important;
+            border: 2px solid rgba(16, 185, 129, 0.4) !important;
+            border-radius: 10px !important;
+            padding: 0.8rem !important;
+            margin: 0.5rem 0 !important;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3) !important;
+        }
+        
+        .evidence-value {
+            color: #10b981 !important;
+            font-weight: bold !important;
+            font-size: 1.1rem !important;
+            text-shadow: 0 0 5px rgba(16, 185, 129, 0.5) !important;
+        }
+        
+        /* Indicador de evidências nas cartas */
+        .evidence-stat {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1)) !important;
+            border: 1px solid rgba(16, 185, 129, 0.4) !important;
+            color: #10b981 !important;
+            font-weight: bold !important;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.3) !important;
+        }
+        
         /* Melhorias na responsividade das cartas */
         .cards-container {
             display: grid;
@@ -2995,6 +3021,7 @@
                     <div class="card-description">${cardData.description}</div>
                     <div class="card-stats">
                         ${cardData.stats ? cardData.stats.map(stat => `<div class="stat">${stat}</div>`).join('') : ''}
+                        ${cardData.evidence ? `<div class="stat evidence-stat">🔍 ${cardData.evidence}</div>` : ''}
                     </div>
                     <div class="card-action" style="margin-top: auto; padding-top: 0.5rem;">
                         <span class="view-details-hint">👁️ Ver Detalhes</span>
@@ -3062,10 +3089,12 @@
                         <div class="card-details-section">
                             <h4>📊 Estatísticas</h4>
                             <div class="card-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Evidências:</span>
-                                    <span class="stat-value">${cardData.evidence || 0}</span>
+                                ${cardData.evidence ? `
+                                <div class="stat-item evidence-highlight">
+                                    <span class="stat-label">🔍 Evidências:</span>
+                                    <span class="stat-value evidence-value">${cardData.evidence} pontos</span>
                                 </div>
+                                ` : ''}
                                 <div class="stat-item">
                                     <span class="stat-label">Raridade:</span>
                                     <span class="stat-value">${getRarityName(cardData.rarity)}</span>
