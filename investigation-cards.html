@@ -4018,8 +4018,22 @@
             const pack = packs[packType];
             
             if (spendCoins(pack.cost, `Pacote ${packType}`)) {
-                showNotification(`📦 Pacote ${packType} comprado! ${pack.cards} cartas obtidas!`);
-                addChatMessage(`💰 Comprei pacote ${packType}! ${pack.cards} novas cartas`, 'self');
+                // Adicionar cartas extras ao banco de dados
+                const newCards = generateExtraCards(pack.cards, pack.rares);
+                cardDatabase.push(...newCards);
+                
+                // Atualizar contadores
+                updateDynamicCardsCounter();
+                updateCardsPlayedCounter();
+                
+                // Regenerar cartas na tela
+                generateCards();
+                
+                showNotification(`📦 Pacote ${packType} comprado! ${pack.cards} cartas extras adicionadas!`);
+                addChatMessage(`💰 Comprei pacote ${packType}! ${pack.cards} novas cartas extras`, 'self');
+                
+                console.log(`📦 Pacote ${packType} comprado: ${pack.cards} cartas extras adicionadas ao banco`);
+                console.log(`📊 Total de cartas no banco: ${cardDatabase.length}`);
                 
                 // Simular abertura de pacote com possível moeda bônus
                 if (packType === 'legendary' && Math.random() < 0.3) {
@@ -4028,6 +4042,147 @@
             } else {
                 showNotification(`❌ Moedas insuficientes! Você tem ${playerCoins}, precisa de ${pack.cost}.`);
             }
+        }
+        
+        // Função para gerar cartas extras
+        function generateExtraCards(count, rares) {
+            const extraCards = [];
+            const cardTypes = ['Evidência', 'Suspeito', 'Equipamento', 'Ação', 'Aliado'];
+            const rarities = ['common', 'rare', 'epic', 'legendary'];
+            
+            for (let i = 0; i < count; i++) {
+                const cardType = cardTypes[Math.floor(Math.random() * cardTypes.length)];
+                const rarity = i < rares ? rarities[Math.floor(Math.random() * rarities.length)] : 'common';
+                
+                const extraCard = createExtraCard(cardType, rarity, i + 1);
+                extraCards.push(extraCard);
+            }
+            
+            return extraCards;
+        }
+        
+        // Função para criar uma carta extra
+        function createExtraCard(type, rarity, index) {
+            const cardId = `extra-${type.toLowerCase()}-${Date.now()}-${index}`;
+            const icons = {
+                'Evidência': ['🔍', '📸', '🧬', '🔪', '🩸', '📱', '📹', '👁️'],
+                'Suspeito': ['👨‍💼', '👩‍💼', '👨‍🔬', '👩‍🔬', '👨‍⚕️', '👩‍⚕️'],
+                'Equipamento': ['🔬', '📹', '💻', '📱', '🔍', '📊'],
+                'Ação': ['⚡', '🔍', '📋', '🎯', '🧠', '⚖️'],
+                'Aliado': ['👮‍♂️', '👮‍♀️', '🕵️‍♂️', '🕵️‍♀️', '👨‍⚖️', '👩‍⚖️']
+            };
+            
+            const icon = icons[type][Math.floor(Math.random() * icons[type].length)];
+            const title = generateExtraCardTitle(type, rarity);
+            const evidence = calculateExtraCardEvidence(type, rarity);
+            
+            return {
+                id: cardId,
+                type: type,
+                rarity: rarity,
+                icon: icon,
+                title: title,
+                description: `Carta extra obtida através de pacote. ${type} de raridade ${rarity}.`,
+                stats: generateExtraCardStats(type, rarity),
+                evidence: evidence,
+                played: false,
+                isExtra: true // Marca como carta extra
+            };
+        }
+        
+        // Função para gerar título da carta extra
+        function generateExtraCardTitle(type, rarity) {
+            const titles = {
+                'Evidência': {
+                    'common': ['Evidência Básica', 'Pista Simples', 'Indício Comum'],
+                    'rare': ['Evidência Rara', 'Pista Especial', 'Indício Único'],
+                    'epic': ['Evidência Épica', 'Pista Crucial', 'Indício Vital'],
+                    'legendary': ['Evidência Lendária', 'Pista Definitiva', 'Indício Final']
+                },
+                'Suspeito': {
+                    'common': ['Suspeito Comum', 'Pessoa de Interesse', 'Testemunha'],
+                    'rare': ['Suspeito Raro', 'Alvo Especial', 'Testemunha Chave'],
+                    'epic': ['Suspeito Épico', 'Alvo Principal', 'Testemunha Vital'],
+                    'legendary': ['Suspeito Lendário', 'Alvo Definitivo', 'Testemunha Final']
+                },
+                'Equipamento': {
+                    'common': ['Equipamento Básico', 'Ferramenta Simples', 'Dispositivo Comum'],
+                    'rare': ['Equipamento Raro', 'Ferramenta Especial', 'Dispositivo Único'],
+                    'epic': ['Equipamento Épico', 'Ferramenta Avançada', 'Dispositivo Vital'],
+                    'legendary': ['Equipamento Lendário', 'Ferramenta Definitiva', 'Dispositivo Final']
+                },
+                'Ação': {
+                    'common': ['Ação Básica', 'Procedimento Simples', 'Técnica Comum'],
+                    'rare': ['Ação Rara', 'Procedimento Especial', 'Técnica Única'],
+                    'epic': ['Ação Épica', 'Procedimento Avançado', 'Técnica Vital'],
+                    'legendary': ['Ação Lendária', 'Procedimento Definitivo', 'Técnica Final']
+                },
+                'Aliado': {
+                    'common': ['Aliado Básico', 'Apoio Simples', 'Colaborador Comum'],
+                    'rare': ['Aliado Raro', 'Apoio Especial', 'Colaborador Único'],
+                    'epic': ['Aliado Épico', 'Apoio Avançado', 'Colaborador Vital'],
+                    'legendary': ['Aliado Lendário', 'Apoio Definitivo', 'Colaborador Final']
+                }
+            };
+            
+            const typeTitles = titles[type][rarity];
+            return typeTitles[Math.floor(Math.random() * typeTitles.length)];
+        }
+        
+        // Função para calcular evidências da carta extra
+        function calculateExtraCardEvidence(type, rarity) {
+            let baseEvidence = 10;
+            
+            // Bônus por tipo
+            switch(type) {
+                case 'Evidência': baseEvidence = 25; break;
+                case 'Suspeito': baseEvidence = 20; break;
+                case 'Equipamento': baseEvidence = 15; break;
+                case 'Ação': baseEvidence = 12; break;
+                case 'Aliado': baseEvidence = 10; break;
+            }
+            
+            // Bônus por raridade
+            switch(rarity) {
+                case 'legendary': baseEvidence *= 1.5; break;
+                case 'epic': baseEvidence *= 1.3; break;
+                case 'rare': baseEvidence *= 1.2; break;
+                case 'common': baseEvidence *= 1.0; break;
+            }
+            
+            return Math.floor(baseEvidence);
+        }
+        
+        // Função para gerar estatísticas da carta extra
+        function generateExtraCardStats(type, rarity) {
+            const basePower = 30 + (Math.floor(Math.random() * 40));
+            const baseAccuracy = 40 + (Math.floor(Math.random() * 40));
+            
+            let power = basePower;
+            let accuracy = baseAccuracy;
+            
+            // Bônus por raridade
+            switch(rarity) {
+                case 'legendary': 
+                    power *= 1.5; 
+                    accuracy *= 1.5; 
+                    break;
+                case 'epic': 
+                    power *= 1.3; 
+                    accuracy *= 1.3; 
+                    break;
+                case 'rare': 
+                    power *= 1.2; 
+                    accuracy *= 1.2; 
+                    break;
+            }
+            
+            const special = type === 'Evidência' ? '🔍 Extra' : 
+                           type === 'Suspeito' ? '👤 Suspeito' :
+                           type === 'Equipamento' ? '🔧 Equipamento' :
+                           type === 'Ação' ? '⚡ Ação' : '🛡️ Aliado';
+            
+            return [`⚡ ${Math.floor(power)}`, `🎯 ${Math.floor(accuracy)}`, special];
         }
 
 
@@ -4946,15 +5101,36 @@
         // Função para detectar dinamicamente o total de cartas disponíveis
         function updateDynamicCardsCounter() {
             const availableCards = cardDatabase.filter(card => !card.played).length;
-            const maxCards = Math.max(difficultySettings[currentDifficulty].cards, availableCards);
+            const totalCards = cardDatabase.length;
+            const baseCards = difficultySettings[currentDifficulty].cards;
+            const extraCards = totalCards - baseCards;
+            
+            // O total deve ser o maior entre: base da dificuldade, cartas disponíveis, ou total de cartas
+            const maxCards = Math.max(baseCards, availableCards, totalCards);
+            
             const cardsElement = document.getElementById('cardsPlayed');
             if (cardsElement) {
                 cardsElement.textContent = `${cardsPlayed}/${maxCards}`;
-                console.log(`🎯 Contador dinâmico: ${cardsPlayed}/${maxCards} (disponíveis: ${availableCards})`);
+                
+                // Adicionar indicador visual para cartas extras
+                if (extraCards > 0) {
+                    cardsElement.title = `📦 ${extraCards} cartas extras adicionadas via pacotes`;
+                    cardsElement.style.color = '#10b981'; // Verde para indicar cartas extras
+                } else {
+                    cardsElement.title = `Cartas jogadas / Total disponível`;
+                    cardsElement.style.color = '#fbbf24'; // Dourado padrão
+                }
+                
+                console.log(`🎯 Contador dinâmico: ${cardsPlayed}/${maxCards} (base: ${baseCards}, extras: ${extraCards}, disponíveis: ${availableCards}, total: ${totalCards})`);
             }
             
             // Atualizar barra de progresso dinamicamente
             updateCardsProgressBar(maxCards);
+            
+            // Mostrar notificação se há cartas extras
+            if (extraCards > 0) {
+                console.log(`📦 Cartas extras detectadas: ${extraCards} cartas adicionais no banco`);
+            }
         }
         
         // Função para forçar atualização agressiva dos contadores
