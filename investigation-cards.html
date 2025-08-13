@@ -3922,35 +3922,42 @@
         }
         
         function loadDifficultyStats() {
-            // Simular carregamento de estatísticas (em produção viria da API)
-            const mockStats = {
-                easy: {
-                    gamesPlayed: 5,
-                    gamesWon: 4,
-                    winRate: '80.0',
-                    bestTimeFormatted: '3:45'
-                },
-                medium: {
-                    gamesPlayed: 12,
-                    gamesWon: 8,
-                    winRate: '66.7',
-                    bestTimeFormatted: '5:22'
-                },
-                hard: {
-                    gamesPlayed: 3,
-                    gamesWon: 1,
-                    winRate: '33.3',
-                    bestTimeFormatted: '8:15'
-                }
+            // Carregar estatísticas reais do localStorage
+            const stats = {
+                easy: loadDifficultyStatsFromStorage('easy'),
+                medium: loadDifficultyStatsFromStorage('medium'),
+                hard: loadDifficultyStatsFromStorage('hard')
             };
             
-            // Comentado temporariamente para evitar erro de elementos não encontrados
-            // updateDifficultyStatsDisplay(mockStats);
-            console.log('📊 Estatísticas por dificuldade carregadas (elementos não encontrados no HTML)');
+            updateDifficultyStatsDisplay(stats);
+            console.log('📊 Estatísticas reais carregadas do localStorage');
+        }
+        
+        function loadDifficultyStatsFromStorage(difficulty) {
+            const savedStats = localStorage.getItem(`criminalMinds_stats_${difficulty}`);
+            if (savedStats) {
+                return JSON.parse(savedStats);
+            }
+            
+            // Estatísticas iniciais se não existirem
+            return {
+                gamesPlayed: 0,
+                gamesWon: 0,
+                winRate: '0.0',
+                bestTimeFormatted: '--:--',
+                totalEvidence: 0,
+                totalCardsPlayed: 0,
+                bestCombo: 0
+            };
+        }
+        
+        function saveDifficultyStats(difficulty, stats) {
+            localStorage.setItem(`criminalMinds_stats_${difficulty}`, JSON.stringify(stats));
+            console.log(`📊 Estatísticas salvas para ${difficulty}:`, stats);
         }
         
         function updateDifficultyStatsDisplay(stats) {
-            console.log('📊 Tentando atualizar estatísticas por dificuldade...');
+            console.log('📊 Atualizando estatísticas reais...');
             
             // Verificar se os elementos existem antes de tentar acessá-los
             const elements = {
@@ -4011,12 +4018,15 @@
                 console.log('📊 hardBestTime atualizado');
             }
             
-            console.log('📊 Atualização de estatísticas por dificuldade concluída');
+            console.log('📊 Atualização de estatísticas reais concluída');
         }
         
         function startTimer() {
             // Carregar conquistas salvas
             loadAchievements();
+            
+            // Inicializar estatísticas reais
+            loadDifficultyStats();
             
             // Comentado temporariamente para evitar erro de elementos não encontrados
             // loadDifficultyStats();
@@ -4580,6 +4590,9 @@
             
             localStorage.setItem('criminalMinds_lastGameResult', JSON.stringify(gameData));
             
+            // Atualizar estatísticas reais do jogo
+            updateGameStats(result === 'win');
+            
             // Criar modal de resultado
             const resultModal = document.createElement('div');
             resultModal.style.cssText = `
@@ -4669,6 +4682,53 @@
         
         function returnToLobby() {
             window.location.href = 'lobby.html';
+        }
+        
+        function updateGameStats(isWin) {
+            const currentDifficulty = getCurrentDifficulty();
+            const stats = loadDifficultyStatsFromStorage(currentDifficulty);
+            
+            // Atualizar estatísticas
+            stats.gamesPlayed++;
+            if (isWin) {
+                stats.gamesWon++;
+            }
+            
+            // Calcular taxa de vitória
+            stats.winRate = ((stats.gamesWon / stats.gamesPlayed) * 100).toFixed(1);
+            
+            // Atualizar melhor tempo se necessário
+            const currentTime = Math.floor((difficultySettings[currentDifficulty]?.timer || 2700 - gameTime) / 60);
+            if (isWin && (stats.bestTimeFormatted === '--:--' || currentTime < parseInt(stats.bestTimeFormatted.split(':')[0]))) {
+                stats.bestTimeFormatted = `${currentTime}:${(gameTime % 60).toString().padStart(2, '0')}`;
+            }
+            
+            // Atualizar total de evidências e cartas jogadas
+            stats.totalEvidence += totalEvidence || 0;
+            stats.totalCardsPlayed += cardsPlayed;
+            
+            // Atualizar melhor combo
+            if (comboStreak > stats.bestCombo) {
+                stats.bestCombo = comboStreak;
+            }
+            
+            // Salvar estatísticas atualizadas
+            saveDifficultyStats(currentDifficulty, stats);
+            
+            console.log(`📊 Estatísticas atualizadas para ${currentDifficulty}:`, stats);
+        }
+        
+        function getCurrentDifficulty() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const difficultyFromUrl = urlParams.get('difficulty') || 'medium';
+            
+            const difficultyMap = {
+                'easy': 'easy',
+                'medium': 'medium', 
+                'hard': 'hard'
+            };
+            
+            return difficultyMap[difficultyFromUrl] || 'medium';
         }
 
         // Função para sair da investigação
