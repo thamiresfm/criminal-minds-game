@@ -3072,6 +3072,9 @@
             // Atualizar contador de cartas jogadas imediatamente
             updateCardsPlayedCounter();
             
+            // Atualizar display de evidências
+            updateEvidenceDisplay();
+            
             // Encontrar o elemento da carta no DOM e removê-lo visualmente
             setTimeout(() => {
                 const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
@@ -4740,19 +4743,22 @@
             // 3. Atualizar progresso das cartas
             updateCardProgress();
             
-            // 4. Atualizar título do caso
+            // 4. Atualizar display de evidências
+            updateEvidenceDisplay();
+            
+            // 5. Atualizar título do caso
             const caseTitle = document.querySelector('.case-title');
             if (caseTitle) {
                 caseTitle.innerHTML = `🔍 ${currentCase.title} <span style="font-size: 0.8rem; color: #10b981;">(${currentCase.collectedEvidence}/${currentCase.targetEvidence})</span>`;
             }
             
-            // 5. Verificar conquistas
+            // 6. Verificar conquistas
             checkAchievements();
             
-            // 6. Garantir que o contador de cartas jogadas seja atualizado
+            // 7. Garantir que o contador de cartas jogadas seja atualizado
             updateCardsPlayedCounter();
             
-            // 7. Forçar atualização agressiva dos contadores
+            // 8. Forçar atualização agressiva dos contadores
             forceUpdateCounters();
             
             console.log('✅ Todas as estatísticas do jogo atualizadas');
@@ -5269,11 +5275,54 @@
         // Função para calcular total de evidências baseado na dificuldade
         function calculateTotalEvidence() {
             const difficultyConfig = difficultySettings[currentDifficulty];
-            const baseEvidencePerCard = 10; // Evidências base por carta
             const maxCards = difficultyConfig.cards;
             
-            // Calcular evidências base
-            let totalBaseEvidence = cardsPlayed * baseEvidencePerCard;
+            // Calcular evidências base por tipo de carta
+            let totalBaseEvidence = 0;
+            const playedCards = cardDatabase.filter(card => card.played);
+            
+            playedCards.forEach(card => {
+                let evidencePerCard = 10; // Base por carta
+                
+                // Bônus por tipo de carta
+                switch(card.type) {
+                    case 'EVIDÊNCIA':
+                        evidencePerCard = 25; // Cartas de evidência dão mais pontos
+                        break;
+                    case 'SUSPEITO':
+                        evidencePerCard = 20; // Suspeitos dão pontos médios
+                        break;
+                    case 'EQUIPAMENTO':
+                        evidencePerCard = 15; // Equipamentos dão pontos moderados
+                        break;
+                    case 'AÇÃO':
+                        evidencePerCard = 12; // Ações dão pontos básicos
+                        break;
+                    case 'ALIADO':
+                        evidencePerCard = 10; // Aliados dão pontos básicos
+                        break;
+                    default:
+                        evidencePerCard = 10;
+                }
+                
+                // Bônus por raridade
+                switch(card.rarity) {
+                    case 'LENDÁRIA':
+                        evidencePerCard *= 1.5;
+                        break;
+                    case 'ÉPICA':
+                        evidencePerCard *= 1.3;
+                        break;
+                    case 'RARA':
+                        evidencePerCard *= 1.2;
+                        break;
+                    case 'COMUM':
+                        evidencePerCard *= 1.0;
+                        break;
+                }
+                
+                totalBaseEvidence += Math.floor(evidencePerCard);
+            });
             
             // Aplicar bônus de combo
             const comboBonus = calculateComboBonus(totalBaseEvidence);
@@ -5282,14 +5331,15 @@
             const difficultyMultiplier = difficultyConfig.evidenceMultiplier || 1.0;
             const finalEvidence = Math.floor(comboBonus.total * difficultyMultiplier);
             
-            console.log(`📊 Total de evidências calculado: ${totalBaseEvidence} base + ${comboBonus.bonus} combo = ${finalEvidence} final`);
+            console.log(`📊 Total de evidências calculado: ${totalBaseEvidence} base + ${comboBonus.bonus} combo = ${finalEvidence} final (${playedCards.length} cartas jogadas)`);
             
             return {
                 base: totalBaseEvidence,
                 combo: comboBonus.bonus,
                 total: finalEvidence,
                 multiplier: difficultyMultiplier,
-                maxCards: maxCards
+                maxCards: maxCards,
+                playedCards: playedCards.length
             };
         }
 
